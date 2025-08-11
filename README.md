@@ -1,4 +1,4 @@
-<a href="https://softserve.academy/"><div align="center"><img src="https://github.com/ita-social-projects/StreetCode/blob/master/StreetCodeLogo.jpg" title="SoftServe IT Academy" alt="SoftServe IT Academy"></div></a>
+<a href="https://softserve.academy/"><div align="center"><img src="https://github.com/project-studying-dotnet/Streetcode-Server-May-2025/blob/main/StreetCodeLogo.jpg" title="SoftServe IT Academy" alt="SoftServe IT Academy"></div></a>
 
 # Streetcode
 This is a Back-end part of our Streetcode project.
@@ -9,11 +9,15 @@ Front-end part: https://github.com/project-studying-dotnet/Streetcode-Client-Aug
 >### **Mission**
 >To fill the gaps in the historical memory of Ukrainians.
 
-[![Build Status](https://img.shields.io/travis/ita-social-projects/Streetcode-Admin/master?style=flat-square)](https://travis-ci.org/github/ita-social-projects/Streetcode-Admin)
-[![Coverage Status](https://img.shields.io/gitlab/coverage/ita-social-projects/Streetcode-Admin/master?style=flat-square)](https://coveralls.io)
-[![Github Issues](https://img.shields.io/github/issues/ita-social-projects/Streetcode-Admin?style=flat-square)](https://github.com/ita-social-projects/Streetcode-Admin/issues)
-[![Pending Pull-Requests](https://img.shields.io/github/issues-pr/ita-social-projects/Streetcode-Admin?style=flat-square)](https://github.com/ita-social-projects/Streetcode-Admin/pulls)
+[![Github Issues](https://img.shields.io/github/issues/project-studying-dotnet/Streetcode-Server-August-2025?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Server-August-2025/issues)
+[![Pending Pull-Requests](https://img.shields.io/github/issues-pr/project-studying-dotnet/Streetcode-Server-August-2025?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Server-August-2025/pulls)
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-August-2025&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-August-2025)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-August-2025&metric=coverage)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-August-2025)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-August-2025&metric=bugs)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-August-2025)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-August-2025&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-August-2025)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-August-2025&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-August-2025)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-August-2025&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-August-2025)
 ---
 
 ## Table of Contents 
