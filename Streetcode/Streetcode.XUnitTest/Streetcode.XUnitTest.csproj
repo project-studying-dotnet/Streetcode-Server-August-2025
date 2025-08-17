@@ -47,7 +47,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="BLL_Tests\MediatR\Media\Art\GetById\" />
 	  <Folder Include="BLL_Tests\MediatR\Media\Art\GetByStreetcodeId\" />
 	</ItemGroup>
 
