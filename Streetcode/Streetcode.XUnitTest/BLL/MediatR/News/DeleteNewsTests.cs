@@ -92,7 +92,6 @@ public class DeleteNewsTests
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
-
     [Fact]
     public async Task DeleteNews_WhenNewsNotFound_ShouldReturnFailure()
     {
@@ -114,7 +113,6 @@ public class DeleteNewsTests
         _mockNewsRepository.Verify(r => r.Delete(It.IsAny<DAL.Entities.News.News>()), Times.Never);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
     }
-
 
     [Fact]
     public async Task DeleteNews_WhenSaveChangesReturnsZero_ShouldReturnFailure()
@@ -167,7 +165,6 @@ public class DeleteNewsTests
         _mockNewsRepository.Verify(r => r.Delete(news), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
     }
-
 
     // Test entities initializations
     private static DeleteNewsCommand CreateDeleteCommand(int id = 1) => new(id);
