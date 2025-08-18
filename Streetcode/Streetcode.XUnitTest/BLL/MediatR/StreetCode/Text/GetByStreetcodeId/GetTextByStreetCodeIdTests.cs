@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
@@ -8,12 +14,6 @@ using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
 
@@ -33,8 +33,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
             _loggerServiceMock = new Mock<ILoggerService>();
             _textServiceMock = new Mock<ITextService>();
 
-            _handler = new GetTextByStreetcodeIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _textServiceMock.Object ,_loggerServiceMock.Object);
+            _handler = new GetTextByStreetcodeIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _textServiceMock.Object, _loggerServiceMock.Object);
         }
+
         [Fact]
         public async Task Handle_WhenTextExists_ReturnOkWithMappedDTO()
         {
@@ -44,7 +45,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
 
             _repositoryWrapperMock.Setup(r => r.TextRepository.GetFirstOrDefaultAsync(
                It.IsAny<Expression<Func<TextEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()))
+               It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()))
                 .ReturnsAsync(textEntity);
 
             _textServiceMock.Setup(s => s.AddTermsTag(textEntity.TextContent))
@@ -62,6 +63,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
 
             _mapperMock.Verify(m => m.Map<TextDTO?>(textEntity), Times.Once);
         }
+
         [Fact]
         public async Task Handle_WhenStreetCodeDoNotExist_ReturnFailAndLogError()
         {
@@ -85,8 +87,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
             Assert.Contains(result.Errors, e => e.Message.Contains(streetcodeId.ToString()));
             _loggerServiceMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains("doesn`t exist"))), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
-
         }
+
         [Fact]
         public async Task Handle_WhenTextNotFoundButSteetCodeExist_ReturtNullResult()
         {
@@ -113,6 +115,5 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
             _loggerServiceMock.VerifyNoOtherCalls();
             _mapperMock.VerifyNoOtherCalls();
         }
-
     }
 }
