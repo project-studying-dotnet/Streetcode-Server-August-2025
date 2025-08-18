@@ -11,7 +11,7 @@ using Streetcode.DAL.Repositories.Interfaces.Newss;
 using System.Linq.Expressions;
 using Xunit;
 
-namespace Streetcode.XUnitTest.BLL_Tests.MediatR.News;
+namespace Streetcode.XUnitTest.BLL.MediatR.News;
 
 public class SortedByDateTimeTests
 {
