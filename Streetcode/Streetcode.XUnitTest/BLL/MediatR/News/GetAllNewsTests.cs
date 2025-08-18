@@ -13,7 +13,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
 
-namespace Streetcode.XUnitTest.BLL_Tests.MediatR.News;
+namespace Streetcode.XUnitTest.BLL.MediatR.News;
 
 public class GetAllNewsTests
 {
