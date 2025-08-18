@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Timeline;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
