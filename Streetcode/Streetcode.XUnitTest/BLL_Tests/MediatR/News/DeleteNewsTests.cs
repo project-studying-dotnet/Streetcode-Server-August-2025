@@ -96,6 +96,82 @@ public class DeleteNewsTests
     }
 
 
+    [Fact]
+    public async Task DeleteNews_WhenNewsNotFound_ShouldReturnFailure()
+    {
+        // Arrange
+        var command = CreateDeleteCommand(1);
+
+        _mockNewsRepository
+            .Setup(r => r.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(), null))
+            .ReturnsAsync((DAL.Entities.News.News?)null);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeEmpty();
+
+        _mockNewsRepository.Verify(r => r.Delete(It.IsAny<DAL.Entities.News.News>()), Times.Never);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
+    }
+
+
+    [Fact]
+    public async Task DeleteNews_WhenSaveChangesReturnsZero_ShouldReturnFailure()
+    {
+        // Arrange
+        var command = CreateDeleteCommand(1);
+        var news = CreateNewsWithoutImage(1);
+
+        _mockNewsRepository
+            .Setup(r => r.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(), null))
+            .ReturnsAsync(news);
+
+        _mockRepositoryWrapper
+            .Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(0);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeEmpty();
+
+        _mockNewsRepository.Verify(r => r.Delete(news), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteNews_WhenRepositoryThrowsException_ShouldPropagateException()
+    {
+        // Arrange
+        var command = CreateDeleteCommand(1);
+        var news = CreateNewsWithoutImage(1);
+
+        _mockNewsRepository
+            .Setup(r => r.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(), null))
+            .ReturnsAsync(news);
+
+        _mockNewsRepository
+            .Setup(r => r.Delete(news))
+            .Throws<InvalidOperationException>();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _handler.Handle(command, CancellationToken.None));
+
+        _mockNewsRepository.Verify(r => r.Delete(news), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
+    }
+
+
     // Test entities initializations
     private static DeleteNewsCommand CreateDeleteCommand(int id = 1) => new(id);
 
