@@ -37,7 +37,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
         }
 
         [Fact]
-        public async Task WhenMultipleArtsExist_ReturnsAllWithBase64()
+        public async Task Handle_WhenArtsExist_ReturnsAllWithBase64()
         {
             // Arrange
             const int StreetcodeId = 1;
@@ -86,7 +86,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
         }
 
         [Fact]
-        public async Task WhenArtsListIsEmpty_ReturnsOk()
+        public async Task Handle_WhenArtsListIsEmpty_ReturnsSuccess()
         {
             // Arrange
             const int StreetcodeId = 1;
@@ -113,7 +113,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
         }
 
         [Fact]
-        public async Task WhenArtsListIsNull_ReturnsFail()
+        public async Task Handle_WhenArtsListIsNull_ReturnsFail()
         {
             // Arrange
             const int StreetcodeId = 1;
@@ -136,17 +136,14 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
             _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Never);
         }
 
-
-
         [Fact]
-        public async Task WhenArtsHaveNoImage_ReturnsOkWithoutBlobLoading()
+        public async Task Handle_WhenArtsHaveNoImage_ReturnsSuccessWithoutBlobLoading()
         {
             // Arrange
             const int ArtId = 1;
-            const int ImageId = 0;
 
-            var art = new ArtEntity { Id = ArtId, Image = null, ImageId = ImageId };
-            var artDto = new ArtDTO { Id = ArtId, Image = null, ImageId = ImageId };
+            var art = new ArtEntity { Id = ArtId, Image = null };
+            var artDto = new ArtDTO { Id = ArtId, Image = null };
 
             _repositoryWrapperMock
                 .Setup(r => r.ArtRepository.GetAllAsync(
@@ -170,7 +167,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
         }
 
         [Fact]
-        public async Task WhenImageBlobNameIsNull_ReturnsOkSkippingBlobLoading()
+        public async Task WhenImageBlobNameIsNull_ReturnsSuccessSkippingBlobLoading()
         {
             // Arrange
             const int ArtId = 1;

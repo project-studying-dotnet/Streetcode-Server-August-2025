@@ -27,7 +27,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
         }
 
         [Fact]
-        public async Task WhenArtExistsAmongMultiple_ReturnsCorrectArt()
+        public async Task Handle_WhenArtExists_ReturnsCorrectArt()
         {
             // Arrange
             const int targetArtId = 2;
@@ -70,7 +70,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
 
 
         [Fact]
-        public async Task WhenArtIdDoesNotExist_ReturnsFailAndLogsError()
+        public async Task Handle_WhenArtDoesNotExist_ReturnsFailAndLogsError()
         {
             // Arrange
             const int nonExistentArtId = -1;
@@ -110,8 +110,9 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
 
 
         [Fact]
-        public async Task WhenArtIsNull_ReturnsFailAndLogsError()
+        public async Task Handle_WhenArtIsNull_ReturnsFailAndLogsError()
         {
+            // Arrange
             _repositoryWrapperMock
               .Setup(r => r.ArtRepository.GetFirstOrDefaultAsync(
                   It.IsAny<Expression<Func<ArtEntity, bool>>>(),
@@ -120,9 +121,11 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
 
             var query = new GetArtByIdQuery(1);
 
+            // Act
             var result = await _handler.Handle(query, CancellationToken.None);
             var message = $"Cannot find an art with corresponding id: {query.Id}";
 
+            // Assert
             Assert.False(result.IsSuccess);
             Assert.Equal(message, result.Errors[0].Message);
             _loggerMock.Verify(l => l.LogError(query, message), Times.Once);

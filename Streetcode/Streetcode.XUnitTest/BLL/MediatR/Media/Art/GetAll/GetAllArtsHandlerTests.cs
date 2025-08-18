@@ -29,8 +29,9 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
         [Theory]
         [InlineData(0)]
         [InlineData(10)]
-        public async Task WithDifferentListSizes_ReturnsSuccess(int count)
+        public async Task Handle_WithDifferentListSizes_ReturnsSuccess(int count)
         {
+            // Arrange
             var arts = Enumerable.Range(1, count)
                 .Select(i => new ArtEntity { Id = i, Title = $"Art{i}" })
                 .ToList();
@@ -46,8 +47,10 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
 
             var query = new GetAllArtsQuery();
 
+            // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
+            // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal(artsDto, result.Value);
 
@@ -60,10 +63,11 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
         }
 
         [Fact]
-        public async Task WhenArtsIsNull_ReturnsFailAndLogsError()
+        public async Task Handle_WhenArtsIsNull_ReturnsFailAndLogsError()
         {
-            const string ErrorMessage = "Cannot find any arts";
             // Arrange
+            const string ErrorMessage = "Cannot find any arts";
+
             _repositoryWrapperMock.Setup(r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
