@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Xunit;
 using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
 
-namespace Streetcode.XIntegrationTest.DLL.MediatR.StreetCode.Text.GetByStreetcodeId
+namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
 {
     public class GetTextByStreetCodeIdTests
     {

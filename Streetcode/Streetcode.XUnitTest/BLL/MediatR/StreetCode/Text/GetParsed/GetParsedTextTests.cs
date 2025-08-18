@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Xunit;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-namespace Streetcode.XIntegrationTest.DLL.MediatR.StreetCode.Text.GetParsed
+namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetParsed
 {
     public class GetParsedTextTests
     {
