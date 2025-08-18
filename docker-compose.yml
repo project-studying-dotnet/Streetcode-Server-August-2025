@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  streetcode-back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+     - sqlserver
+    environment:
+     - ConnectionStrings__DefaultConnection=Server=streetcode-db;Database=StreetcodeDb;User Id=sa;Password=Admin@1234;MultipleActiveResultSets=true
+    networks:
+     - streetcodeapp
+    restart: on-failure
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Admin@1234"
+      ACCEPT_EULA: "Y"
+    ports:
+     - "1433:1433"
+    volumes:
+     - sqlvolume:/var/opt/mssql
+    networks:
+     - streetcodeapp
+
+networks:
+  streetcodeapp:
+
+volumes:
+  sqlvolume:
