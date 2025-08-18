@@ -49,9 +49,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet sonarscanner begin /k:"project-studying-dotnet_Streetcode-Server-August-2025" /o:"project-studying-dotnet" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportPaths="./coverage/coverage.xml"
+          dotnet sonarscanner begin /k:"project-studying-dotnet_Streetcode-Server-August-2025" /o:"project-studying-dotnet" /d:sonar.login="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportPaths="./coverage/coverage.xml"
           dotnet build ./Streetcode/Streetcode.sln --configuration Release
-          dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+          dotnet sonarscanner end /d:sonar.login="$env:SONAR_TOKEN"
 
       - name: Publish Code Coverage Report
         if: always()
