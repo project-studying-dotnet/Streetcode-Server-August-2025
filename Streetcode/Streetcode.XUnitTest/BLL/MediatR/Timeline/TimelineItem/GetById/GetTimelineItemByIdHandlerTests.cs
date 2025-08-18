@@ -10,7 +10,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
-namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Timeline.TimelineItem.GetById;
+namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.GetById;
 
 public class GetTimelineItemByIdHandlerTests
 {

@@ -1,13 +1,13 @@
-﻿using FluentResults;
-using Moq;
-using Streetcode.BLL.Interfaces.Text;
-using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
-using Streetcode.BLL.MediatR.Streetcode.Text.GetParsed;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentResults;
+using Moq;
+using Streetcode.BLL.Interfaces.Text;
+using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
+using Streetcode.BLL.MediatR.Streetcode.Text.GetParsed;
 using Xunit;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -17,15 +17,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetParsed
     {
         private readonly Mock<ITextService> _textServiceMock;
         private readonly GetParsedTextAdminPreviewHandler _handler;
-
-
         public GetParsedTextTests()
         {
             _textServiceMock = new Mock<ITextService>();
 
             _handler = new GetParsedTextAdminPreviewHandler(_textServiceMock.Object);
-
         }
+
         [Fact]
         public async Task Handle_WhenTextIsParsedSeccussfully_ReturnOkResult()
         {
@@ -35,8 +33,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetParsed
             _textServiceMock.Setup(s => s.AddTermsTag(inputText))
             .ReturnsAsync(parsedText);
 
-
-           var command = new GetParsedTextForAdminPreviewCommand(inputText);
+            var command = new GetParsedTextForAdminPreviewCommand(inputText);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -45,9 +42,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetParsed
             Assert.True(result.IsSuccess);
             Assert.Equal(parsedText, result.Value);
             _textServiceMock.Verify(s => s.AddTermsTag(inputText), Times.Once);
-
-
         }
+
         [Fact]
         public async Task Handle_WhenParsingFails_ReturnsFailResult()
         {
