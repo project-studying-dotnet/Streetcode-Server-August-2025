@@ -24,7 +24,6 @@ public class GetAllNewsTests
     private readonly Mock<IBlobService> _mockBlobService;
     private readonly GetAllNewsHandler _handler;
 
-
     public GetAllNewsTests()
     {
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
@@ -85,7 +84,6 @@ public class GetAllNewsTests
         _mockMapper.Verify(m => m.Map<IEnumerable<NewsDTO>>(newsList), Times.Once);
     }
 
-
     [Fact]
     public async Task GetAllNews_WhenNewsHasImage_ShouldSetBase64FromBlobService()
     {
@@ -129,23 +127,11 @@ public class GetAllNewsTests
     public async Task GetAllNews_WhenRepositoryReturnsNull_ShouldReturnFailure()
     {
         // Arrange
-        var newsList = new List<DAL.Entities.News.News>
-        {
-            CreateNewsWithoutImage(1),
-            CreateNewsWithoutImage(2)
-        };
-        var newsDTOList = new List<NewsDTO>
-        {
-            CreateNewsDTO(1),
-            CreateNewsDTO(2)
-        };
-
         _mockNewsRepository
             .Setup(r => r.GetAllAsync(
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync((IEnumerable<DAL.Entities.News.News>)null);
-
 
         var query = new GetAllNewsQuery();
 
@@ -159,9 +145,7 @@ public class GetAllNewsTests
         _mockNewsRepository.Verify(r => r.GetAllAsync(
             It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
             It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()), Times.Once);
-
     }
-
 
     [Fact]
     public async Task GetAllNews_WhenRepositoryThrowsException_ShouldPropagateException()
@@ -217,6 +201,5 @@ public class GetAllNewsTests
         Image = imageId.HasValue ? new ImageDTO { Id = imageId.Value } : null,
         CreationDate = DateTime.UtcNow
     };
-
 
 }

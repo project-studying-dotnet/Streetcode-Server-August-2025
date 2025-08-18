@@ -22,7 +22,6 @@ public class GetNewsAndLinksByUrlTests
     private readonly Mock<ILoggerService> _mockLogger;
     private readonly GetNewsAndLinksByUrlHandler _handler;
 
-
     public GetNewsAndLinksByUrlTests()
     {
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
@@ -56,7 +55,6 @@ public class GetNewsAndLinksByUrlTests
             CreateNewsEntity(3, "third-url"),
             CreateNewsEntity(4, "fourth-url")
         };
-
 
         var newsDTO = CreateNewsDTO(2, testUrl);
 
@@ -110,7 +108,6 @@ public class GetNewsAndLinksByUrlTests
         _mockMapper.Verify(x => x.Map<NewsDTO>(It.IsAny<DAL.Entities.News.News>()), Times.Once);
     }
 
-
     [Fact]
     public async Task GetNewsAndLinksByUrl_WhenNewsNotFound_ShouldReturnFailure()
     {
@@ -132,7 +129,6 @@ public class GetNewsAndLinksByUrlTests
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
     }
-
 
     [Fact]
     public async Task GetNewsAndLinksByUrl_WhenTotalNewsLessOrEqualThree_ShouldSetRandomNewsAsCurrent()
@@ -228,6 +224,5 @@ public class GetNewsAndLinksByUrlTests
             }
         };
     }
-
 
 }
