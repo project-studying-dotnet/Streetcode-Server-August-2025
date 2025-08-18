@@ -157,6 +157,27 @@ public class CreateNewsTests
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
+    [Fact]
+    public async Task CreateNews_WhenRepositoryThrowsException_ShouldPropagateException()
+    {
+        // Arrange
+        var newsDTO = CreateValidNewsDTO();
+        var newsEntity = CreateValidNewsEntity();
+        var command = new CreateNewsCommand(newsDTO);
+
+        _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
+            .Returns(newsEntity);
+        _mockNewsRepository.Setup(r => r.Create(newsEntity))
+            .Throws<InvalidOperationException>();
+
+        // Act and Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _handler.Handle(command, CancellationToken.None));
+
+        _mockNewsRepository.Verify(r => r.Create(newsEntity), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
+    }
+
     // Test entities initializations
     private static NewsDTO CreateValidNewsDTO(int id = 0, int? imageId = 1)
     {
