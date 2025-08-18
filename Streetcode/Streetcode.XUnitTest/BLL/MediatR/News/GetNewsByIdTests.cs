@@ -16,7 +16,6 @@ namespace Streetcode.XUnitTest.BLL.MediatR.News;
 
 public class GetNewsByIdTests
 {
-
     private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<INewsRepository> _mockNewsRepository;
     private readonly Mock<IMapper> _mockMapper;

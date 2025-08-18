@@ -8,7 +8,6 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetAll;
-using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -180,17 +179,6 @@ public class GetAllNewsTests
         CreationDate = DateTime.UtcNow
     };
 
-    private static DAL.Entities.News.News CreateNewsWithImage(int id = 1, int imageId = 1) => new()
-    {
-        Id = id,
-        Title = $"Test News {id}",
-        Text = "Test Content",
-        URL = "test-url",
-        ImageId = imageId,
-        Image = new Image { Id = imageId },
-        CreationDate = DateTime.UtcNow
-    };
-
     private static NewsDTO CreateNewsDTO(int id = 1, int? imageId = null) => new()
     {
         Id = id,
@@ -201,5 +189,4 @@ public class GetAllNewsTests
         Image = imageId.HasValue ? new ImageDTO { Id = imageId.Value } : null,
         CreationDate = DateTime.UtcNow
     };
-
 }

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -8,7 +9,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.News;
@@ -102,7 +102,6 @@ public class GetNewsAndLinksByUrlTests
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()),
             Times.Once);
-
 
         // Verify mapper call
         _mockMapper.Verify(x => x.Map<NewsDTO>(It.IsAny<DAL.Entities.News.News>()), Times.Once);
@@ -224,5 +223,4 @@ public class GetNewsAndLinksByUrlTests
             }
         };
     }
-
 }
