@@ -4,6 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<CodeAnalysisRuleSet>../settings.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -44,6 +45,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Streetcode.BLL\Streetcode.BLL.csproj" />
 		<ProjectReference Include="..\Streetcode.DAL\Streetcode.DAL.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="BLL_Tests\" />
 	</ItemGroup>
 
 </Project>
