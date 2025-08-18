@@ -107,5 +107,4 @@ public class SortedByDateTimeTests
         result.Errors.Should().NotBeEmpty();
     }
 
-
 }
