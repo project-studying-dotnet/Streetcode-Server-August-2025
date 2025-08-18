@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
 using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
 
@@ -54,7 +54,8 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
             Assert.True(result.IsSuccess);
             Assert.Equal(artsDto, result.Value);
 
-            _repositoryWrapperMock.Verify(r => r.ArtRepository.GetAllAsync(
+            _repositoryWrapperMock.Verify(
+                r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()), Times.Once);
 
@@ -82,7 +83,8 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
             Assert.True(result.IsFailed);
             Assert.Contains(result.Errors, e => e.Message.Contains(ErrorMessage));
 
-            _repositoryWrapperMock.Verify(r => r.ArtRepository.GetAllAsync(
+            _repositoryWrapperMock.Verify(
+                r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()), Times.Once);
 

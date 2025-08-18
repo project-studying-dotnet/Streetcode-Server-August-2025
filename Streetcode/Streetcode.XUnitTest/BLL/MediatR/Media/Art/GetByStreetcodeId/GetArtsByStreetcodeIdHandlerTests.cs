@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Media.Art;
@@ -6,11 +7,10 @@ using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId;
-using Image = Streetcode.DAL.Entities.Media.Images.Image;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
 using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
+using Image = Streetcode.DAL.Entities.Media.Images.Image;
 
 namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
 {
@@ -32,8 +32,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
                 _repositoryWrapperMock.Object,
                 _mapperMock.Object,
                 _blobServiceMock.Object,
-                _loggerMock.Object
-            );
+                _loggerMock.Object);
         }
 
         [Fact]
@@ -48,14 +47,14 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
             var arts = new List<ArtEntity>
             {
                 new ArtEntity { Id = 1, Image = new Image { Id = 1, BlobName = BlobName1 }, ImageId = 1 },
-                new ArtEntity { Id = 2, Image = new Image { Id = 2, BlobName = BlobName2 }, ImageId = 2 }
+                new ArtEntity { Id = 2, Image = new Image { Id = 2, BlobName = BlobName2 }, ImageId = 2 },
             };
 
             var artsDto = arts.Select(a => new ArtDTO
             {
                 Id = a.Id,
                 ImageId = a.ImageId,
-                Image = new ImageDTO { Id = a.ImageId, BlobName = a.Image.BlobName, Base64 = Base64Value }
+                Image = new ImageDTO { Id = a.ImageId, BlobName = a.Image.BlobName, Base64 = Base64Value },
             }).ToList();
 
             _repositoryWrapperMock
