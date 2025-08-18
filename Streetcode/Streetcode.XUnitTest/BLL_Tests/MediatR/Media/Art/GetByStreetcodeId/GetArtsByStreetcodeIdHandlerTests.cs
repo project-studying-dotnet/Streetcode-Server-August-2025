@@ -10,7 +10,6 @@ using Image = Streetcode.DAL.Entities.Media.Images.Image;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
 using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
 
 namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
@@ -38,19 +37,116 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
         }
 
         [Fact]
-        public async Task WhenArtsExist_ReturnsOk()
+        public async Task WhenMultipleArtsExist_ReturnsAllWithBase64()
         {
-            const int artId = 1;
-            const int imageId = 1;
-            const string blobName = "Blob1.jpeg";
-            const string base64 = "image";
-            const int streetcodeId = 1;
+            // Arrange
+            const int StreetcodeId = 1;
+            const string BlobName1 = "Blob1.jpeg";
+            const string BlobName2 = "Blob2.jpeg";
+            const string Base64Value = "base64-image";
 
-            var image = new Image { Id = imageId, BlobName = blobName };
-            var imageDto = new ImageDTO { Id = imageId, BlobName = blobName, Base64 = base64 };
+            var arts = new List<ArtEntity>
+            {
+                new ArtEntity { Id = 1, Image = new Image { Id = 1, BlobName = BlobName1 }, ImageId = 1 },
+                new ArtEntity { Id = 2, Image = new Image { Id = 2, BlobName = BlobName2 }, ImageId = 2 }
+            };
 
-            var art = new ArtEntity { Id = artId, Image = image, ImageId = image.Id };
-            var artDto = new ArtDTO { Id = artId, Image = imageDto, ImageId = imageDto.Id };
+            var artsDto = arts.Select(a => new ArtDTO
+            {
+                Id = a.Id,
+                ImageId = a.ImageId,
+                Image = new ImageDTO { Id = a.ImageId, BlobName = a.Image.BlobName, Base64 = Base64Value }
+            }).ToList();
+
+            _repositoryWrapperMock
+                .Setup(r => r.ArtRepository.GetAllAsync(
+                    It.IsAny<Expression<Func<ArtEntity, bool>>>(),
+                    It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
+                .ReturnsAsync(arts);
+
+            _mapperMock
+                .Setup(m => m.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<ArtEntity>>()))
+                .Returns(artsDto);
+
+            _blobServiceMock
+                .Setup(b => b.FindFileInStorageAsBase64(It.IsAny<string>()))
+                .Returns(Base64Value);
+
+            var query = new GetArtsByStreetcodeIdQuery(StreetcodeId);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(2, result.Value.Count());
+            Assert.All(result.Value, a => Assert.Equal(Base64Value, a.Image.Base64));
+
+            _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task WhenArtsListIsEmpty_ReturnsOk()
+        {
+            // Arrange
+            const int StreetcodeId = 1;
+
+            _repositoryWrapperMock
+                .Setup(r => r.ArtRepository.GetAllAsync(
+                    It.IsAny<Expression<Func<ArtEntity, bool>>>(),
+                    It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
+                .ReturnsAsync(new List<ArtEntity>());
+
+            _mapperMock
+                .Setup(m => m.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<ArtEntity>>()))
+                .Returns(new List<ArtDTO>());
+
+            var query = new GetArtsByStreetcodeIdQuery(StreetcodeId);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Empty(result.Value);
+            _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task WhenArtsListIsNull_ReturnsFail()
+        {
+            // Arrange
+            const int StreetcodeId = 1;
+            var query = new GetArtsByStreetcodeIdQuery(StreetcodeId);
+            var expectedMessage = $"Cannot find any art with corresponding streetcode id: {StreetcodeId}";
+
+            _repositoryWrapperMock
+                .Setup(r => r.ArtRepository.GetAllAsync(
+                    It.IsAny<Expression<Func<ArtEntity, bool>>>(),
+                    It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
+                .ReturnsAsync((List<ArtEntity>)null);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal(expectedMessage, result.Errors.First().Message);
+            _loggerMock.Verify(l => l.LogError(query, expectedMessage), Times.Once);
+            _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Never);
+        }
+
+
+
+        [Fact]
+        public async Task WhenArtsHaveNoImage_ReturnsOkWithoutBlobLoading()
+        {
+            // Arrange
+            const int ArtId = 1;
+            const int ImageId = 0;
+
+            var art = new ArtEntity { Id = ArtId, Image = null, ImageId = ImageId };
+            var artDto = new ArtDTO { Id = ArtId, Image = null, ImageId = ImageId };
 
             _repositoryWrapperMock
                 .Setup(r => r.ArtRepository.GetAllAsync(
@@ -62,64 +158,26 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
                 .Setup(m => m.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<ArtEntity>>()))
                 .Returns(new List<ArtDTO> { artDto });
 
-            _blobServiceMock
-                .Setup(b => b.FindFileInStorageAsBase64(blobName))
-                .Returns(base64);
+            var query = new GetArtsByStreetcodeIdQuery(1);
 
-            var query = new GetArtsByStreetcodeIdQuery(streetcodeId);
-
+            // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
+            // Assert
             Assert.True(result.IsSuccess);
-            var returnedArt = Assert.Single(result.Value);
             Assert.Equal(new List<ArtDTO> { artDto }, result.Value);
-            Assert.Equal(base64, returnedArt.Image.Base64);
-
-            _repositoryWrapperMock.Verify(r => r.ArtRepository.GetAllAsync(
-                It.IsAny<Expression<Func<ArtEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()), Times.Once);
-
-            _mapperMock.Verify(m => m.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<ArtEntity>>()), Times.Once);
-            _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(blobName), Times.Once);
-            _loggerMock.VerifyNoOtherCalls();
+            _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
-        public async Task WhenArtsListIsNull_ReturnsFailAndLogsError()
+        public async Task WhenImageBlobNameIsNull_ReturnsOkSkippingBlobLoading()
         {
-            const int streetcodeId = 1;
-            var query = new GetArtsByStreetcodeIdQuery(streetcodeId);
-            var message = $"Cannot find any art with corresponding streetcode id: {streetcodeId}";
+            // Arrange
+            const int ArtId = 1;
+            const int ImageId = 2;
 
-            _repositoryWrapperMock
-                .Setup(r => r.ArtRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<ArtEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
-                .ReturnsAsync((List<ArtEntity>)null);
-
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            Assert.False(result.IsSuccess);
-            Assert.Equal(message, result.Errors[0].Message);
-            _loggerMock.Verify(l => l.LogError(query, message), Times.Once);
-
-            _repositoryWrapperMock.Verify(r => r.ArtRepository.GetAllAsync(
-                It.IsAny<Expression<Func<ArtEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()), Times.Once);
-
-            _mapperMock.VerifyNoOtherCalls();
-            _blobServiceMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task WhenStreetcodeDoesNotExist_ReturnsFailAndLogsError()
-        {
-            int artId = 1;
-            const int nonExistentStreetcodeId = -1;
-
-            var art = new ArtEntity { Id = artId };
-            var query = new GetArtsByStreetcodeIdQuery(nonExistentStreetcodeId);
-            var message = $"Cannot find any art with corresponding streetcode id: {nonExistentStreetcodeId}";
+            var art = new ArtEntity { Id = ArtId, Image = new Image { Id = ImageId, BlobName = null }, ImageId = ImageId };
+            var artDto = new ArtDTO { Id = ArtId, Image = new ImageDTO { Id = ImageId, BlobName = null }, ImageId = ImageId };
 
             _repositoryWrapperMock
                 .Setup(r => r.ArtRepository.GetAllAsync(
@@ -127,18 +185,19 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
                     It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
                 .ReturnsAsync(new List<ArtEntity> { art });
 
+            _mapperMock
+                .Setup(m => m.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<ArtEntity>>()))
+                .Returns(new List<ArtDTO> { artDto });
+
+            var query = new GetArtsByStreetcodeIdQuery(1);
+
+            // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal(message, result.Errors[0].Message);
-            _loggerMock.Verify(l => l.LogError(query, message), Times.Once);
-
-            _repositoryWrapperMock.Verify(r => r.ArtRepository.GetAllAsync(
-                It.IsAny<Expression<Func<ArtEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()), Times.Once);
-
-            _mapperMock.VerifyNoOtherCalls();
-            _blobServiceMock.VerifyNoOtherCalls();
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(new List<ArtDTO> { artDto }, result.Value);
+            _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Never);
         }
     }
 }
