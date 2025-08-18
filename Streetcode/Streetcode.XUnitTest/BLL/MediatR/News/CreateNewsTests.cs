@@ -202,5 +202,4 @@ public class CreateNewsTests
             CreationDate = DateTime.UtcNow
         };
     }
-
 }
