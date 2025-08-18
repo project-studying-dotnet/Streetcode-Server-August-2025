@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
@@ -6,12 +12,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetById;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
 
@@ -31,6 +31,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetById
 
             _handler = new GetTextByIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object);
         }
+
         [Fact]
         public async Task Handler_WhenTextExists_ReturnOkResultWith()
         {
@@ -39,7 +40,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetById
 
             _repositoryWrapperMock.Setup(r => r.TextRepository.GetFirstOrDefaultAsync(
                It.IsAny<Expression<Func<TextEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()))
+               It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()))
                 .ReturnsAsync(entityList);
 
             _mapperMock.Setup(m => m.Map<TextDTO>(entityList))
@@ -51,13 +52,15 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetById
 
             Assert.True(result.IsSuccess);
             Assert.Equal(dtoList, result.Value);
-            _repositoryWrapperMock.Verify(r => r.TextRepository.GetFirstOrDefaultAsync(
+            _repositoryWrapperMock.Verify(
+                r => r.TextRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TextEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()),
-            Times.Once);
+                Times.Once);
             _mapperMock.Verify(m => m.Map<TextDTO>(entityList), Times.Once);
             _loggerServiceMock.VerifyNoOtherCalls();
         }
+
         [Fact]
         public async Task Handler_WhenTextNull_ReturnFailAndLogError()
         {
@@ -73,8 +76,10 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetById
             Assert.True(result.IsFailed);
             Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find any text with corresponding id: 1"));
 
-            _loggerServiceMock.Verify(l => l.LogError(query,
-                It.Is<string>(s => s.Contains("Cannot find any text with corresponding id: 1"))),
+            _loggerServiceMock.Verify(
+                l => l.LogError(
+                    query,
+                    It.Is<string>(s => s.Contains("Cannot find any text with corresponding id: 1"))),
                 Times.Once);
 
             _mapperMock.VerifyNoOtherCalls();

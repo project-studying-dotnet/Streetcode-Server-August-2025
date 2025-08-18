@@ -47,4 +47,8 @@
 		<ProjectReference Include="..\Streetcode.DAL\Streetcode.DAL.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="BLL_Tests\" />
+	</ItemGroup>
+
 </Project>
