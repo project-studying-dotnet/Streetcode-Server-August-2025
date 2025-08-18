@@ -1,16 +1,16 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
 
@@ -30,6 +30,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetAll
 
             _handler = new GetAllTextsHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object);
         }
+
         [Fact]
         public async Task Handle_WhenTextsExist_ReturnsOkResultWithMappedDtos()
         {
@@ -53,13 +54,15 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetAll
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal(dtoList, result.Value);
-            _repositoryWrapperMock.Verify(r => r.TextRepository.GetAllAsync(
+            _repositoryWrapperMock.Verify(
+                r => r.TextRepository.GetAllAsync(
                 It.IsAny<Expression<Func<TextEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()),
-            Times.Once);
+                Times.Once);
             _mapperMock.Verify(m => m.Map<IEnumerable<TextDTO>>(entityList), Times.Once);
             _loggerServiceMock.VerifyNoOtherCalls();
         }
+
         [Fact]
         public async Task Handle_WhenTextsAreNull_ReturnsFailAndLogsError()
         {
@@ -78,7 +81,5 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetAll
             _loggerServiceMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains("Cannot find any text"))), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
         }
-
     }
 }
-    

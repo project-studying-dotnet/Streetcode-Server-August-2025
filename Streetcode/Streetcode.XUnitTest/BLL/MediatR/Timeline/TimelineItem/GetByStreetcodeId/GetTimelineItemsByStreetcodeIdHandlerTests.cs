@@ -4,36 +4,40 @@ using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Timeline;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Timeline.TimelineItem.GetAll;
+using Streetcode.BLL.MediatR.Timeline.TimelineItem.GetByStreetcodeId;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
-namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Timeline.TimelineItem.GetAll;
+namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.GetByStreetcodeId;
 
-public class GetAllTimelineItemsHandlerTests
+public class GetTimelineItemsByStreetcodeIdHandlerTests
 {
     private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<ILoggerService> _mockLogger;
-    private readonly GetAllTimelineItemsHandler _handler;
+    private readonly GetTimelineItemsByStreetcodeIdHandler _handler;
 
-    public GetAllTimelineItemsHandlerTests()
+    public GetTimelineItemsByStreetcodeIdHandlerTests()
     {
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
         _mockMapper = new Mock<IMapper>();
         _mockLogger = new Mock<ILoggerService>();
-        _handler = new GetAllTimelineItemsHandler(_mockRepositoryWrapper.Object, _mockMapper.Object, _mockLogger.Object);
+        _handler = new GetTimelineItemsByStreetcodeIdHandler(
+            _mockRepositoryWrapper.Object,
+            _mockMapper.Object,
+            _mockLogger.Object);
     }
 
     [Fact]
-    public async Task Handle_WhenTimelineItemsExist_ShouldReturnSuccessResult()
+    public async Task Handle_WhenTimelineItemsExistForStreetcodeId_ShouldReturnSuccessResult()
     {
         // Arrange
-        var request = new GetAllTimelineItemsQuery();
+        int targetStreetcodeId = 1;
         var cancellationToken = CancellationToken.None;
+        var request = new GetTimelineItemsByStreetcodeIdQuery(targetStreetcodeId);
 
-        var (entities, mappedDtos) = CreateValidTimelineItemEntitiesAndDtos();
+        var (entities, mappedDtos) = CreateValidTimelineItemEntitiesAndDtos(targetStreetcodeId);
 
         SetupMocksForTimelineItems(entities, mappedDtos);
 
@@ -50,12 +54,13 @@ public class GetAllTimelineItemsHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenTimelineItemsIsNull_ShouldReturnFailureResult()
+    public async Task Handle_WhenNoTimelineItemsFoundForStreetcodeId_ShouldReturnFailureResult()
     {
         // Arrange
-        var request = new GetAllTimelineItemsQuery();
+        var streetcodeId = 999;
+        var request = new GetTimelineItemsByStreetcodeIdQuery(streetcodeId);
         var cancellationToken = CancellationToken.None;
-        const string errorMsg = "Cannot find any timelineItem";
+        var expectedErrorMessage = $"Cannot find any timeline item by the streetcode id: {streetcodeId}";
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetAllAsync(
@@ -69,22 +74,21 @@ public class GetAllTimelineItemsHandlerTests
         // Assert
         Assert.True(result.IsFailed);
         Assert.Single(result.Errors);
-        Assert.Equal(errorMsg, result.Errors.First().Message);
+        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
 
-        _mockRepositoryWrapper.Verify(
-            repo => repo.TimelineRepository.GetAllAsync(
-            It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
-            It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()), Times.Once);
-
-        _mockLogger.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
+        _mockLogger.Verify(
+            logger => logger.LogError(request, expectedErrorMessage),
+            Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WhenTimelineItemsIsEmpty_ShouldReturnSuccessResultWithEmptyCollection()
+    public async Task Handle_WhenEmptyCollectionReturned_ShouldReturnSuccessResultWithEmptyCollection()
     {
         // Arrange
-        var request = new GetAllTimelineItemsQuery();
+        var streetcodeId = 1;
+        var request = new GetTimelineItemsByStreetcodeIdQuery(streetcodeId);
         var cancellationToken = CancellationToken.None;
+
         var (entities, mappedDtos) = CreateEmptyTimelineItemEntitiesAndDtos();
 
         SetupMocksForTimelineItems(entities, mappedDtos);
@@ -98,22 +102,44 @@ public class GetAllTimelineItemsHandlerTests
         Assert.Empty(result.Value);
 
         VerifyMocksCalledOnce();
+
+        _mockLogger.Verify(
+            logger => logger.LogError(It.IsAny<GetTimelineItemsByStreetcodeIdQuery>(), It.IsAny<string>()),
+            Times.Never);
     }
 
-    [Fact]
-    public void Constructor_WhenAllDependenciesProvided_ShouldCreateInstance()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(5)]
+    [InlineData(100)]
+    [InlineData(-1)]
+    [InlineData(0)]
+    public async Task Handle_WithDifferentStreetcodeIds_ShouldIncludeIdInErrorMessage(int streetcodeId)
     {
-        // Arrange & Act
-        var handler = new GetAllTimelineItemsHandler(
-            _mockRepositoryWrapper.Object,
-            _mockMapper.Object,
-            _mockLogger.Object);
+        var request = new GetTimelineItemsByStreetcodeIdQuery(streetcodeId);
+        var cancellationToken = CancellationToken.None;
+        var expectedErrorMessage = $"Cannot find any timeline item by the streetcode id: {streetcodeId}";
+
+        _mockRepositoryWrapper
+            .Setup(repo => repo.TimelineRepository.GetAllAsync(
+                It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
+                It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
+            .ReturnsAsync((IEnumerable<TimelineItemEntity>?)null);
+
+        // Act
+        var result = await _handler.Handle(request, cancellationToken);
 
         // Assert
-        Assert.NotNull(handler);
+        Assert.True(result.IsFailed);
+        Assert.Single(result.Errors);
+        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
+
+        _mockLogger.Verify(
+            logger => logger.LogError(request, expectedErrorMessage),
+            Times.Once);
     }
 
-    private static (IEnumerable<TimelineItemEntity>, IEnumerable<TimelineItemDTO>) CreateValidTimelineItemEntitiesAndDtos()
+    private static (IEnumerable<TimelineItemEntity>, IEnumerable<TimelineItemDTO>) CreateValidTimelineItemEntitiesAndDtos(int targetStreetcodeId)
     {
         var entities = new List<TimelineItemEntity>
         {
@@ -122,14 +148,16 @@ public class GetAllTimelineItemsHandlerTests
                 Id = 1,
                 Date = new DateTime(2025, 1, 1),
                 Title = "Test Timeline Item 1",
-                Description = "Description 1"
+                Description = "Description 1",
+                StreetcodeId = targetStreetcodeId
             },
             new TimelineItemEntity
             {
                 Id = 2,
                 Date = new DateTime(2025, 2, 1),
                 Title = "Test Timeline Item 2",
-                Description = "Description 2"
+                Description = "Description 2",
+                StreetcodeId = targetStreetcodeId
             }
         };
         var mappedDtos = new List<TimelineItemDTO>
