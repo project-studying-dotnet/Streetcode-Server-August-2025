@@ -26,11 +26,16 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
             _handler = new GetAllArtsHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
         }
 
-        [Fact]
-        public async Task WhenArtsExist_ReturnsOk()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(10)]
+        public async Task WithDifferentListSizes_ReturnsSuccess(int count)
         {
-            var arts = new List<ArtEntity> { new ArtEntity { Id = 1, Title = "Art1" } };
-            var artsDto = new List<ArtDTO> { new ArtDTO { Id = 1, Title = "Art1" } };
+            var arts = Enumerable.Range(1, count)
+                .Select(i => new ArtEntity { Id = i, Title = $"Art{i}" })
+                .ToList();
+
+            var artsDto = arts.Select(a => new ArtDTO { Id = a.Id, Title = a.Title }).ToList();
 
             _repositoryWrapperMock.Setup(r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
@@ -57,6 +62,8 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
         [Fact]
         public async Task WhenArtsIsNull_ReturnsFailAndLogsError()
         {
+            const string ErrorMessage = "Cannot find any arts";
+            // Arrange
             _repositoryWrapperMock.Setup(r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
@@ -64,16 +71,18 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
 
             var query = new GetAllArtsQuery();
 
+            // Act
             var result = await _handler.Handle(query, default);
 
+            // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find any arts"));
+            Assert.Contains(result.Errors, e => e.Message.Contains(ErrorMessage));
 
             _repositoryWrapperMock.Verify(r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()), Times.Once);
 
-            _loggerMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains("Cannot find any arts"))), Times.Once);
+            _loggerMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains(ErrorMessage))), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
         }
     }
