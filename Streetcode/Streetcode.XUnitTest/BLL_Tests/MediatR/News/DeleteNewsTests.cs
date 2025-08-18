@@ -1,12 +1,9 @@
 ﻿using FluentAssertions;
-using FluentResults;
-using MediatR;
 using Moq;
 using Repositories.Interfaces;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.Delete;
 using Streetcode.DAL.Entities.Media.Images;
-using Streetcode.DAL.Entities.News;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using System.Linq.Expressions;

@@ -2,15 +2,12 @@
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Newss.GetAll;
 using Streetcode.BLL.MediatR.Newss.GetById;
-using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -143,8 +140,6 @@ public class GetNewsByIdTests
         _mockBlobService.Verify(b => b.FindFileInStorageAsBase64("test-image.jpg"), Times.Once);
         _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
     }
-
-
 
     private DAL.Entities.News.News CreateNewsEntity(int id)
     {
