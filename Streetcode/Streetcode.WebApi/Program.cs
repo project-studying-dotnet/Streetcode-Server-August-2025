@@ -27,7 +27,7 @@ else
 
 await app.ApplyMigrations();
 
-await app.SeedDataAsync();
+// await app.SeedDataAsync();
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
