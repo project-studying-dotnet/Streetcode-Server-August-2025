@@ -89,6 +89,73 @@ public class CreateNewsTests
         _mockNewsRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.News.News>()), Times.Never);
     }
 
+    [Fact]
+    public async Task CreateNews_WhenImageIdIsZero_ShouldSetImageIdToNull()
+    {
+        // Arrange
+        var newsDTO = CreateValidNewsDTO(imageId: 0);
+        var mappedNewsEntity = CreateValidNewsEntity(imageId: 0);
+        var createdEntity = CreateValidNewsEntity(imageId: null);
+        var expectedResultDTO = CreateValidNewsDTO(id: 1, imageId: null);
+
+        var command = new CreateNewsCommand(newsDTO);
+
+        // Variable to capture the entity passed to Create method
+        DAL.Entities.News.News? capturedEntity = null;
+
+        _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
+            .Returns(mappedNewsEntity);
+
+        _mockNewsRepository.Setup(r => r.Create(It.IsAny<DAL.Entities.News.News>()))
+            .Callback<DAL.Entities.News.News>(entity => capturedEntity = entity)
+            .Returns(createdEntity);
+
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+
+        _mockMapper.Setup(m => m.Map<NewsDTO>(createdEntity))
+            .Returns(expectedResultDTO);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEquivalentTo(expectedResultDTO);
+
+        capturedEntity.Should().NotBeNull();
+        capturedEntity!.ImageId.Should().BeNull("handler should set ImageId to null when it's 0");
+
+        _mockNewsRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.News.News>()), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(1));
+    }
+
+    [Fact]
+    public async Task CreateNews_WhenSaveChangesReturnsZero_ShouldReturnFailureWithErrorMessage()
+    {
+        // Arrange
+        var newsDTO = CreateValidNewsDTO();
+        var newsEntity = CreateValidNewsEntity();
+        var command = new CreateNewsCommand(newsDTO);
+
+        _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
+            .Returns(newsEntity);
+        _mockNewsRepository.Setup(r => r.Create(newsEntity))
+            .Returns(newsEntity);
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(0);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+
+        _mockNewsRepository.Verify(r => r.Create(newsEntity), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
 
     // Test entities initializations
     private static NewsDTO CreateValidNewsDTO(int id = 0, int? imageId = 1)
