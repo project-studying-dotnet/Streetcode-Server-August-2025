@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.MediatR.Toponyms.GetAll;
@@ -21,8 +22,8 @@ public class ToponymController : BaseApiController
     }
 
     [HttpGet("{streetcodeId:int}")]
-    public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
+    public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetCodeId)
     {
-        return HandleResult(await Mediator.Send(new GetToponymsByStreetcodeIdQuery(streetcodeId)));
+        return HandleResult(await Mediator.Send(new GetToponymsByStreetcodeIdQuery(streetCodeId)));
     }
 }
