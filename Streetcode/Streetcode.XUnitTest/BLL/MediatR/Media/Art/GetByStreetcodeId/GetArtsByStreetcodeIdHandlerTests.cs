@@ -167,7 +167,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
         }
 
         [Fact]
-        public async Task WhenImageBlobNameIsNull_ReturnsSuccessSkippingBlobLoading()
+        public async Task Handle_WhenImageBlobNameIsNull_ReturnsSuccessSkippingBlobLoading()
         {
             // Arrange
             const int ArtId = 1;
