@@ -3,11 +3,10 @@ name: SonarCloud
 on:
   push:
     branches:
-      - master
-      - develop
+      - dev
   pull_request:
     types: [opened, synchronize, reopened]
-
+    
 jobs:
   sonarcloud_branch:
     runs-on: windows-latest
@@ -16,10 +15,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          java-version: '11'
-          distribution: 'adopt'
+          distribution: temurin
+          java-version: '17'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
@@ -45,19 +44,18 @@ jobs:
       - name: Install SonarScanner
         run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Set SonarCloud Token
-        run: echo "SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}" >> $GITHUB_ENV
-
       - name: SonarScanner Analysis
         id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet sonarscanner begin /k:"ita-social-projects_StreetCode" /o:"ita-social-projects" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportPaths="./coverage/coverage.xml"
+          dotnet sonarscanner begin /k:"project-studying-dotnet_Streetcode-Server-August-2025" /o:"project-studying-dotnet" /d:sonar.login="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportPaths="./coverage/coverage.xml"
           dotnet build ./Streetcode/Streetcode.sln --configuration Release
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet sonarscanner end /d:sonar.login="$env:SONAR_TOKEN"
 
       - name: Publish Code Coverage Report
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Code Coverage Report
           path: |
