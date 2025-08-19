@@ -57,8 +57,7 @@ public class GetAllNewsTests
         };
 
         _mockNewsRepository
-            .Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+            .Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync(newsList);
 
@@ -76,8 +75,7 @@ public class GetAllNewsTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEquivalentTo(newsDTOList);
 
-        _mockNewsRepository.Verify(r => r.GetAllAsync(
-            It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+        _mockNewsRepository.Verify(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
             It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()), Times.Once);
 
         _mockMapper.Verify(m => m.Map<IEnumerable<NewsDTO>>(newsList), Times.Once);
@@ -96,8 +94,7 @@ public class GetAllNewsTests
         var newsDTOList = new List<NewsDTO> { newsDTO };
 
         _mockNewsRepository
-            .Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+            .Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync(newsList);
 
@@ -127,8 +124,7 @@ public class GetAllNewsTests
     {
         // Arrange
         _mockNewsRepository
-            .Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+            .Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync((IEnumerable<DAL.Entities.News.News>)null);
 
@@ -141,8 +137,7 @@ public class GetAllNewsTests
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
 
-        _mockNewsRepository.Verify(r => r.GetAllAsync(
-            It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+        _mockNewsRepository.Verify(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
             It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()), Times.Once);
     }
 
@@ -153,8 +148,7 @@ public class GetAllNewsTests
         var expectedException = new Exception("Database connection failed");
 
         _mockNewsRepository
-            .Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+            .Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ThrowsAsync(expectedException);
 

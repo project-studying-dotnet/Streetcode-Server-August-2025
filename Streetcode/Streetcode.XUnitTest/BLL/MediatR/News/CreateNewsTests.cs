@@ -169,8 +169,7 @@ public class CreateNewsTests
             .Throws<InvalidOperationException>();
 
         // Act and Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(
-            () => _handler.Handle(command, CancellationToken.None));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
 
         _mockNewsRepository.Verify(r => r.Create(newsEntity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
