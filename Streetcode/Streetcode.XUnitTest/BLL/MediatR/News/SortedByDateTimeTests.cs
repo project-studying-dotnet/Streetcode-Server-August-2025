@@ -89,7 +89,8 @@ public class SortedByDateTimeTests
     {
         // Arrange
         _mockNewsRepository
-            .Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+            .Setup(r => r.GetAllAsync(
+                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync((IEnumerable<DAL.Entities.News.News>?)null);
 

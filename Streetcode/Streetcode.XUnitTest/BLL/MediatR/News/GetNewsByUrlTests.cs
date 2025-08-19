@@ -141,6 +141,7 @@ public class GetNewsByUrlTests
         _mockBlobService.Verify(b => b.FindFileInStorageAsBase64("test-image.jpg"), Times.Once);
         _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
     }
+
     private DAL.Entities.News.News CreateNewsEntity(int id, string url = null)
     {
         return new DAL.Entities.News.News
@@ -167,6 +168,7 @@ public class GetNewsByUrlTests
             Image = null
         };
     }
+
     private NewsDTO CreateNewsDTOWithImage(int id, string blobName, string url = null)
     {
         return new NewsDTO

@@ -100,7 +100,8 @@ public class GetNewsAndLinksByUrlTests
         _mockNewsRepository.Verify(
             x => x.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()),
+                It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
+                    IIncludableQueryable<DAL.Entities.News.News, object>>>()),
             Times.Once);
 
         // Verify mapper call
@@ -117,7 +118,8 @@ public class GetNewsAndLinksByUrlTests
         _mockNewsRepository
             .Setup(x => x.GetFirstOrDefaultAsync(
                 It.Is<Expression<Func<DAL.Entities.News.News, bool>>>(expr => true),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
+                It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
+                    IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync((DAL.Entities.News.News?)null);
 
         // Act
@@ -149,13 +151,15 @@ public class GetNewsAndLinksByUrlTests
         _mockNewsRepository
             .Setup(x => x.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
+                It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
+                    IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync(newsEntity);
 
         _mockNewsRepository
             .Setup(r => r.GetAllAsync(
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
+                It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
+                    IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync(allNewsEntities);
 
         _mockMapper
@@ -200,27 +204,6 @@ public class GetNewsAndLinksByUrlTests
             URL = url,
             ImageId = 10,
             Image = null
-        };
-    }
-
-    private NewsDTOWithURLs CreateNewsDTOWithURLs()
-    {
-        return new NewsDTOWithURLs
-        {
-            News = new NewsDTO
-            {
-                Id = 1,
-                Title = "Test News 1",
-                Text = "Test Content",
-                URL = "test-news-url"
-            },
-            PrevNewsUrl = null,
-            NextNewsUrl = "second-url",
-            RandomNews = new RandomNewsDTO
-            {
-                Title = "Third News",
-                RandomNewsUrl = "third-url"
-            }
         };
     }
 }
