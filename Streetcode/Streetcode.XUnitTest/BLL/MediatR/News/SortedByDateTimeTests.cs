@@ -82,17 +82,14 @@ public class SortedByDateTimeTests
         result.Value[0].Id.Should().Be(2); // newest one
         result.Value[1].Id.Should().Be(1);
         result.Value[2].Id.Should().Be(3);
-
     }
-
 
     [Fact]
     public async Task SortedByDateTime_WhenNoNewsExist_ShouldReturnFailure()
     {
         // Arrange
         _mockNewsRepository
-            .Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
+            .Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
             .ReturnsAsync((IEnumerable<DAL.Entities.News.News>?)null);
 

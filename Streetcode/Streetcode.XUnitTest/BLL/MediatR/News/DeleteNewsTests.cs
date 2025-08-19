@@ -60,7 +60,6 @@ public class DeleteNewsTests
         _mockNewsRepository.Verify(r => r.Delete(news), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
         _mockImageRepository.Verify(r => r.Delete(It.IsAny<Image>()), Times.Never);
-
     }
 
     [Fact]

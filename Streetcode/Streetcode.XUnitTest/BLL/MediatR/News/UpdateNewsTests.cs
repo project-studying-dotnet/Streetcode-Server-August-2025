@@ -147,5 +147,4 @@ public class UpdateNewsTests
             CreationDate = DateTime.UtcNow
         };
     }
-
 }
