@@ -5,8 +5,8 @@ using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
