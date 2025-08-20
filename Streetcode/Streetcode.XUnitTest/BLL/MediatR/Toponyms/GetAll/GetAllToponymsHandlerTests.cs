@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Linq.Expressions;
+using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoMapper;
 using Moq;
@@ -7,7 +8,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Toponyms.GetAll;
 using Streetcode.DAL.Entities.Toponyms;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetAll
@@ -66,7 +66,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetAll
             Assert.Equal(dtos.Count, result.Value.Toponyms.Count());
 
             _repositoryWrapperMock
-                .Verify(r => r.ToponymRepository
+                .Verify(
+                    r => r.ToponymRepository
                 .FindAll(It.IsAny<Expression<Func<Toponym, bool>>>()), Times.Once);
 
             _mapperMock
@@ -102,7 +103,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetAll
             Assert.Contains(result.Value.Toponyms, t => t.StreetName.Contains("Shevchenko"));
 
             _repositoryWrapperMock
-                .Verify(r => r.ToponymRepository
+                .Verify(
+                    r => r.ToponymRepository
                 .FindAll(It.IsAny<Expression<Func<Toponym, bool>>>()), Times.Once);
 
             _mapperMock
