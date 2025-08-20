@@ -1,13 +1,13 @@
-﻿using AutoMapper;
-using FluentAssertions;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
+using Xunit;
+using AutoMapper;
+using FluentAssertions;
 using Moq;
-using System.Linq.Expressions;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Xunit;
 
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
