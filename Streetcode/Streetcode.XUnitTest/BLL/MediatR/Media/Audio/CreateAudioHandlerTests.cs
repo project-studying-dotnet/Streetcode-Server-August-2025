@@ -14,9 +14,8 @@ using DalAudio = DAL.Entities.Media.Audio;
 public class CreateAudioHandlerTests
 {
     [Fact]
-    public async Task Handle_ShouldReturnSuccessResult_WhenAudioCreated()
+    public async Task CreateAudio_ShouldReturnSuccessResult_WhenAudioCreated()
     {
-        // Arrange
         var mockBlobService = new Mock<IBlobService>();
         mockBlobService.Setup(x => x.SaveFileInStorage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns("hash123");

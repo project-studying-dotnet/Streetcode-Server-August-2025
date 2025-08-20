@@ -18,9 +18,8 @@ using AudioEntity = DAL.Entities.Media.Audio;
 public class GetAudioByStreetcodeIdQueryHandlerTests
 {
     [Fact]
-    public async Task Handle_ShouldReturnAudioDTO_WhenAudioExists()
+    public async Task GetAudioByStreetcodeId_ShouldReturnAudioDTO_WhenAudioExists()
     {
-        // Arrange
         var streetcodeId = 1;
 
         var audioEntity = new AudioEntity
@@ -65,10 +64,8 @@ public class GetAudioByStreetcodeIdQueryHandlerTests
 
         var query = new GetAudioByStreetcodeIdQuery(streetcodeId);
 
-        // Act
         var result = await handler.Handle(query, CancellationToken.None);
 
-        // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
         Assert.Equal(audioDto.Id, result.Value.Id);

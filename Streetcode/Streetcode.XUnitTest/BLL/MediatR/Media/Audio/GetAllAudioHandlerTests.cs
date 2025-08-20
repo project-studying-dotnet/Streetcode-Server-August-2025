@@ -39,9 +39,8 @@ public class GetAllAudioHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnAudioDtos_WhenAudiosExist()
+    public async Task GetAllAudio_ShouldReturnAudioDtos_WhenAudiosExist()
     {
-        // Arrange
         var audiosFromDb = new List<Audio>
             {
                 new Audio { Id = 1, BlobName = "file1.mp3" },
@@ -65,28 +64,23 @@ public class GetAllAudioHandlerTests
         _mockBlobService.Setup(b => b.FindFileInStorageAsBase64(It.IsAny<string>()))
             .Returns<string>(name => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(name)));
 
-        // Act
         var result = await _handler.Handle(new GetAllAudiosQuery(), CancellationToken.None);
 
-        // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(2, result.Value.Count());
         Assert.All(result.Value, dto => Assert.NotNull(dto.Base64));
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFail_WhenNoAudiosExist()
+    public async Task GetAllAudio_ShouldReturnFail_WhenNoAudiosExist()
     {
-        // Arrange
         _mockRepo.Setup(r => r.AudioRepository.GetAllAsync(
             It.IsAny<System.Linq.Expressions.Expression<Func<Audio, bool>>>(),
             It.IsAny<Func<IQueryable<Audio>, IIncludableQueryable<Audio, object>>>()))
             .ReturnsAsync((IEnumerable<Audio>?)null);
 
-        // Act
         var result = await _handler.Handle(new GetAllAudiosQuery(), CancellationToken.None);
 
-        // Assert
         Assert.True(result.IsFailed);
         _mockLogger.Verify(l => l.LogError(It.IsAny<GetAllAudiosQuery>(), "Cannot find any audios"), Times.Once);
     }

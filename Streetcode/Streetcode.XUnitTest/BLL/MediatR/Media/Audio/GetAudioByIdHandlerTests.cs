@@ -32,9 +32,8 @@ public class GetAudioByIdHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ReturnsAudioDTO_WhenAudioExists()
+    public async Task GetAudioById_ReturnsAudioDTO_WhenAudioExists()
     {
-        // Arrange
         int audioId = 1;
 
         var audioEntity = new Audio
@@ -60,10 +59,8 @@ null))
 
         var query = new GetAudioByIdQuery(audioId);
 
-        // Act
         var result = await handler.Handle(query, default);
 
-        // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(audioId, result.Value.Id);
         Assert.Equal("test.mp3", result.Value.BlobName);
@@ -71,9 +68,8 @@ null))
     }
 
     [Fact]
-    public async Task Handle_ReturnsFail_WhenAudioDoesNotExist()
+    public async Task GetAudioById_ReturnsFail_WhenAudioDoesNotExist()
     {
-        // Arrange
         _repositoryMock.Setup(r => r.AudioRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Audio, bool>>>(),
                 null))
@@ -86,11 +82,8 @@ null))
             _loggerMock.Object);
 
         var query = new GetAudioByIdQuery(1);
-
-        // Act
         var result = await handler.Handle(query, default);
 
-        // Assert
         Assert.True(result.IsFailed);
     }
 }

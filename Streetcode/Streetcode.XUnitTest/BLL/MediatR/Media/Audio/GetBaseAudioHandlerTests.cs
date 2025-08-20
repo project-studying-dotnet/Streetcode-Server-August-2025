@@ -28,9 +28,8 @@ public class GetBaseAudioHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ReturnsMemoryStream_WhenAudioExists()
+    public async Task GetBaseAudio_ReturnsMemoryStream_WhenAudioExists()
     {
-        // Arrange
         var audioId = 1;
         var audioEntity = new Audio
         {
@@ -49,19 +48,15 @@ public class GetBaseAudioHandlerTests
             .Returns(memoryStream);
 
         var query = new GetBaseAudioQuery(audioId);
-
-        // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(memoryStream, result.Value);
     }
 
     [Fact]
-    public async Task Handle_ReturnsFailure_WhenAudioDoesNotExist()
+    public async Task GetBaseAudio_ReturnsFailure_WhenAudioDoesNotExist()
     {
-        // Arrange
         var audioId = 1;
 
         _mockRepo.Setup(r => r.AudioRepository.GetFirstOrDefaultAsync(
@@ -71,10 +66,8 @@ public class GetBaseAudioHandlerTests
 
         var query = new GetBaseAudioQuery(audioId);
 
-        // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert
         Assert.True(result.IsFailed);
         _mockLogger.Verify(l => l.LogError(query, It.IsAny<string>()), Times.Once);
     }
