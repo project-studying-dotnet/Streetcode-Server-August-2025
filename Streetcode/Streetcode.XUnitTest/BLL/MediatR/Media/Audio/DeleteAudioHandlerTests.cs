@@ -26,25 +26,13 @@ public class DeleteAudioHandlerTests
             Id = 1,
             BlobName = "test.mp3",
         };
-<<<<<<< HEAD
-=======
-
-        
->>>>>>> 03dc853de16b4ed6ea0df05c891557baa1caad63
         mockRepoWrapper.Setup(r => r.AudioRepository.GetFirstOrDefaultAsync(
             It.IsAny<System.Linq.Expressions.Expression<Func<DAL.Entities.Media.Audio, bool>>>(),
             null))
             .ReturnsAsync(audio);
 
-<<<<<<< HEAD
         mockRepoWrapper.Setup(r => r.AudioRepository.Delete(audio));
-
-=======
-        
         mockRepoWrapper.Setup(r => r.AudioRepository.Delete(audio));
-
-        
->>>>>>> 03dc853de16b4ed6ea0df05c891557baa1caad63
         mockRepoWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(1);
 
