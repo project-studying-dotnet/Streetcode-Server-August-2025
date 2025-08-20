@@ -2,6 +2,7 @@
   "profiles": {
     "Streetcode_Local": {
       "commandName": "Project",
+      "launchBrowser": false,
       "environmentVariables": {
         "STREETCODE_ENVIRONMENT": "Local",
         "ASPNETCORE_ENVIRONMENT": "Local"
@@ -9,8 +10,10 @@
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5000;https://localhost:5001"
     },
+
     "Streetcode_Dev": {
       "commandName": "Project",
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -20,24 +23,17 @@
     },
     "Streetcode_IntegTests": {
       "commandName": "Project",
+      "launchBrowser": false,
       "environmentVariables": {
         "STREETCODE_ENVIRONMENT": "IntegrationTests"
       }
     },
     "Docker": {
       "commandName": "Docker",
+      "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "publishAllPorts": true,
       "useSSL": true
-    },
-    "WSL": {
-      "commandName": "WSL2",
-      "launchUrl": "https://localhost:5001/swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
-      },
-      "distributionName": ""
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json",
@@ -45,8 +41,6 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:5000;https://localhost:5001",
-      "sslPort": 0
+      "applicationUrl": "http://localhost:5000;https://localhost:5001"
     }
   }
-}
