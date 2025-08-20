@@ -28,16 +28,16 @@ public class DeleteAudioHandlerTests
             BlobName = "test.mp3",
         };
 
-        // Репозиторій повертає знайдене аудіо
+        
         mockRepoWrapper.Setup(r => r.AudioRepository.GetFirstOrDefaultAsync(
             It.IsAny<System.Linq.Expressions.Expression<Func<DAL.Entities.Media.Audio, bool>>>(),
             null))
             .ReturnsAsync(audio);
 
-        // Delete нічого не повертає, просто викликається
+        
         mockRepoWrapper.Setup(r => r.AudioRepository.Delete(audio));
 
-        // SaveChanges повертає 1 -> успіх
+        
         mockRepoWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(1);
 
