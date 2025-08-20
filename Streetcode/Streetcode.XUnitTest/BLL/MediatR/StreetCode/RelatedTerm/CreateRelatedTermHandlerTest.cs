@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Xunit;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
+using Xunit;
 
+using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
 {
@@ -55,8 +55,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
-                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()
-            )).ReturnsAsync(list);
+                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
+                .ReturnsAsync(list);
 
             var result = await _handler.Handle(request, CancellationToken.None);
 
@@ -75,8 +75,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             _mapperMock.Setup(m => m.Map<Entity>(relatedTerm)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
-                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()
-            )).ReturnsAsync(new List<Entity>());
+                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
+                .ReturnsAsync(new List<Entity>());
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.Create(entity)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
@@ -98,8 +98,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             _mapperMock.Setup(m => m.Map<Entity>(relatedTerm)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
-                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()
-            )).ReturnsAsync(new List<Entity>());
+                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
+                .ReturnsAsync(new List<Entity>());
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.Create(entity)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
@@ -122,8 +122,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             _mapperMock.Setup(m => m.Map<Entity>(relatedTerm)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
-                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()
-            )).ReturnsAsync(new List<Entity>());
+                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
+                .ReturnsAsync(new List<Entity>());
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.Create(entity)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);

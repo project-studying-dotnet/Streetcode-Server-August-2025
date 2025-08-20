@@ -1,20 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
-using MimeKit.Cryptography;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
+
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm

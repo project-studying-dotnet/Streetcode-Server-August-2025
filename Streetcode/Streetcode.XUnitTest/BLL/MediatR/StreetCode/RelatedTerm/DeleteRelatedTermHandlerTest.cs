@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
-using Streetcode.DAL.Repositories.Interfaces.Base;
-using Xunit;
-using System.Linq.Expressions;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
-using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
-using Microsoft.EntityFrameworkCore.Query;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.DAL.Repositories.Interfaces.Base;
+using System.Linq.Expressions;
+using Xunit;
+
+using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
 {
@@ -37,8 +38,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
-                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()
-            )).ReturnsAsync(entity);
+                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
+                .ReturnsAsync(entity);
 
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
 
@@ -61,8 +62,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
-                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()
-            )).ReturnsAsync((Entity)null);
+                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
+                .ReturnsAsync((Entity)null);
 
             var result = await _handler.Handle(request, CancellationToken.None);
 
@@ -80,8 +81,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
-                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()
-            )).ReturnsAsync(entity);
+                It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
+                .ReturnsAsync(entity);
 
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
