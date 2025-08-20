@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Linq.Expressions;
+using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
@@ -8,7 +9,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Toponyms.GetByStreetcodeId;
 using Streetcode.DAL.Entities.Toponyms;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetByStreetCodeId

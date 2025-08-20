@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Linq.Expressions;
+using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
@@ -8,7 +9,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Toponyms.GetById;
 using Streetcode.DAL.Entities.Toponyms;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetById
@@ -95,7 +95,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetById
             Assert.Contains(result.Errors, e => e.Message.Contains(query.Id.ToString()));
 
             _loggerServiceMock.Verify(
-                l => l.LogError(query,
+                l => l.LogError(
+                    query,
                     It.Is<string>(msg => msg.Contains(query.Id.ToString()))),
                 Times.Once);
         }
