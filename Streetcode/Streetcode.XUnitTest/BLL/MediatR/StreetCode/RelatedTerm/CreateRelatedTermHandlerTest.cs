@@ -2,10 +2,10 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using System.Linq.Expressions;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
-using System.Linq.Expressions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using System.Linq.Expressions;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
-using System.Linq.Expressions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
