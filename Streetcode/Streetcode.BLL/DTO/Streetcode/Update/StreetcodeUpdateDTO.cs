@@ -5,5 +5,5 @@ namespace Streetcode.BLL.DTO.Streetcode.Update;
 public class StreetcodeUpdateDTO : StreetcodeCreateUpdateDTO
 {
     public int Id { get; set; }
-    public IEnumerable<UpdateTagDTO>? Tags { get; set; } = new List<UpdateTagDTO>();
+    public IEnumerable<StreetcodeTagUpdateDTO>? Tags { get; set; } = new List<StreetcodeTagUpdateDTO>();
 }
