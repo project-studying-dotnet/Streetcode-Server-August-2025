@@ -1,6 +1,8 @@
 ﻿using DbUp;
 using Microsoft.Extensions.Configuration;
 
+
+
 public class Program
 {
     static int Main(string[] args)
