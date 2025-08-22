@@ -15,6 +15,7 @@ public class StreetcodeCreateUpdateDTO
     public DateTime EventStartOrPersonBirthDate { get; set; }
     public DateTime? EventEndOrPersonDeathDate { get; set; }
     public string DateString { get; set; } = null!;
+
     /// <summary>
     /// A short teaser text for the streetcode.
     /// Validation rules:
