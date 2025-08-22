@@ -216,7 +216,7 @@ public class BaseStreetcodeValidatorsTests
     [Theory]
     [InlineData("27 August 1856 - 28 May 1916")]
     [InlineData("27 серпня 1856 року - 28 травня 1916 року!")]
-    [InlineData("semptember 2025 - december 2025")]
+    [InlineData("september 2025 - december 2025")]
     [InlineData("2025/2026")]
     [InlineData("tests#$%^@%&")]
     public void ShouldReturnError_WhenDateStringIsInvalid(string dateString)
