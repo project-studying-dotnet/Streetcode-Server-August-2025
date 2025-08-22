@@ -27,7 +27,8 @@ public class CreateStreetcodeValidator : AbstractValidator<StreetcodeCreateDTO>
 
         RuleForEach(dto => dto.ImagesDetails.Select(x => x.ImageId))
             .MustAsync(HasExistingImage)
-            .WithMessage("One or more images do not exist.");
+            .WithMessage("One or more images do not exist.")
+            .OverridePropertyName("Streetcode.ImagesDetails.ImageId");
 
         RuleForEach(dto => dto.Tags).SetValidator(tagValidator);
     }
