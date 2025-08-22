@@ -40,7 +40,7 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
         RuleFor(dto => dto.TransliterationUrl)
             .NotEmpty().WithMessage("Transliteration URL is required.")
             .MaximumLength(TransliterationUrlMaxLength).WithMessage($"Transliteration URL cannot exceed {TransliterationUrlMaxLength} characters.")
-            .Matches(@"^[a-z0-9-]*$").Matches("Transliteration URL can only contain lowercase letters, numbers, and hyphens.");
+            .Matches(@"^[a-z0-9-]*$").WithMessage("Transliteration URL can only contain lowercase letters, numbers, and hyphens.");
 
         RuleFor(dto => dto.DateString)
             .NotEmpty().WithMessage("Date string is required.")
