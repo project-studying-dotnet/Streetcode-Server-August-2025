@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Streetcode.Create;
+using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.Validators.Streetcode;
@@ -8,7 +9,10 @@ public class CreateStreetcodeValidator : AbstractValidator<StreetcodeCreateDTO>
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
 
-    public CreateStreetcodeValidator(IRepositoryWrapper repositoryWrapper, BaseStreetcodeValidator baseStreetcodeValidator)
+    public CreateStreetcodeValidator(
+        IRepositoryWrapper repositoryWrapper,
+        BaseStreetcodeValidator baseStreetcodeValidator,
+        TagValidator tagValidator)
     {
         _repositoryWrapper = repositoryWrapper;
 
@@ -24,6 +28,8 @@ public class CreateStreetcodeValidator : AbstractValidator<StreetcodeCreateDTO>
         RuleForEach(dto => dto.ImagesDetails.Select(x => x.ImageId))
             .MustAsync(HasExistingImage)
             .WithMessage("One or more images do not exist.");
+
+        RuleForEach(dto => dto.Tags).SetValidator(tagValidator);
     }
 
     private async Task<bool> BeUniqueIndex(int index, CancellationToken cancellationToken)
