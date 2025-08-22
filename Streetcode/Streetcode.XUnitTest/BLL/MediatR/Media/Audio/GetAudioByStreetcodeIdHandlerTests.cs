@@ -14,11 +14,31 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 
 using AudioEntity = DAL.Entities.Media.Audio;
+using System.Reflection.Metadata;
 
 public class GetAudioByStreetcodeIdQueryHandlerTests
 {
-    [Fact]
-    public async Task GetAudioByStreetcodeId_ShouldReturnAudioDTO_WhenAudioExists()
+        private readonly Mock<IRepositoryWrapper> _repositoryMock;
+        private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IBlobService> _blobServiceMock;
+        private readonly Mock<ILoggerService> _loggerMock;
+        private readonly GetAudioByStreetcodeIdQueryHandler _handler;
+
+        public GetAudioByStreetcodeIdQueryHandlerTests()
+    {
+        _repositoryMock = new Mock<IRepositoryWrapper>();
+        _mapperMock = new Mock<IMapper>();
+        _blobServiceMock = new Mock<IBlobService>();
+        _loggerMock = new Mock<ILoggerService>();
+        _handler = new GetAudioByStreetcodeIdQueryHandler(
+            _repositoryMock.Object,
+            _mapperMock.Object,
+            _blobServiceMock.Object,
+            _loggerMock.Object);
+    }
+
+        [Fact]
+        public async Task GetAudioByStreetcodeId_ShouldReturnAudioDTO_WhenAudioExists()
     {
         var streetcodeId = 1;
 
@@ -40,31 +60,19 @@ public class GetAudioByStreetcodeIdQueryHandlerTests
             BlobName = "file.mp3",
             Base64 = "base64string",
         };
-
-        var repositoryMock = new Mock<IRepositoryWrapper>();
-        var mapperMock = new Mock<IMapper>();
-        var blobServiceMock = new Mock<IBlobService>();
-        var loggerMock = new Mock<ILoggerService>();
-
-        repositoryMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
+        _repositoryMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
             It.IsAny<System.Linq.Expressions.Expression<Func<StreetcodeContent, bool>>>(),
             It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
             .ReturnsAsync(streetcodeEntity);
 
-        mapperMock.Setup(m => m.Map<AudioDTO>(audioEntity)).Returns(audioDto);
+        _mapperMock.Setup(m => m.Map<AudioDTO>(audioEntity)).Returns(audioDto);
 
-        blobServiceMock.Setup(b => b.FindFileInStorageAsBase64(audioDto.BlobName))
+        _blobServiceMock.Setup(b => b.FindFileInStorageAsBase64(audioDto.BlobName))
             .Returns(audioDto.Base64);
-
-        var handler = new GetAudioByStreetcodeIdQueryHandler(
-            repositoryMock.Object,
-            mapperMock.Object,
-            blobServiceMock.Object,
-            loggerMock.Object);
 
         var query = new GetAudioByStreetcodeIdQuery(streetcodeId);
 
-        var result = await handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(query, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
@@ -72,6 +80,6 @@ public class GetAudioByStreetcodeIdQueryHandlerTests
         Assert.Equal(audioDto.BlobName, result.Value.BlobName);
         Assert.Equal(audioDto.Base64, result.Value.Base64);
 
-        mapperMock.Verify(m => m.Map<AudioDTO>(audioEntity), Times.Exactly(2));
+        _mapperMock.Verify(m => m.Map<AudioDTO>(audioEntity), Times.Exactly(2));
     }
 }

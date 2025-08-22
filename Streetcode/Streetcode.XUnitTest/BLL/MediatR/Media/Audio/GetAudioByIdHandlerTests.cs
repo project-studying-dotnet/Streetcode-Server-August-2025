@@ -10,6 +10,7 @@ using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
 
 public class GetAudioByIdHandlerTests
 {
@@ -17,6 +18,7 @@ public class GetAudioByIdHandlerTests
     private readonly Mock<IBlobService> _blobServiceMock;
     private readonly Mock<ILoggerService> _loggerMock;
     private readonly IMapper _mapper;
+    private readonly GetAudioByIdHandler _handler;
 
     public GetAudioByIdHandlerTests()
     {
@@ -29,6 +31,12 @@ public class GetAudioByIdHandlerTests
             cfg.CreateMap<Audio, AudioDTO>();
         });
         _mapper = config.CreateMapper();
+
+        _handler = new GetAudioByIdHandler(
+            _repositoryMock.Object,
+            _mapper,
+            _blobServiceMock.Object,
+            _loggerMock.Object);
     }
 
     [Fact]
@@ -51,15 +59,9 @@ null))
             .Setup(b => b.FindFileInStorageAsBase64(It.IsAny<string>()))
             .Returns("base64string");
 
-        var handler = new GetAudioByIdHandler(
-            _repositoryMock.Object,
-            _mapper,
-            _blobServiceMock.Object,
-            _loggerMock.Object);
-
         var query = new GetAudioByIdQuery(audioId);
 
-        var result = await handler.Handle(query, default);
+        var result = await _handler.Handle(query, default);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(audioId, result.Value.Id);
@@ -75,14 +77,9 @@ null))
                 null))
             .ReturnsAsync((Audio?)null);
 
-        var handler = new GetAudioByIdHandler(
-            _repositoryMock.Object,
-            _mapper,
-            _blobServiceMock.Object,
-            _loggerMock.Object);
-
         var query = new GetAudioByIdQuery(1);
-        var result = await handler.Handle(query, default);
+
+        var result = await _handler.Handle(query, default);
 
         Assert.True(result.IsFailed);
     }

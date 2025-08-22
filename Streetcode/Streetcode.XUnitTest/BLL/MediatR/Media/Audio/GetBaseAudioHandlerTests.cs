@@ -24,7 +24,10 @@ public class GetBaseAudioHandlerTests
         _mockBlobService = new Mock<IBlobService>();
         _mockLogger = new Mock<ILoggerService>();
 
-        _handler = new GetBaseAudioHandler(_mockBlobService.Object, _mockRepo.Object, _mockLogger.Object);
+        _handler = new GetBaseAudioHandler(
+            _mockBlobService.Object,
+            _mockRepo.Object,
+            _mockLogger.Object);
     }
 
     [Fact]
