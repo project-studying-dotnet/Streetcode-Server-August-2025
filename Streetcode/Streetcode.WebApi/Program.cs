@@ -13,6 +13,7 @@ builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+
 var app = builder.Build();
 
 if (app.Environment.EnvironmentName == "Local")
@@ -41,10 +42,12 @@ if (app.Environment.EnvironmentName != "Local")
 {
     BackgroundJob.Schedule<WebParsingUtils>(
         wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
+
     RecurringJob.AddOrUpdate<WebParsingUtils>(
         "WebParsingUtils_ParseZipFile",
         wp => wp.ParseZipFileFromWebAsync(),
         Cron.Monthly);
+
     RecurringJob.AddOrUpdate<BlobService>(
         "BlobService_CleanBlobStorage",
         b => b.CleanBlobStorage(),
@@ -54,6 +57,7 @@ if (app.Environment.EnvironmentName != "Local")
 app.MapControllers();
 
 await app.RunAsync();
+
 public partial class Program
 {
 }
