@@ -1,7 +1,7 @@
 using FluentValidation;
 using Streetcode.BLL.DTO.News;
 
-namespace Streetcode.BLL.Validators
+namespace Streetcode.BLL.Validators.News
 {
     public class NewsDTOValidator : AbstractValidator<NewsDTO>
     {
