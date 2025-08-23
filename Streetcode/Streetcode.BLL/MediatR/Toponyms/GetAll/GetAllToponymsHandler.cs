@@ -24,6 +24,8 @@ public class GetAllToponymsHandler : IRequestHandler<GetAllToponymsQuery,
 
     public async Task<Result<GetAllToponymsResponseDTO>> Handle(GetAllToponymsQuery query, CancellationToken cancellationToken)
     {
+        _logger.LogInformation($"Getting all toponyms with filter: Title={query.request.Title}");
+
         var filterRequest = query.request;
 
         var toponyms = _repositoryWrapper.ToponymRepository
@@ -32,6 +34,7 @@ public class GetAllToponymsHandler : IRequestHandler<GetAllToponymsQuery,
         if (filterRequest.Title is not null)
         {
             FindStreetcodesWithMatchTitle(ref toponyms, filterRequest.Title);
+            _logger.LogInformation($"Applied title filter: {filterRequest.Title}");
         }
 
         // int pagesAmount = ApplyPagination(ref toponyms, filterRequest.Amount, filterRequest.Page);
@@ -44,6 +47,7 @@ public class GetAllToponymsHandler : IRequestHandler<GetAllToponymsQuery,
             Toponyms = toponymDtos
         };
 
+        _logger.LogInformation($"Successfully retrieved {toponymDtos.Count()} toponyms");
         return Result.Ok(response);
     }
 
