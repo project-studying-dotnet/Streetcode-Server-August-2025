@@ -28,7 +28,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetAll
 
         [Theory]
         [InlineData(0)]
-        [InlineData(10)]
+        [InlineData(1)]
+        [InlineData(50)]
+        [InlineData(99)]
         [InlineData(100)]
         public async Task Handle_WithDifferentCategoryCounts_ReturnsSuccess(int count)
         {

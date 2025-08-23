@@ -36,7 +36,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
         [InlineData(1, 1)]
         [InlineData(50, 50)]
         [InlineData(100, 100)]
-        public async Task Handle_WhithDifferentCategoriesCount_ReturnsSuccess(int count, int streetcodeId)
+        public async Task Handle_WithDifferentCategoriesCount_ReturnsSuccess(int count, int streetcodeId)
         {
             // Arrange
             var (categories, categoryDtos) = CreateCategoriesAndDtos(count);
