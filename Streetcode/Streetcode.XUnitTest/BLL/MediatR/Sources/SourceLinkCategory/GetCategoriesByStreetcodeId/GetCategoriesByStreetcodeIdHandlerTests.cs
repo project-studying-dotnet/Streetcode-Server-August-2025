@@ -90,7 +90,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Null(result.Value);
+            Assert.Contains(result.Errors, e => e.Message == expectedErrorMessage);
 
             _repositoryWrapperMock.Verify(
                 r => r.SourceCategoryRepository.GetAllAsync(
