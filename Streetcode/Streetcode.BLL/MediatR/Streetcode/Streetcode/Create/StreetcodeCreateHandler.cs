@@ -26,20 +26,33 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
 
     public async Task<Result<StreetcodeDTO>> Handle(StreetcodeCreateCommand request, CancellationToken cancellationToken)
     {
-        var newStreetcode = _mapper.Map<StreetcodeContent>(request.newStreetcode);
         try
         {
-            newStreetcode = await _repositoryWrapper.StreetcodeRepository.CreateAsync(newStreetcode);
-            await _repositoryWrapper.SaveChangesAsync();
+            var streetcodeEntity = _mapper.Map<StreetcodeContent>(request.newStreetcode);
 
-            var resultDto = _mapper.Map<StreetcodeDTO>(newStreetcode);
+            streetcodeEntity.CreatedAt = DateTime.UtcNow;
+            streetcodeEntity.UpdatedAt = DateTime.UtcNow;
+            streetcodeEntity.ViewCount = 0;
 
+            _repositoryWrapper.StreetcodeRepository.Create(streetcodeEntity);
+
+            var saveResult = await _repositoryWrapper.SaveChangesAsync();
+            if (saveResult == 0)
+            {
+                const string errorMsg = "Failed to save streetcode to database";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail<StreetcodeDTO>(new Error(errorMsg));
+            }
+
+            var resultDto = _mapper.Map<StreetcodeDTO>(streetcodeEntity);
+
+            _logger.LogInformation($"Success! Streetcode with ID {resultDto.Id} was created");
             return Result.Ok(resultDto);
         }
         catch (Exception ex)
         {
             _logger.LogError(request, ex.Message);
-            return Result.Fail(ex.Message);
+            return Result.Fail<StreetcodeDTO>(ex.Message);
         }
     }
 }
