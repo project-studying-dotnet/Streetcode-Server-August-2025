@@ -1,6 +1,7 @@
 using Hangfire;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.WebApi.Extensions;
+using Streetcode.WebApi.Middleware;
 using Streetcode.WebApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,9 @@ if (app.Environment.EnvironmentName != "Local")
 }
 
 app.MapControllers();
+
+// Middlewares
+app.UseMiddleware<ValidationExceptionHandlingMiddleware>();
 
 await app.RunAsync();
 

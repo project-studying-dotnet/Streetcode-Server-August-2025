@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
         {
             cfg.RegisterServicesFromAssemblyContaining<ApplicationAssembly>();
         });
-
+        services.AddValidatorsFromAssemblyContaining<ApplicationAssembly>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         services.AddScoped<IBlobService, BlobService>();
