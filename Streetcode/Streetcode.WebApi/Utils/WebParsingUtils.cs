@@ -85,6 +85,8 @@ public class WebParsingUtils
                 await streamToReadFrom.CopyToAsync(streamToWriteTo, 81920, cancellationToken);
             }
 
+            await Task.Delay(1000);
+
             using var archive = ZipFile.OpenRead(zipPath);
             archive.ExtractToDirectory(extractTo, overwriteFiles: true);
             Console.WriteLine($"Archive received and extracted to {extractTo}");
