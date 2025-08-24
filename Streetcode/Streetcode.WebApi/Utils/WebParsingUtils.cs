@@ -104,19 +104,21 @@ public class WebParsingUtils
     public async Task ParseZipFileFromWebAsync()
     {
         var projRootDirectory = Directory.GetParent(Environment.CurrentDirectory)?.FullName!;
-        var zipPath = $"houses.zip";
-        var extractTo = $"/root/build/StreetCode/Streetcode/Streetcode.DAL";
+        var extractTo = Path.Combine(projRootDirectory, "Streetcode.DAL", "data");
+        var zipPath = Path.Combine(projRootDirectory, "houses.zip");
 
         var cancellationToken = new CancellationTokenSource().Token;
 
         try
         {
+            Directory.CreateDirectory(extractTo);
+
             await DownloadAndExtractAsync(_fileToParseUrl, zipPath, extractTo, cancellationToken);
             Console.WriteLine("Download and extraction completed successfully.");
 
             if (File.Exists(zipPath))
             {
-                File.Delete(zipPath);
+                // File.Delete(zipPath);
             }
 
             await ProcessCsvFileAsync(extractTo);
