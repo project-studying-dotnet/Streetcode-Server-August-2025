@@ -105,7 +105,7 @@ public class WebParsingUtils
     {
         var projRootDirectory = Directory.GetParent(Environment.CurrentDirectory)?.FullName!;
         var extractTo = Path.Combine(projRootDirectory, "Streetcode.DAL", "data");
-        var zipPath = Path.Combine(projRootDirectory, "houses.zip");
+        var zipPath = Path.Combine(extractTo, "houses.zip");
 
         var cancellationToken = new CancellationTokenSource().Token;
 
@@ -118,7 +118,7 @@ public class WebParsingUtils
 
             if (File.Exists(zipPath))
             {
-                // File.Delete(zipPath);
+                File.Delete(zipPath);
             }
 
             await ProcessCsvFileAsync(extractTo);
