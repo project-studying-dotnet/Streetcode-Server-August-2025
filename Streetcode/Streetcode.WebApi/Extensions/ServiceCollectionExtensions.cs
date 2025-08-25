@@ -24,10 +24,11 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
+using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.MediatR;
-using Serilog.Events;
+using Streetcode.BLL.Validators.News;
+using Streetcode.BLL.MediatR.Newss.Create;
 using Streetcode.BLL;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -45,14 +46,11 @@ public static class ServiceCollectionExtensions
         var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(currentAssemblies);
 
-        // Register all validators from the BLL assembly
-
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssemblyContaining<ApplicationAssembly>();
-        });
-        services.AddValidatorsFromAssemblyContaining<ApplicationAssembly>();
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddMediatR(currentAssemblies);
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddValidatorsFromAssembly(
+            BLL.ApplicationAssembly.Assembly,
+            includeInternalTypes: true);
 
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<ILoggerService, LoggerService>();

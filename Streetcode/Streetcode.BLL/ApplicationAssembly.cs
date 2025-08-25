@@ -1,3 +1,6 @@
+using System.Reflection.Metadata;
+using System.Reflection;
+
 namespace Streetcode.BLL
 {
     /// <summary>
@@ -6,7 +9,6 @@ namespace Streetcode.BLL
     /// </summary>
     public class ApplicationAssembly
     {
-        // This class serves as a marker for assembly scanning
-        // No implementation needed
+        public static readonly Assembly Assembly = typeof(AssemblyReference).Assembly;
     }
 }
