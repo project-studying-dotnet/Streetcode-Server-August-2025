@@ -42,6 +42,18 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
                 newFact.ImageId = null;
             }
 
+            var streetcodeExists = await _repositoryWrapper.StreetcodeRepository
+                .GetFirstOrDefaultAsync(s => s.Id == request.streetcodeId);
+
+            if (streetcodeExists is null)
+            {
+                const string errorMsg = "Streetcode not found";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(errorMsg);
+            }
+
+            newFact.StreetcodeId = request.streetcodeId;
+
             var entity = _repositoryWrapper.FactRepository.Create(newFact);
             var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
