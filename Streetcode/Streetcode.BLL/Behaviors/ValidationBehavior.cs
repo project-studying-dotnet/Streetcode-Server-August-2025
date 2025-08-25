@@ -6,7 +6,7 @@ namespace Streetcode.BLL.MediatR
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
-        where TResponse : Result
+        where TResponse : IResultBase
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -40,7 +40,7 @@ namespace Streetcode.BLL.MediatR
             {
                 // Create a failed result with validation errors
                 var result = Result.Fail(failures.Select(f => f.ErrorMessage));
-                return (TResponse)result;
+                return (dynamic)result;
             }
 
             // If validation passes, proceed to the next handler
