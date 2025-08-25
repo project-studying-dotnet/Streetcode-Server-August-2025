@@ -26,15 +26,18 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
         public async Task<Result<List<StreetcodeFilterResultDTO>>> Handle(GetStreetcodeByFilterQuery request, CancellationToken cancellationToken)
         {
             string searchQuery = request.Filter.SearchQuery;
+            _logger.LogInformation($"Starting streetcode search with query: '{searchQuery}'");
 
             var results = new List<StreetcodeFilterResultDTO>();
 
             var streetcodes = await _repositoryWrapper.StreetcodeRepository.GetAllAsync(
                  predicate: x =>
-        (x.Status == DAL.Enums.StreetcodeStatus.Published) &&
-        (x.Title.Contains(searchQuery) ||
-        (x.Alias != null && x.Alias.Contains(searchQuery)) ||
-        x.Teaser.Contains(searchQuery)));
+                    (x.Status == DAL.Enums.StreetcodeStatus.Published) &&
+                    (x.Title.Contains(searchQuery) ||
+                    (x.Alias != null && x.Alias.Contains(searchQuery)) ||
+                    x.Teaser.Contains(searchQuery)));
+
+            _logger.LogInformation($"Found {streetcodes.Count()} streetcodes matching basic criteria");
 
             foreach (var streetcode in streetcodes)
             {
@@ -62,9 +65,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
                 }
             }
 
-            foreach (var text in await _repositoryWrapper.TextRepository.GetAllAsync(
-    include: i => i.Include(x => x.Streetcode),
-    predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published))
+            _logger.LogInformation($"After streetcode search: {results.Count} results found");
+
+            var texts = await _repositoryWrapper.TextRepository.GetAllAsync(
+                include: i => i.Include(x => x.Streetcode),
+                predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published);
+
+            _logger.LogInformation($"Searching in {texts.Count()} texts");
+            foreach (var text in texts)
             {
                 if (text.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
                 {
@@ -78,9 +86,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
                 }
             }
 
-            foreach (var fact in await _repositoryWrapper.FactRepository.GetAllAsync(
-    include: i => i.Include(x => x.Streetcode),
-    predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published))
+            _logger.LogInformation($"After text search: {results.Count} results found");
+
+            var facts = await _repositoryWrapper.FactRepository.GetAllAsync(
+                include: i => i.Include(x => x.Streetcode),
+                predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published);
+
+            _logger.LogInformation($"Searching in {facts.Count()} facts");
+            foreach (var fact in facts)
             {
                 if (fact.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) || fact.FactContent.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
                 {
@@ -88,9 +101,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
                 }
             }
 
-            foreach (var timelineItem in await _repositoryWrapper.TimelineRepository.GetAllAsync(
+            _logger.LogInformation($"After facts search: {results.Count} results found");
+
+            var timelineItems = await _repositoryWrapper.TimelineRepository.GetAllAsync(
                 include: i => i.Include(x => x.Streetcode),
-                predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published))
+                predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published);
+
+            _logger.LogInformation($"Searching in {timelineItems.Count()} timeline items");
+            foreach (var timelineItem in timelineItems)
             {
                 if (timelineItem.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
                     || (!string.IsNullOrEmpty(timelineItem.Description) && timelineItem.Description.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
@@ -99,9 +117,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
                 }
             }
 
-            foreach (var streetcodeArt in await _repositoryWrapper.ArtRepository.GetAllAsync(
-            include: i => i.Include(x => x.StreetcodeArts),
-            predicate: x => x.StreetcodeArts.Any(art => art.Streetcode != null && art.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published)))
+            _logger.LogInformation($"After timeline search: {results.Count} results found");
+
+            var streetcodeArts = await _repositoryWrapper.ArtRepository.GetAllAsync(
+                include: i => i.Include(x => x.StreetcodeArts),
+                predicate: x => x.StreetcodeArts.Any(art => art.Streetcode != null && art.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published));
+
+            _logger.LogInformation($"Searching in {streetcodeArts.Count()} art items");
+            foreach (var streetcodeArt in streetcodeArts)
             {
                 if (!string.IsNullOrEmpty(streetcodeArt.Description) && streetcodeArt.Description.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
                 {
@@ -118,6 +141,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
                 }
             }
 
+            _logger.LogInformation($"Search completed. Total results found: {results.Count}");
             return results;
         }
 
