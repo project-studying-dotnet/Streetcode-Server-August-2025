@@ -48,8 +48,10 @@ public static class ServiceCollectionExtensions
 
         services.AddMediatR(currentAssemblies);
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+
         services.AddValidatorsFromAssembly(
-            BLL.ApplicationAssembly.Assembly,
+            ApplicationAssembly.Assembly,
             includeInternalTypes: true);
 
         services.AddScoped<IBlobService, BlobService>();

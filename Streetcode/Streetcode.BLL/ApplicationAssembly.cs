@@ -9,6 +9,6 @@ namespace Streetcode.BLL
     /// </summary>
     public class ApplicationAssembly
     {
-        public static readonly Assembly Assembly = typeof(AssemblyReference).Assembly;
+        public static readonly Assembly Assembly = typeof(ApplicationAssembly).Assembly;
     }
 }

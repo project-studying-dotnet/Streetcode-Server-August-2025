@@ -10,6 +10,8 @@ namespace Streetcode.BLL.Validators.News
             RuleFor(x => x.Title)
                 .NotEmpty()
                     .WithMessage("Title is required.")
+                .MinimumLength(2)
+                    .WithMessage("Title must be at least 2 characters long.")
                 .MaximumLength(150)
                     .WithMessage("Title cannot exceed 150 characters.");
 
