@@ -23,7 +23,6 @@ namespace Streetcode.BLL.MediatR
                 return await next();
             }
 
-            // Create validation context
             var context = new ValidationContext<TRequest>(request);
 
             // Run all validators
@@ -38,12 +37,10 @@ namespace Streetcode.BLL.MediatR
 
             if (failures.Count != 0)
             {
-                // Create a failed result with validation errors
                 var result = Result.Fail(failures.Select(f => f.ErrorMessage));
                 return (dynamic)result;
             }
 
-            // If validation passes, proceed to the next handler
             return await next();
         }
     }
