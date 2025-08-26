@@ -57,9 +57,6 @@ if (app.Environment.EnvironmentName != "Local")
 
 app.MapControllers();
 
-// Middlewares
-app.UseMiddleware<ValidationExceptionHandlingMiddleware>();
-
 await app.RunAsync();
 
 public partial class Program
