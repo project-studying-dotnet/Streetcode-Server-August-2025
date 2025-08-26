@@ -31,5 +31,4 @@ public class CreateTeamLinkQueryValidator : AbstractValidator<CreateTeamLinkQuer
                 .WithMessage("TeamMemberId must be greater than 0.");
         });
     }
-
 }
