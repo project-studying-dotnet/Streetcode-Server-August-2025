@@ -5,4 +5,4 @@ using Streetcode.BLL.DTO.Streetcode;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 
-public record StreetcodeCreateCommand(StreetcodeCreateDTO newStreetcode) : IRequest<Result<StreetcodeDTO>>;
+public record StreetcodeCreateCommand(StreetcodeCreateDTO NewStreetcode) : IRequest<Result<StreetcodeDTO>>;

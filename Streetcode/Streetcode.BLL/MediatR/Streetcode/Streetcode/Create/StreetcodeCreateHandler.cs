@@ -31,7 +31,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
         {
             try
             {
-                var streetcodeEntity = _mapper.Map<StreetcodeContent>(request.newStreetcode);
+                var streetcodeEntity = _mapper.Map<StreetcodeContent>(request.NewStreetcode);
 
                 streetcodeEntity.CreatedAt = streetcodeEntity.UpdatedAt = DateTime.UtcNow;
                 streetcodeEntity.ViewCount = 0;
@@ -40,28 +40,29 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
 
                 var saveResult = await _repositoryWrapper.SaveChangesAsync();
 
-                var imageIds = request.newStreetcode.ImagesDetails.Select(x => x.ImageId).ToList();
-                if (imageIds == null || !imageIds.Any())
+                var imagesDetails = request.NewStreetcode.ImagesDetails;
+                if (imagesDetails is null || !imagesDetails.Any())
+                {
+                    return CreateErrorResult<StreetcodeDTO>(request, "ImagesDetails cannot be empty");
+                }
+
+                var imageIds = imagesDetails.Select(x => x.ImageId).Where(id => id > 0).Distinct().ToList();
+                if (imageIds.Count == 0)
                 {
                     return CreateErrorResult<StreetcodeDTO>(request, "Image IDs cannot be empty");
                 }
 
                 await AddImagesAsync(streetcodeEntity, imageIds);
 
-                if (request.newStreetcode.Tags == null || !request.newStreetcode.Tags.Any())
+                if (request.NewStreetcode.Tags is null || !request.NewStreetcode.Tags.Any())
                 {
                     return CreateErrorResult<StreetcodeDTO>(request, "Tags cannot be empty");
                 }
 
-                await AddTags(streetcodeEntity, request.newStreetcode.Tags);
+                await AddTags(streetcodeEntity, request.NewStreetcode.Tags);
                 await _repositoryWrapper.SaveChangesAsync();
 
-                if (request.newStreetcode.ImagesDetails == null || !request.newStreetcode.ImagesDetails.Any())
-                {
-                    return CreateErrorResult<StreetcodeDTO>(request, "ImagesDetails cannot be empty");
-                }
-
-                await AddImagesDetails(request.newStreetcode.ImagesDetails);
+                await AddImagesDetails(request.NewStreetcode.ImagesDetails);
 
                 await _repositoryWrapper.SaveChangesAsync();
                 if (saveResult == 0)

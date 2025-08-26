@@ -10,7 +10,7 @@ using Xunit;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Media.Images;
 
-namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Create;
+namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.StreetCode.Create;
 
 public class StreetcodeCreateHandlerTest
 {
@@ -37,7 +37,7 @@ public class StreetcodeCreateHandlerTest
         var request = CreateValidRequest();
         var streetcodeEntity = CreateStreetcodeEntity();
 
-        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
+        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.NewStreetcode))
             .Returns(streetcodeEntity);
         _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(streetcodeEntity));
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
@@ -65,7 +65,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("Image IDs cannot be empty", result.Errors[0].Message);
+        Assert.Contains("ImagesDetails cannot be empty", result.Errors[0].Message);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("Image IDs cannot be empty", result.Errors[0].Message);
+        Assert.Contains("ImagesDetails cannot be empty", result.Errors[0].Message);
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateValidRequest();
 
-        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
+        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.NewStreetcode))
             .Throws(new Exception("Test exception"));
 
         // Act
@@ -169,21 +169,21 @@ public class StreetcodeCreateHandlerTest
     private StreetcodeCreateCommand CreateRequestWithEmptyImages()
     {
         var request = CreateValidRequest();
-        request.newStreetcode.ImagesDetails = new List<ImageDetailsDto>();
+        request.NewStreetcode.ImagesDetails = new List<ImageDetailsDto>();
         return request;
     }
 
     private StreetcodeCreateCommand CreateRequestWithEmptyTags()
     {
         var request = CreateValidRequest();
-        request.newStreetcode.Tags = new List<StreetcodeTagDTO>();
+        request.NewStreetcode.Tags = new List<StreetcodeTagDTO>();
         return request;
     }
 
     private StreetcodeCreateCommand CreateRequestWithEmptyImagesDetails()
     {
         var request = CreateValidRequest();
-        request.newStreetcode.ImagesDetails = new List<ImageDetailsDto>();
+        request.NewStreetcode.ImagesDetails = new List<ImageDetailsDto>();
         return request;
     }
 
@@ -225,7 +225,7 @@ public class StreetcodeCreateHandlerTest
 
     private void SetupMocksForInitialSave(StreetcodeCreateCommand request, StreetcodeContent entity)
     {
-        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
+        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.NewStreetcode))
             .Returns(entity);
 
         _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(entity));
@@ -253,7 +253,7 @@ public class StreetcodeCreateHandlerTest
 
     private void VerifySuccessCalls(StreetcodeCreateCommand request, StreetcodeContent entity)
     {
-        _mockMapper.Verify(m => m.Map<StreetcodeContent>(request.newStreetcode), Times.Once);
+        _mockMapper.Verify(m => m.Map<StreetcodeContent>(request.NewStreetcode), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.StreetcodeRepository.Create(entity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(2));
         _mockMapper.Verify(m => m.Map<StreetcodeDTO>(entity), Times.Once);
