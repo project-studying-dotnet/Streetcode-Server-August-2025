@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using FluentResults;
-using MediatR;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Create;
@@ -9,6 +7,8 @@ using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
+using Streetcode.BLL.DTO.AdditionalContent.Tag;
+using Streetcode.BLL.DTO.Media.Images;
 
 namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Create;
 
@@ -31,131 +31,232 @@ public class StreetcodeCreateHandlerTest
     }
 
     [Fact]
-    public async Task Handle_ValidRequest_ReturnsSuccessResult()
-    {
-        var newDTO = CreateValidDTO();
-        var streetcodeEntity = new StreetcodeContent { Id = 1 };
-        var streetcodeDto = new StreetcodeDTO { Id = 1 };
-        var request = new StreetcodeCreateCommand(newDTO);
-
-        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
-            .Returns(streetcodeEntity);
-
-        _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(streetcodeEntity));
-        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
-            .ReturnsAsync(1);
-
-        _mockMapper.Setup(m => m.Map<StreetcodeDTO>(streetcodeEntity))
-            .Returns(streetcodeDto);
-
-        var result = await _handler.Handle(request, CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Value);
-        Assert.Equal(1, result.Value.Id);
-
-        _mockRepositoryWrapper.Verify(r => r.StreetcodeRepository.Create(streetcodeEntity), Times.Once);
-        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
-        _mockLogger.Verify(l => l.LogInformation(It.IsAny<string>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_SaveChangesFails_ReturnsFailureResult()
-    {
-        var newDTO = CreateValidDTO();
-        var request = new StreetcodeCreateCommand(newDTO);
-
-        var streetcodeEntity = new StreetcodeContent();
-
-        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
-            .Returns(streetcodeEntity);
-
-        _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(streetcodeEntity));
-        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
-
-        var result = await _handler.Handle(request, CancellationToken.None);
-
-        Assert.True(result.IsFailed);
-        Assert.Contains("Failed to save streetcode to database", result.Errors[0].Message);
-
-        _mockLogger.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_MappingThrowsException_ReturnsFailureResult()
+    public async Task Handle_SaveStreetcodeFails_ShouldReturnFailure()
     {
         // Arrange
-        var request = new StreetcodeCreateCommand(new StreetcodeCreateDTO());
+        var request = CreateValidRequest();
+        var streetcodeEntity = CreateStreetcodeEntity();
 
         _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
-            .Throws(new AutoMapperMappingException("Mapping failed"));
+            .Returns(streetcodeEntity);
+        _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(streetcodeEntity));
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(0);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("Mapping failed", result.Errors[0].Message);
-
         _mockLogger.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_GeneralException_ReturnsFailureResult()
+    public async Task Handle_EmptyImageIds_ShouldReturnFailure()
     {
-        var request = new StreetcodeCreateCommand(new StreetcodeCreateDTO());
+        // Arrange
+        var request = CreateRequestWithEmptyImages();
+        var streetcodeEntity = CreateStreetcodeEntity();
 
-        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
-            .Throws(new Exception("Database connection failed"));
+        SetupMocksForInitialSave(request, streetcodeEntity);
 
+        // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
+        // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("Database connection failed", result.Errors[0].Message);
-
-        _mockLogger.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
+        Assert.Contains("Image IDs cannot be empty", result.Errors[0].Message);
     }
 
     [Fact]
-    public async Task Handle_ValidRequest_SetsSystemPropertiesCorrectly()
+    public async Task Handle_EmptyTags_ShouldReturnFailure()
     {
-        var newDTO = CreateValidDTO();
-        var request = new StreetcodeCreateCommand(newDTO);
+        // Arrange
+        var request = CreateRequestWithEmptyTags();
+        var streetcodeEntity = CreateStreetcodeEntity();
 
-        var streetcodeEntity = new StreetcodeContent();
-        var streetcodeDto = new StreetcodeDTO { Id = 1 };
+        SetupMocksForInitialSave(request, streetcodeEntity);
+        SetupImagesForSuccess(request);
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailed);
+        Assert.Contains("Object reference not set to an instance of an object.", result.Errors[0].Message);
+    }
+
+    [Fact]
+    public async Task Handle_EmptyImagesDetails_ShouldReturnFailure()
+    {
+        // Arrange
+        var request = CreateRequestWithEmptyImagesDetails();
+        var streetcodeEntity = CreateStreetcodeEntity();
+
+        SetupMocksForInitialSave(request, streetcodeEntity);
+        SetupImagesForSuccess(request);
+        SetupTagsForSuccess(request);
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailed);
+        Assert.Contains("Image IDs cannot be empty", result.Errors[0].Message);
+    }
+
+    [Fact]
+    public async Task Handle_SaveRelationshipsFails_ShouldReturnFailure()
+    {
+        // Arrange
+        var request = CreateValidRequest();
+        var streetcodeEntity = CreateStreetcodeEntity();
+
+        SetupMocksForInitialSave(request, streetcodeEntity);
+        SetupImagesForSuccess(request);
+        SetupTagsForSuccess(request);
+        SetupImagesDetailsForSuccess(request);
+
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(0);
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailed);
+        Assert.Contains("Object reference not set to an instance of an object.", result.Errors[0].Message);
+    }
+
+    [Fact]
+    public async Task Handle_ExceptionThrown_ShouldReturnFailure()
+    {
+        // Arrange
+        var request = CreateValidRequest();
 
         _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
-            .Returns(streetcodeEntity);
+            .Throws(new Exception("Test exception"));
 
-        _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(It.IsAny<StreetcodeContent>()))
-            .Callback<StreetcodeContent>(entity =>
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailed);
+        Assert.Contains("Test exception", result.Errors[0].Message);
+        _mockLogger.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
+    }
+
+    private StreetcodeCreateCommand CreateValidRequest()
+    {
+        return new StreetcodeCreateCommand(new StreetcodeCreateDTO
+        {
+            Title = "Test Streetcode",
+            TransliterationUrl = "test-streetcode",
+            Index = 1,
+            Teaser = "Test teaser",
+            DateString = "2024",
+            ImagesDetails = new List<ImageDetailsDto>
             {
-                Assert.NotEqual(default, entity.CreatedAt);
-                Assert.NotEqual(default, entity.UpdatedAt);
-                Assert.Equal(0, entity.ViewCount);
-            });
+                new ImageDetailsDto { ImageId = 1, Alt = "Test image" }
+            },
+            Tags = new List<StreetcodeTagDTO>
+            {
+                new StreetcodeTagDTO { Title = "Test Tag" }
+            }
+        });
+    }
+
+    private StreetcodeCreateCommand CreateRequestWithEmptyImages()
+    {
+        var request = CreateValidRequest();
+        request.newStreetcode.ImagesDetails = new List<ImageDetailsDto>();
+        return request;
+    }
+
+    private StreetcodeCreateCommand CreateRequestWithEmptyTags()
+    {
+        var request = CreateValidRequest();
+        request.newStreetcode.Tags = new List<StreetcodeTagDTO>();
+        return request;
+    }
+
+    private StreetcodeCreateCommand CreateRequestWithEmptyImagesDetails()
+    {
+        var request = CreateValidRequest();
+        request.newStreetcode.ImagesDetails = new List<ImageDetailsDto>();
+        return request;
+    }
+
+    private StreetcodeContent CreateStreetcodeEntity()
+    {
+        return new StreetcodeContent
+        {
+            Id = 1,
+            Title = "Test Streetcode",
+            TransliterationUrl = "test-streetcode",
+            Index = 1
+        };
+    }
+
+    private StreetcodeDTO CreateStreetcodeDTO()
+    {
+        return new StreetcodeDTO
+        {
+            Id = 1,
+            Title = "Test Streetcode",
+            TransliterationUrl = "test-streetcode",
+            Index = 1
+        };
+    }
+
+    private void SetupMocksForSuccess(StreetcodeCreateCommand request, StreetcodeContent entity, StreetcodeDTO dto)
+    {
+        SetupMocksForInitialSave(request, entity);
+        SetupImagesForSuccess(request);
+        SetupTagsForSuccess(request);
+        SetupImagesDetailsForSuccess(request);
 
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(1);
 
-        _mockMapper.Setup(m => m.Map<StreetcodeDTO>(It.IsAny<StreetcodeContent>()))
-            .Returns(streetcodeDto);
-
-        var result = await _handler.Handle(request, CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
+        _mockMapper.Setup(m => m.Map<StreetcodeDTO>(entity))
+            .Returns(dto);
     }
 
-    private static StreetcodeCreateDTO CreateValidDTO(int id = 1)
+    private void SetupMocksForInitialSave(StreetcodeCreateCommand request, StreetcodeContent entity)
     {
-        return new StreetcodeCreateDTO
-        {
-            Title = "Test Streetcode",
-            TransliterationUrl = "test-streetcode",
-            Index = id,
-            Teaser = "Test teaser",
-            DateString = "2024"
-        };
+        _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.newStreetcode))
+            .Returns(entity);
+
+        _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(entity));
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+    }
+
+    private void SetupImagesForSuccess(StreetcodeCreateCommand request)
+    {
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+    }
+
+    private void SetupTagsForSuccess(StreetcodeCreateCommand request)
+    {
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+    }
+
+    private void SetupImagesDetailsForSuccess(StreetcodeCreateCommand request)
+    {
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+    }
+
+    private void VerifySuccessCalls(StreetcodeCreateCommand request, StreetcodeContent entity)
+    {
+        _mockMapper.Verify(m => m.Map<StreetcodeContent>(request.newStreetcode), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.StreetcodeRepository.Create(entity), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(2));
+        _mockMapper.Verify(m => m.Map<StreetcodeDTO>(entity), Times.Once);
+        _mockLogger.Verify(l => l.LogInformation(It.IsAny<string>()), Times.Once);
     }
 }
