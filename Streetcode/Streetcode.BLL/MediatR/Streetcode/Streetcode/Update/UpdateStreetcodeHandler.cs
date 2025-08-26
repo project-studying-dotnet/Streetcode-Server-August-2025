@@ -20,13 +20,13 @@ using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 {
-    public class UpdateStreecodeHandler : IRequestHandler<UpdateStreetcodeCommand, Result<int>>
+    public class UpdateStreetcodeHandler : IRequestHandler<UpdateStreetcodeCommand, Result<int>>
     {
         private IRepositoryWrapper _repositoryWrapper;
         private IMapper _mapper;
         private ILoggerService _logger;
 
-        public UpdateStreecodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+        public UpdateStreetcodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
@@ -59,11 +59,16 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 
                     var saveResult = await _repositoryWrapper.SaveChangesAsync();
 
-                    if (saveResult <= 0)
+                    if (saveResult < 0)
                     {
                         const string errorMsg = "Failed to update streetcode in database";
                         _logger.LogError(request, errorMsg);
                         return Result.Fail<int>(errorMsg);
+                    }
+
+                    if (saveResult == 0)
+                    {
+                        _logger.LogInformation($"No changes detected for Streetcode ID {existingEntity.Id}; committing transaction.");
                     }
 
                     transactionScope.Complete();
@@ -93,7 +98,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                 var existingTag = await _repositoryWrapper.TagRepository.GetFirstOrDefaultAsync(t => t.Title == newTag.Title);
                 if (existingTag is not null && existingTag.Id != newTag.Id)
                 {
-                    throw new HttpRequestException("Tags must be unique", null, System.Net.HttpStatusCode.BadRequest);
+                    throw new InvalidOperationException("Tag titles must be unique.");
                 }
             }
 

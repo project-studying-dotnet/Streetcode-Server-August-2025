@@ -25,13 +25,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILoggerService> _loggerServiceMock;
-        private readonly UpdateStreecodeHandler _handler;
+        private readonly UpdateStreetcodeHandler _handler;
         public UpdateStreetcodeTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
             _loggerServiceMock = new Mock<ILoggerService>();
-            _handler = new UpdateStreecodeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object);
+            _handler = new UpdateStreetcodeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
         }
 
         [Fact]
-        public async Task Handle_ShoulReturnFail_WhenEntityNotFound()
+        public async Task Handle_Should_ReturnFail_WhenEntityNotFound()
         {
             var request = new UpdateStreetcodeCommand(new StreetcodeUpdateDTO { Id = 1 });
 
