@@ -71,7 +71,7 @@ public class StreetcodeController : BaseApiController
     {
         return HandleResult(await Mediator.Send(new GetStreetcodeByIdQuery(id)));
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] StreetcodeCreateDTO streetcodeCreate)
     {
