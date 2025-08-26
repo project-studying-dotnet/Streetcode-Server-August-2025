@@ -345,3 +345,6 @@ healthchecksdb
 # BlobStorage
 BlobStorageFolder/
 BlobStorageTestFolder/
+
+# Extract houses.zip files
+/Streetcode/Streetcode.DAL/data/
