@@ -7,7 +7,7 @@ namespace Streetcode.BLL
     /// Marker class for the application assembly.
     /// Used for clean MediatR registration and assembly scanning.
     /// </summary>
-    public class ApplicationAssembly
+    public static class ApplicationAssembly
     {
         public static readonly Assembly Assembly = typeof(ApplicationAssembly).Assembly;
     }
