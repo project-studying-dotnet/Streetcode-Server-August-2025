@@ -1,10 +1,7 @@
-using System.Text;
 using FluentValidation;
 using Hangfire;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.Logging;
@@ -16,7 +13,6 @@ using Streetcode.BLL.Services.Email;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.BLL.Interfaces.Users;
 using Microsoft.FeatureManagement;
 using Streetcode.BLL.Interfaces.Payment;
 using Streetcode.BLL.Services.Payment;
@@ -24,10 +20,7 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
-using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.MediatR;
-using Streetcode.BLL.Validators.News;
-using Streetcode.BLL.MediatR.Newss.Create;
 using Streetcode.BLL;
 
 namespace Streetcode.WebApi.Extensions;
@@ -48,7 +41,6 @@ public static class ServiceCollectionExtensions
 
         services.AddMediatR(currentAssemblies);
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
 
         services.AddValidatorsFromAssembly(
             ApplicationAssembly.Assembly,
