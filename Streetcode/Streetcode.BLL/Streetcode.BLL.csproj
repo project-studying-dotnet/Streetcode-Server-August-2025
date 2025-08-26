@@ -48,6 +48,8 @@
     <Folder Include="Validators\Media\Image\" />
     <Folder Include="Validators\Payment\" />
     <Folder Include="Validators\Partners\" />
+    <Folder Include="Validators\Team\TeamMembersLinks\" />
+    <Folder Include="Validators\Team\Position\" />
   </ItemGroup>
 
 </Project>
