@@ -34,10 +34,9 @@ public class WebParsingUtils
         _streetcodeContext = streetcodeContext;
     }
 
-    public static async Task DownloadAndExtractAsync(
+    public static async Task DownloadFileAsync(
         string fileUrl,
         string zipPath,
-        string extractTo,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(fileUrl) || !Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
@@ -50,15 +49,8 @@ public class WebParsingUtils
             throw new ArgumentException("zipPath cannot be null or empty", nameof(zipPath));
         }
 
-        if (string.IsNullOrEmpty(extractTo))
-        {
-            throw new ArgumentException("extractTo cannot be null or empty", nameof(extractTo));
-        }
-
         var clientHandler = new HttpClientHandler();
         clientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-        // clientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 
         var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(
             3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
@@ -84,10 +76,6 @@ public class WebParsingUtils
                 await using var streamToWriteTo = File.Open(zipPath, FileMode.Create);
                 await streamToReadFrom.CopyToAsync(streamToWriteTo, 81920, cancellationToken);
             }
-
-            using var archive = ZipFile.OpenRead(zipPath);
-            archive.ExtractToDirectory(extractTo, overwriteFiles: true);
-            Console.WriteLine($"Archive received and extracted to {extractTo}");
         }
         catch (OperationCanceledException)
         {
@@ -104,15 +92,23 @@ public class WebParsingUtils
     public async Task ParseZipFileFromWebAsync()
     {
         var projRootDirectory = Directory.GetParent(Environment.CurrentDirectory)?.FullName!;
-        var zipPath = $"houses.zip";
-        var extractTo = $"/root/build/StreetCode/Streetcode/Streetcode.DAL";
+        var extractTo = Path.Combine(projRootDirectory, "Streetcode.DAL", "data");
+        var zipPath = Path.Combine(extractTo, "houses.zip");
 
         var cancellationToken = new CancellationTokenSource().Token;
 
         try
         {
-            await DownloadAndExtractAsync(_fileToParseUrl, zipPath, extractTo, cancellationToken);
-            Console.WriteLine("Download and extraction completed successfully.");
+            Directory.CreateDirectory(extractTo);
+
+            await DownloadFileAsync(_fileToParseUrl, zipPath, cancellationToken);
+            Console.WriteLine("Download completed successfully.");
+
+            using (var archive = ZipFile.OpenRead(zipPath))
+            {
+                archive.ExtractToDirectory(extractTo, overwriteFiles: true);
+                Console.WriteLine($"Archive received and extracted to {extractTo}");
+            }
 
             if (File.Exists(zipPath))
             {
