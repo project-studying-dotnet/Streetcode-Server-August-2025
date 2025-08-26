@@ -46,6 +46,7 @@
     <Folder Include="MediatR\Analytics\" />
     <Folder Include="Validators\Email\" />
     <Folder Include="Validators\Media\Image\" />
+    <Folder Include="Validators\Payment\" />
     <Folder Include="Validators\Partners\" />
   </ItemGroup>
 
