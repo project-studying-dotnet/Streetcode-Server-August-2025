@@ -55,6 +55,8 @@ namespace Streetcode.BLL.MediatR.Streetcode.Term.Create
             if (!isSuccessResult)
             {
                 const string errorMsg = "Cannot save changes in database";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(errorMsg);
             }
 
             var createdTermDTO = _mapper.Map<TermDTO>(createdTerm);
