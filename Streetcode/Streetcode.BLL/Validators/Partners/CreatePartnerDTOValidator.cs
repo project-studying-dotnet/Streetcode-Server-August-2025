@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Partners;
+using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.Partners;
 
@@ -24,7 +25,7 @@ public class CreatePartnerDTOValidator : AbstractValidator<CreatePartnerDTO>
         RuleFor(x => x.TargetUrl)
             .MaximumLength(255)
             .WithMessage("TargetUrl cannot exceed 255 characters.")
-            .Must(BeValidUrl)
+            .Must(ValidationHelper.BeValidUrl)
             .When(x => !string.IsNullOrWhiteSpace(x.TargetUrl))
             .WithMessage("TargetUrl must be in a valid format.");
 
@@ -43,10 +44,5 @@ public class CreatePartnerDTOValidator : AbstractValidator<CreatePartnerDTO>
 
         RuleForEach(x => x.Streetcodes)
             .SetValidator(new StreetcodeShortDTOValidator());
-    }
-
-    private static bool BeValidUrl(string url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out _);
     }
 }

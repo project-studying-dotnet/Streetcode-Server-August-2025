@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Partners.Create;
+using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.Partners;
 
@@ -20,12 +21,7 @@ public class CreatePartnerSourceLinkDTOValidator : AbstractValidator<CreatePartn
             .WithMessage("TargetUrl is required.")
             .MaximumLength(255)
             .WithMessage("TargetUrl cannot exceed 255 characters.")
-            .Must(BeValidUrl)
+            .Must(ValidationHelper.BeValidUrl)
             .WithMessage("TargetUrl must be a valid URL.");
-    }
-
-    private static bool BeValidUrl(string url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out _);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Payment;
+using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.Payment;
 
@@ -16,13 +17,8 @@ public class CreateInvoiceCommandValidator : AbstractValidator<CreateInvoiceComm
             .WithMessage("Amount must be greater than zero.");
 
         RuleFor(x => x.Payment.RedirectUrl)
-            .Must(BeValidUrl)
+            .Must(ValidationHelper.BeValidUrl)
             .When(x => !string.IsNullOrWhiteSpace(x.Payment.RedirectUrl))
             .WithMessage("RedirectUrl must be a valid absolute URL.");
-    }
-
-    private static bool BeValidUrl(string? url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out _);
     }
 }

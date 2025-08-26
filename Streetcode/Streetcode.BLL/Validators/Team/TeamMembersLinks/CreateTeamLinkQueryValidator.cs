@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create;
+using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.Team.TeamMembersLinks;
 
@@ -22,7 +23,7 @@ public class CreateTeamLinkQueryValidator : AbstractValidator<CreateTeamLinkQuer
                 .WithMessage("Target URL is required.")
                 .MaximumLength(255)
                 .WithMessage("Target URL cannot exceed 255 characters.")
-                .Must(BeValidUrl)
+                .Must(ValidationHelper.BeValidUrl)
                 .WithMessage("Target URL must be a valid absolute URL.");
 
             RuleFor(x => x.teamMember.TeamMemberId)
@@ -31,8 +32,4 @@ public class CreateTeamLinkQueryValidator : AbstractValidator<CreateTeamLinkQuer
         });
     }
 
-    private static bool BeValidUrl(string url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out _);
-    }
 }

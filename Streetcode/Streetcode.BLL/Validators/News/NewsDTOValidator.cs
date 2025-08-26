@@ -1,5 +1,6 @@
 using FluentValidation;
 using Streetcode.BLL.DTO.News;
+using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.News
 {
@@ -24,7 +25,7 @@ namespace Streetcode.BLL.Validators.News
                     .WithMessage("URL is required.")
                 .MaximumLength(100)
                     .WithMessage("URL cannot exceed 100 characters.")
-                .Must(BeValidUrl)
+                .Must(ValidationHelper.BeValidUrl)
                     .WithMessage("URL must be in a valid format.");
 
             RuleFor(x => x.CreationDate)
@@ -37,11 +38,6 @@ namespace Streetcode.BLL.Validators.News
                     .GreaterThan(0)
                         .WithMessage("Image ID must be greater than 0.");
             });
-        }
-
-        private static bool BeValidUrl(string url)
-        {
-            return Uri.TryCreate(url, UriKind.Absolute, out _);
         }
     }
 }
