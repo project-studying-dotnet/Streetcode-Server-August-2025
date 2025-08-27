@@ -8,6 +8,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Specifications.Streetcode;
 using Streetcode.DAL.Specifications.Video;
 using Xunit;
+using StreetcodeEntity = Streetcode.DAL.Entities.Streetcode.StreetcodeContent;
 using VideoEntity = Streetcode.DAL.Entities.Media.Video;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Media.Video
@@ -59,6 +60,36 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Media.Video
 
             _repositoryWrapperMock.Verify(r => r.VideoRepository.GetBySpecAsync(It.IsAny<VideoByStreetCodeIdSpecification>(), default), Times.Once);
             _mapperMock.Verify(m => m.Map<VideoDTO>(videoEntity), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_ShouldReturnNullResult_WhenVideoDoesNotExistButStreetcodeExists()
+        {
+            // Arrange
+            var request = new GetVideoByStreetcodeIdQuery(2);
+
+            var streetcodeEntity = new StreetcodeEntity { Id = 2, Title = "Test Streetcode" };
+
+            _repositoryWrapperMock
+                .Setup(r => r.VideoRepository.GetBySpecAsync(It.IsAny<VideoByStreetCodeIdSpecification>(), default))
+                .ReturnsAsync((VideoEntity?)null);
+
+            _repositoryWrapperMock
+                .Setup(r => r.StreetcodeRepository.GetBySpecAsync(It.IsAny<StreetCodeByIdSpecification>(), default))
+                .ReturnsAsync(streetcodeEntity);
+
+            _mapperMock
+                .Setup(m => m.Map<VideoDTO>((VideoEntity?)null))
+                .Returns((VideoDTO?)null);
+
+            // Act
+            var result = await _handler.Handle(request, default);
+
+            // Assert
+            Assert.True(result.IsSuccess); // NullResult вважається успішним
+            Assert.Null(result.Value);
+
+            _repositoryWrapperMock.Verify(r => r.StreetcodeRepository.GetBySpecAsync(It.IsAny<StreetCodeByIdSpecification>(), default), Times.Once);
         }
     }
 }
