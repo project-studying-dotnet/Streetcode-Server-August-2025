@@ -34,9 +34,7 @@ public class BlobService : IBlobService
 
     public string FindFileInStorageAsBase64(string name)
     {
-        string[] splitedName = name.Split('.');
-
-        byte[] decodedBytes = DecryptFile(splitedName[0], splitedName[1]);
+        byte[] decodedBytes = DecryptFile(name);
 
         string base64 = Convert.ToBase64String(decodedBytes);
 
@@ -150,9 +148,13 @@ public class BlobService : IBlobService
         File.WriteAllBytes($"{_blobPath}{name}.{type}", encryptedData);
     }
 
-    private byte[] DecryptFile(string fileName, string type)
+    private byte[] DecryptFile(string fileName, string? type = null)
     {
-        byte[] encryptedData = File.ReadAllBytes($"{_blobPath}{fileName}.{type}");
+        string fullPath = type is null
+            ? Path.Combine(_blobPath, fileName)
+            : Path.Combine(_blobPath, $"{fileName}.{type}");
+
+        byte[] encryptedData = File.ReadAllBytes(fullPath);
         byte[] keyBytes = Encoding.UTF8.GetBytes(_keyCrypt);
 
         byte[] iv = new byte[16];
