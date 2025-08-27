@@ -1,15 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
+using Streetcode.BLL.DTO.AdditionalContent.Filter;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.Delete;
+using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAll;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllCatalog;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllShort;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllStreetcodesMainPage;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByTransliterationUrl;
-using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllShort;
-using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllCatalog;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetCount;
-using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter;
-using Streetcode.BLL.DTO.AdditionalContent.Filter;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById;
-using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllStreetcodesMainPage;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
+using Streetcode.BLL.DTO.Streetcode.Create;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
+
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
@@ -67,5 +73,23 @@ public class StreetcodeController : BaseApiController
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new GetStreetcodeByIdQuery(id)));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] StreetcodeCreateDTO streetcodeCreate)
+    {
+        return HandleResult(await Mediator.Send(new StreetcodeCreateCommand(streetcodeCreate)));
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteStreetcodeCommand(id)));
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] StreetcodeUpdateDTO streetcodeUpdateDTO)
+    {
+        return HandleResult(await Mediator.Send(new UpdateStreetcodeCommand(streetcodeUpdateDTO)));
     }
 }
