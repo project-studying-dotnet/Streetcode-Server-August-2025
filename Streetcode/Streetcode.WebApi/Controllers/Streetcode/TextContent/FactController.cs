@@ -29,7 +29,7 @@ public class FactController : BaseApiController
     }
 
     [HttpPost("{streetcodeId:int}")]
-    public async Task<IActionResult> Create(int streetcodeId, [FromBody] FactDto newFact)
+    public async Task<IActionResult> Create(int streetcodeId, [FromBody] FactCreateDto newFact)
     {
         return HandleResult(await Mediator.Send(new CreateFactCommand(streetcodeId, newFact)));
     }
