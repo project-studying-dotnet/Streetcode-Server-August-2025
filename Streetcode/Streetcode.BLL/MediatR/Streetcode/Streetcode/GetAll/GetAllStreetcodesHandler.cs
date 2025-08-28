@@ -24,6 +24,8 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
 
     public async Task<Result<GetAllStreetcodesResponseDTO>> Handle(GetAllStreetcodesQuery query, CancellationToken cancellationToken)
     {
+        _logger.LogInformation($"Getting all streetcodes with filters: Title={query.request.Title}, Sort={query.request.Sort}, Filter={query.request.Filter}, Page={query.request.Page}, Amount={query.request.Amount}");
+
         var filterRequest = query.request;
 
         var streetcodes = _repositoryWrapper.StreetcodeRepository
@@ -32,19 +34,23 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
         if (filterRequest.Title is not null)
         {
             FindStreetcodesWithMatchTitle(ref streetcodes, filterRequest.Title);
+            _logger.LogInformation($"Applied title filter: {filterRequest.Title}");
         }
 
         if (filterRequest.Sort is not null)
         {
             FindSortedStreetcodes(ref streetcodes, filterRequest.Sort);
+            _logger.LogInformation($"Applied sorting: {filterRequest.Sort}");
         }
 
         if (filterRequest.Filter is not null)
         {
             FindFilteredStreetcodes(ref streetcodes, filterRequest.Filter);
+            _logger.LogInformation($"Applied filter: {filterRequest.Filter}");
         }
 
         int pagesAmount = ApplyPagination(ref streetcodes, filterRequest.Amount, filterRequest.Page);
+        _logger.LogInformation($"Applied pagination: Page {filterRequest.Page} of {pagesAmount}, {filterRequest.Amount} items per page");
 
         var streetcodeDtos = _mapper.Map<IEnumerable<StreetcodeDTO>>(streetcodes.AsEnumerable());
 
@@ -54,6 +60,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
             Streetcodes = streetcodeDtos
         };
 
+        _logger.LogInformation($"Successfully retrieved {streetcodeDtos.Count()} streetcodes");
         return Result.Ok(response);
     }
 
