@@ -16,7 +16,6 @@ using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
 using Streetcode.BLL.DTO.Streetcode.Create;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 
-
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
 public class StreetcodeController : BaseApiController
