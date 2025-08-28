@@ -47,8 +47,8 @@ public class CreateNewsTests
 
         _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
             .Returns(newsEntity);
-        _mockNewsRepository.Setup(r => r.Create(newsEntity))
-            .Returns(createdEntity);
+        _mockNewsRepository.Setup(r => r.CreateAsync(newsEntity))
+            .ReturnsAsync(createdEntity);
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(1);
         _mockMapper.Setup(m => m.Map<NewsDTO>(createdEntity))
@@ -62,7 +62,7 @@ public class CreateNewsTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEquivalentTo(expectedResultDTO);
 
-        _mockNewsRepository.Verify(r => r.Create(newsEntity), Times.Once);
+        _mockNewsRepository.Verify(r => r.CreateAsync(newsEntity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(1));
     }
 
@@ -104,9 +104,9 @@ public class CreateNewsTests
         _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
             .Returns(mappedNewsEntity);
 
-        _mockNewsRepository.Setup(r => r.Create(It.IsAny<DAL.Entities.News.News>()))
+        _mockNewsRepository.Setup(r => r.CreateAsync(It.IsAny<DAL.Entities.News.News>()))
             .Callback<DAL.Entities.News.News>(entity => capturedEntity = entity)
-            .Returns(createdEntity);
+            .ReturnsAsync(createdEntity);
 
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(1);
@@ -125,7 +125,7 @@ public class CreateNewsTests
         capturedEntity.Should().NotBeNull();
         capturedEntity!.ImageId.Should().BeNull("handler should set ImageId to null when it's 0");
 
-        _mockNewsRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.News.News>()), Times.Once);
+        _mockNewsRepository.Verify(r => r.CreateAsync(It.IsAny<DAL.Entities.News.News>()), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(1));
     }
 
@@ -139,8 +139,8 @@ public class CreateNewsTests
 
         _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
             .Returns(newsEntity);
-        _mockNewsRepository.Setup(r => r.Create(newsEntity))
-            .Returns(newsEntity);
+        _mockNewsRepository.Setup(r => r.CreateAsync(newsEntity))
+            .ReturnsAsync(newsEntity);
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(0);
 
@@ -151,7 +151,7 @@ public class CreateNewsTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
 
-        _mockNewsRepository.Verify(r => r.Create(newsEntity), Times.Once);
+        _mockNewsRepository.Verify(r => r.CreateAsync(newsEntity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
@@ -165,13 +165,13 @@ public class CreateNewsTests
 
         _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
             .Returns(newsEntity);
-        _mockNewsRepository.Setup(r => r.Create(newsEntity))
+        _mockNewsRepository.Setup(r => r.CreateAsync(newsEntity))
             .Throws<InvalidOperationException>();
 
         // Act and Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
 
-        _mockNewsRepository.Verify(r => r.Create(newsEntity), Times.Once);
+        _mockNewsRepository.Verify(r => r.CreateAsync(newsEntity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
     }
 
