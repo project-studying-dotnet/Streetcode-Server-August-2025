@@ -43,8 +43,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
                     return Result.Fail(errorMsg);
                 }
 
-                _mapper.Map(request.Fact, existingFact);
-
                 if (request.Fact.NewImage is not null)
                 {
                     var createImageResult = await _mediator.Send(
@@ -52,10 +50,15 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 
                     if (createImageResult.IsFailed)
                     {
-                        return Result.Fail(createImageResult.Errors.First().Message);
+                        return Result.Fail(createImageResult.Errors[0].Message);
                     }
 
+                    _mapper.Map(request.Fact, existingFact);
                     existingFact.ImageId = createImageResult.Value.Id;
+                }
+                else
+                {
+                    _mapper.Map(request.Fact, existingFact);
                 }
 
                 await UpdateImageDetailsAsync(request, existingFact);
