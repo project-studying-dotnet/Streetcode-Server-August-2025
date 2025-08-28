@@ -7,13 +7,13 @@ namespace Streetcode.BLL.Validators.News
     {
         public CreateNewsCommandValidator()
         {
-            RuleFor(x => x.newNews)
+            RuleFor(x => x.NewNews)
                 .NotNull()
                     .WithMessage("News data is required.");
 
-            When(x => x.newNews != null, () =>
+            When(x => x.NewNews != null, () =>
             {
-                RuleFor(x => x.newNews)
+                RuleFor(x => x.NewNews)
                     .SetValidator(new NewsDTOValidator());
             });
         }

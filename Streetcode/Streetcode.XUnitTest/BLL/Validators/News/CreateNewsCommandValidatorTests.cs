@@ -25,7 +25,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.News
             var result = _validator.TestValidate(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(c => c.newNews)
+            result.ShouldHaveValidationErrorFor(c => c.NewNews)
                   .WithErrorMessage("News data is required.");
         }
 
@@ -45,7 +45,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.News
             var result = _validator.TestValidate(command);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(c => c.newNews);
+            result.ShouldNotHaveValidationErrorFor(c => c.NewNews);
         }
     }
 }

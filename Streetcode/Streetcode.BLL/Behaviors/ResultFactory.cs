@@ -7,7 +7,11 @@ public static class ResultFactory
 {
     public static T? CreateFailure<T>(IEnumerable<string> messages) where T : IResultBase
     {
-        var errors = messages.Select(msg => new Error(msg)).ToList();
+        var errors = (messages ?? Array.Empty<string>())
+            .Where(static m => !string.IsNullOrWhiteSpace(m))
+            .Distinct(StringComparer.Ordinal)
+            .Select(static m => (IError)new Error(m))
+            .ToList();
         var type = typeof(T);
 
         // Case 1: Generic Result<TValue>

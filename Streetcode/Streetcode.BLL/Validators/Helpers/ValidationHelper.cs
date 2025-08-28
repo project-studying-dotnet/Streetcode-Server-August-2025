@@ -20,14 +20,4 @@ public static class ValidationHelper
 
         return true;
     }
-    public static bool BeHttpOrHttpsUrl(string url)
-        => Uri.TryCreate(url, UriKind.Absolute, out var uri)
-           && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
-
-    public static bool IsSlug(string value)
-        => !string.IsNullOrWhiteSpace(value)
-           && Regex.IsMatch(value, "^[a-z0-9]+(?:-[a-z0-9]+)*$");
-
-    public static bool BeAbsoluteUrlOrSlug(string value)
-        => BeHttpOrHttpsUrl(value) || IsSlug(value);
 }

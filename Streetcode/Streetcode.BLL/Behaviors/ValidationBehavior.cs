@@ -32,13 +32,16 @@ namespace Streetcode.BLL.MediatR
             // Check if any validation failed
             var failures = validationResults
                 .SelectMany(r => r.Errors)
-                .Where(f => f != null)
+                .Where(f => f is not null && !string.IsNullOrWhiteSpace(f.ErrorMessage))
                 .ToList();
 
             if (failures.Count != 0)
             {
-                var messages = failures.Select(f => f.ErrorMessage);
-                return ResultFactory.CreateFailure<TResponse>(messages);
+                var messages = failures
+                    .Select(f => $"{f.PropertyName}: {f.ErrorMessage}")
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList();
+                return ResultFactory.CreateFailure<TResponse>(messages)!;
 
             }
 

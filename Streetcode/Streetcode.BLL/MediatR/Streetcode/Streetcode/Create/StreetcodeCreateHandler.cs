@@ -29,6 +29,12 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
         try
         {
             var streetcodeEntity = _mapper.Map<StreetcodeContent>(request.newStreetcode);
+            if (streetcodeEntity is null)
+            {
+                const string errorMsg = "Cannot convert null to StreetcodeContent";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail<StreetcodeDTO>(errorMsg);
+            }
 
             streetcodeEntity.CreatedAt = DateTime.UtcNow;
             streetcodeEntity.UpdatedAt = DateTime.UtcNow;
