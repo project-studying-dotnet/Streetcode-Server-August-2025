@@ -8,7 +8,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
 
-public class GetAllFactsHandler : IRequestHandler<GetAllFactsQuery, Result<IEnumerable<FactCreateDto>>>
+public class GetAllFactsHandler : IRequestHandler<GetAllFactsQuery, Result<IEnumerable<FactDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
@@ -21,7 +21,7 @@ public class GetAllFactsHandler : IRequestHandler<GetAllFactsQuery, Result<IEnum
         _logger = logger;
     }
 
-    public async Task<Result<IEnumerable<FactCreateDto>>> Handle(GetAllFactsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<FactDTO>>> Handle(GetAllFactsQuery request, CancellationToken cancellationToken)
     {
         var facts = await _repositoryWrapper.FactRepository.GetAllAsync();
 
@@ -32,6 +32,6 @@ public class GetAllFactsHandler : IRequestHandler<GetAllFactsQuery, Result<IEnum
             return Result.Fail(new Error(errorMsg));
         }
 
-        return Result.Ok(_mapper.Map<IEnumerable<FactCreateDto>>(facts));
+        return Result.Ok(_mapper.Map<IEnumerable<FactDTO>>(facts));
     }
 }
