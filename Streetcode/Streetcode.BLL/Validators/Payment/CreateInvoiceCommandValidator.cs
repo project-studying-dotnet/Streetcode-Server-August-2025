@@ -10,15 +10,17 @@ public class CreateInvoiceCommandValidator : AbstractValidator<CreateInvoiceComm
     {
         RuleFor(x => x.Payment)
             .NotNull()
-            .WithMessage("Payment information is required.");
+            .WithMessage("Payment information is required.")
+            .DependentRules(() =>
+            {
+                RuleFor(x => x.Payment!.Amount)
+                    .GreaterThan(0)
+                    .WithMessage("Amount must be greater than zero.");
 
-        RuleFor(x => x.Payment.Amount)
-            .GreaterThan(0)
-            .WithMessage("Amount must be greater than zero.");
-
-        RuleFor(x => x.Payment.RedirectUrl)
-            .Must(ValidationHelper.BeValidUrl)
-            .When(x => !string.IsNullOrWhiteSpace(x.Payment.RedirectUrl))
-            .WithMessage("RedirectUrl must be a valid absolute URL.");
+                RuleFor(x => x.Payment!.RedirectUrl)
+                    .Must(ValidationHelper.BeValidUrl)
+                    .When(x => !string.IsNullOrWhiteSpace(x.Payment!.RedirectUrl))
+                    .WithMessage("RedirectUrl must be a valid absolute URL.");
+            });
     }
 }

@@ -25,8 +25,8 @@ namespace Streetcode.BLL.Validators.News
                     .WithMessage("URL is required.")
                 .MaximumLength(100)
                     .WithMessage("URL cannot exceed 100 characters.")
-                .Must(ValidationHelper.BeValidUrl)
-                    .WithMessage("URL must be in a valid format.");
+                .Must(ValidationHelper.BeAbsoluteUrlOrSlug)
+                    .WithMessage("URL must be an absolute http(s) URL or a slug (e.g., 'test-news-url').");
 
             RuleFor(x => x.CreationDate)
                 .NotEmpty()

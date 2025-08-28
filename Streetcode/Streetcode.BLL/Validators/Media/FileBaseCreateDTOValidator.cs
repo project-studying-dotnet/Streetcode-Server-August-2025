@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Media;
+using System.Text.RegularExpressions;
 
 namespace Streetcode.BLL.Validators.Media;
 
@@ -15,9 +16,9 @@ public class FileBaseCreateDTOValidator<T> : AbstractValidator<T>
 
         RuleFor(x => x.MimeType)
             .NotEmpty()
-            .WithMessage("MimeType is required.")
-            .MaximumLength(10)
-            .WithMessage("MimeType cannot exceed 10 characters.");
+            .MaximumLength(50)
+            .Matches(@"^[a-z]+\/[a-z0-9.+-]+$", RegexOptions.IgnoreCase)
+            .WithMessage("MimeType must match type/subtype (e.g., image/png, application/pdf).");
 
         RuleFor(x => x.Extension)
             .MaximumLength(10)
