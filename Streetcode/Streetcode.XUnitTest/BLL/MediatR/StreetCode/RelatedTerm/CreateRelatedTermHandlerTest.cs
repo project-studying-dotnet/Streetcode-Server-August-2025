@@ -119,7 +119,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var entity = new Entity();
             var request = new CreateRelatedTermCommand(relatedTerm);
 
-            _mapperMock.Setup(m => m.Map<Entity>(relatedTerm)).Returns(entity);
+            _mapperMock.Setup(m => m.Map<Entity>(It.IsAny<RelatedTermDTO>())).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
                 It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
@@ -127,11 +127,11 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.Create(entity)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
-            _mapperMock.Setup(m => m.Map<RelatedTermDTO>(entity)).Returns(relatedTerm);
+            _mapperMock.Setup(m => m.Map<RelatedTermDTO>(It.IsAny<Entity>())).Returns(relatedTerm);
 
             var result = await _handler.Handle(request, CancellationToken.None);
 
-            Assert.True(result.IsSuccess);
+            Assert.True(result.IsSuccess, $"Handler failed: {string.Join(", ", result.Errors?.Select(e => e.Message) ?? Enumerable.Empty<string>())}");
             Assert.Equal(relatedTerm, result.Value);
         }
     }
