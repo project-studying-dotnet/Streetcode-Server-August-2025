@@ -81,9 +81,9 @@ public static class ServiceCollectionExtensions
         {
             opt.AddDefaultPolicy(policy =>
             {
-                policy.AllowAnyOrigin()
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                policy.WithOrigins(corsConfig.AllowedOrigins)
+                    .WithHeaders(corsConfig.AllowedHeaders)
+                    .WithMethods(corsConfig.AllowedMethods);
             });
         });
 
@@ -110,9 +110,9 @@ public static class ServiceCollectionExtensions
 
     public class CorsConfiguration
     {
-        public List<string> AllowedOrigins { get; set; }
-        public List<string> AllowedHeaders { get; set; }
-        public List<string> AllowedMethods { get; set; }
+        public string[] AllowedOrigins { get; set; }
+        public string[] AllowedHeaders { get; set; }
+        public string[] AllowedMethods { get; set; }
         public int PreflightMaxAge { get; set; }
     }
 }
