@@ -16,11 +16,6 @@ public static class ValidationHelper
             return false;
         }
 
-        if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
-        {
-            return false;
-        }
-
         if (string.IsNullOrWhiteSpace(uri.Host))
         {
             return false;
