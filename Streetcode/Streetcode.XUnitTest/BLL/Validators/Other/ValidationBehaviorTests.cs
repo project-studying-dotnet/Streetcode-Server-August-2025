@@ -11,15 +11,6 @@ namespace Streetcode.XUnitTest.BLL.Validators.Other;
 
 public class ValidationBehaviorTests
 {
-    public class TestRequest : IRequest<Result<string>>
-    {
-        public string Name { get; set; } = string.Empty;
-    }
-
-    // Helper: create delegate that just returns success
-    private static RequestHandlerDelegate<Result<string>> SuccessDelegate(string value = "OK")
-        => () => Task.FromResult(Result.Ok(value));
-
     [Fact]
     public async Task Handle_NoValidators_CallsNext()
     {
@@ -112,5 +103,13 @@ public class ValidationBehaviorTests
         // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message.Contains("Name is required"));
+    }
+
+    private static RequestHandlerDelegate<Result<string>> SuccessDelegate(string value = "OK")
+        => () => Task.FromResult(Result.Ok(value));
+
+    public class TestRequest : IRequest<Result<string>>
+    {
+        public string Name { get; set; } = string.Empty;
     }
 }
