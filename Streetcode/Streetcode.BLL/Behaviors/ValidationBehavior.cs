@@ -15,7 +15,7 @@ namespace Streetcode.BLL.MediatR
             _validators = validators;
         }
 
-        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+        public async Task<TResponse?> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             // If no validators are registered for this request type, proceed to the next handler
             if (!_validators.Any())
@@ -37,8 +37,9 @@ namespace Streetcode.BLL.MediatR
 
             if (failures.Count != 0)
             {
-                var result = Result.Fail(failures.Select(f => f.ErrorMessage));
-                return (dynamic)result;
+                var messages = failures.Select(f => f.ErrorMessage);
+                return ResultFactory.CreateFailure<TResponse>(messages);
+
             }
 
             return await next();
