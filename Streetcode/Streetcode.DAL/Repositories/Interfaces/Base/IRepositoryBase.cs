@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
@@ -35,6 +36,10 @@ public interface IRepositoryBase<T>
 
     IQueryable<T> Include(params Expression<Func<T, object>>[] includes);
 
+    Task<IEnumerable<T>> ListAsync(ISpecification<T> specification, CancellationToken cancellationToken);
+    Task<T?> GetBySpecAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
+    Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
     Task<IEnumerable<T>> GetAllAsync(
         Expression<Func<T, bool>>? predicate = default,
         Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default);
