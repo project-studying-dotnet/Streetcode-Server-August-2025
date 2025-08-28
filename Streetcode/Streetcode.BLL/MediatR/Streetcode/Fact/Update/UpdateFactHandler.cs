@@ -79,20 +79,29 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
                 return;
             }
 
+            var alt = request.Fact.ImageDescription;
+            if (alt is null)
+            {
+                return;
+            }
+
             var imageDetails = await _repositoryWrapper.ImageDetailsRepository
                 .GetSingleOrDefaultAsync(id => id.ImageId == existingFact.ImageId.Value);
 
             if (imageDetails != null)
             {
-                imageDetails.Alt = request.Fact.ImageDescription;
-                _repositoryWrapper.ImageDetailsRepository.Update(imageDetails);
+                if (imageDetails.Alt != alt)
+                {
+                    imageDetails.Alt = alt;
+                    _repositoryWrapper.ImageDetailsRepository.Update(imageDetails);
+                }
             }
             else
             {
                 _repositoryWrapper.ImageDetailsRepository.Create(new ImageDetails
                 {
                     ImageId = existingFact.ImageId.Value,
-                    Alt = request.Fact.ImageDescription
+                    Alt = alt
                 });
             }
         }

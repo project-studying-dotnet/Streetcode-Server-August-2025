@@ -100,7 +100,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
                     It.IsAny<Expression<Func<FactEntity, bool>>>(),
                     It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<CreateImageCommand>(), CancellationToken.None), Times.Once);
-            _repositoryWrapperMock.Verify(r => r.FactRepository.Update(fact), Times.Never);
+            _repositoryWrapperMock.Verify(r => r.FactRepository.Update(It.IsAny<FactEntity>()), Times.Never);
+            _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Never);
             _loggerMock.VerifyNoOtherCalls();
             _mapperMock.VerifyNoOtherCalls();
         }
@@ -132,6 +133,11 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal(expectedResult, result.Value);
+            Assert.Equal(imageId, fact.ImageId);
+            _mediatorMock.Verify(
+                m => m.Send(
+                It.Is<CreateImageCommand>(c => c.Image == factDto.NewImage),
+                CancellationToken.None), Times.Once);
             VerifyCalls(fact, imageId, imageDescription, factDto);
         }
 
