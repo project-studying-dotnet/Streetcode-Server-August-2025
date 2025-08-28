@@ -5,7 +5,8 @@ namespace Streetcode.BLL.MediatR;
 
 public static class ResultFactory
 {
-    public static T? CreateFailure<T>(IEnumerable<string> messages) where T : IResultBase
+    public static T? CreateFailure<T>(IEnumerable<string> messages)
+        where T : IResultBase
     {
         var errors = (messages ?? Array.Empty<string>())
             .Where(static m => !string.IsNullOrWhiteSpace(m))
@@ -18,6 +19,7 @@ public static class ResultFactory
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Result<>))
         {
             var valueType = type.GetGenericArguments()[0];
+
             // Find Result.Fail<TValue>(IEnumerable<IError>)
             var method = typeof(Result)
                 .GetMethods(BindingFlags.Static | BindingFlags.Public)

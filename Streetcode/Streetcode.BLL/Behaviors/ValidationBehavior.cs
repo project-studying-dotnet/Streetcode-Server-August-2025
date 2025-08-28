@@ -42,7 +42,6 @@ namespace Streetcode.BLL.MediatR
                     .Distinct(StringComparer.Ordinal)
                     .ToList();
                 return ResultFactory.CreateFailure<TResponse>(messages)!;
-
             }
 
             return await next();

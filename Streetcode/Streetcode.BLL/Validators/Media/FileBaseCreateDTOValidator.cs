@@ -1,6 +1,6 @@
-﻿using FluentValidation;
+﻿using System.Text.RegularExpressions;
+using FluentValidation;
 using Streetcode.BLL.DTO.Media;
-using System.Text.RegularExpressions;
 
 namespace Streetcode.BLL.Validators.Media;
 
