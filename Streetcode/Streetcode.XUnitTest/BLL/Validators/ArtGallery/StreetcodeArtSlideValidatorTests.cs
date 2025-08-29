@@ -43,20 +43,6 @@ namespace Streetcode.XUnitTest.BLL.Validators.ArtGallery
         }
 
         [Fact]
-        public void ShouldReturnError_WhenStreetcodeArtsContainsNullElement()
-        {
-            // Arrange
-            var dto = CreateDto(d => d.StreetcodeArts = new List<StreetcodeArtCreateUpdateDTO> { null! });
-
-            // Act
-            var result = _validator.TestValidate(dto);
-
-            // Assert
-            Assert.False(result.IsValid);
-            Assert.Contains(result.Errors, e => e.PropertyName.StartsWith("StreetcodeArts"));
-        }
-
-        [Fact]
         public void ShouldNotReturnError_WhenStreetcodeArtsHasValidElement()
         {
             // Arrange
@@ -73,7 +59,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.ArtGallery
         }
 
         [Fact]
-        public void ShouldNotReturnError_WhenStreetcodeArtsIsEmpty()
+        public void ShouldReturnError_WhenStreetcodeArtsIsEmpty()
         {
             // Arrange
             var dto = CreateDto();
@@ -82,7 +68,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.ArtGallery
             var result = _validator.TestValidate(dto);
 
             // Assert
-            Assert.True(result.IsValid);
+            Assert.False(result.IsValid);
         }
 
         private static StreetcodeArtSlideCreateUpdateDTO CreateDto(Action<StreetcodeArtSlideCreateUpdateDTO>? customize = null)

@@ -11,7 +11,7 @@ public class StreetcodeArtSlideValidator : AbstractValidator<StreetcodeArtSlideC
             .IsInEnum()
             .WithMessage("Invalid Template value.");
 
-        RuleForEach(x => x.StreetcodeArts)
+        RuleFor(x => x.StreetcodeArts)
             .NotEmpty()
             .WithMessage("StreetcodeArts collection cannot be empty.");
     }

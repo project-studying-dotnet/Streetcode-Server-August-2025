@@ -193,14 +193,6 @@ public class StreetcodeDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<Art>(entity =>
-        {
-            entity.HasOne(d => d.Image)
-                .WithOne(i => i.Art)
-                .HasForeignKey<Art>(d => d.ImageId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
         modelBuilder.Entity<StreetcodeArt>(entity =>
         {
             entity.HasKey(d => new { d.Id });
