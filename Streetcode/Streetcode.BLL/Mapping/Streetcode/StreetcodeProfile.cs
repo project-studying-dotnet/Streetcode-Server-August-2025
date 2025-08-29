@@ -23,11 +23,13 @@ public class StreetcodeProfile : Profile
                 .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
 
         CreateMap<StreetcodeCreateDTO, StreetcodeContent>()
+            .ForMember(x => x.StreetcodeArtSlides, conf => conf.Ignore())
             .ForMember(x => x.Tags, conf => conf.Ignore())
             .ForMember(x => x.Images, conf => conf.Ignore())
             .ReverseMap();
 
         CreateMap<StreetcodeUpdateDTO, StreetcodeContent>()
+            .ForMember(x => x.StreetcodeArtSlides, conf => conf.Ignore())
             .ForMember(x => x.Tags, conf => conf.Ignore())
             .ForMember(x => x.Images, conf => conf.Ignore())
             .ReverseMap();
