@@ -205,11 +205,6 @@ public class StreetcodeDbContext : DbContext
         {
             entity.HasKey(d => new { d.Id });
 
-            entity.HasOne(d => d.Streetcode)
-               .WithMany(d => d.StreetcodeArts)
-               .HasForeignKey(d => d.StreetcodeId)
-               .OnDelete(DeleteBehavior.Cascade);
-
             entity.HasOne(d => d.Art)
                 .WithMany(d => d.StreetcodeArts)
                 .HasForeignKey(d => d.ArtId)
