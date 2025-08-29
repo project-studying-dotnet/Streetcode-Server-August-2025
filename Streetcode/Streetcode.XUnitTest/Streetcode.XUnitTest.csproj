@@ -50,4 +50,8 @@
 		<ProjectReference Include="..\Streetcode.DAL\Streetcode.DAL.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="BLL\Validators\Other\" />
+	</ItemGroup>
+
 </Project>

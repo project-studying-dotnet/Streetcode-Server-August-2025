@@ -14,6 +14,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="FluentResults" Version="3.15.1" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
@@ -44,6 +45,13 @@
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
     <Folder Include="MediatR\Analytics\" />
+    <Folder Include="Validators\Email\" />
+    <Folder Include="Validators\Media\Image\" />
+    <Folder Include="Validators\Helpers\" />
+    <Folder Include="Validators\Payment\" />
+    <Folder Include="Validators\Partners\" />
+    <Folder Include="Validators\Team\TeamMembersLinks\" />
+    <Folder Include="Validators\Team\Position\" />
   </ItemGroup>
 
 </Project>
