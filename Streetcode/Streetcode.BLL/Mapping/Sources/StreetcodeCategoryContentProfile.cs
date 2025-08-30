@@ -13,6 +13,9 @@ namespace Streetcode.BLL.Mapping.Sources
 
             CreateMap<CategoryContentCreateDTO, StreetcodeCategoryContent>()
                 .ReverseMap();
+
+            CreateMap<CategoryContentUpdateDTO, StreetcodeCategoryContent>()
+                .ReverseMap();
         }
     }
 }
