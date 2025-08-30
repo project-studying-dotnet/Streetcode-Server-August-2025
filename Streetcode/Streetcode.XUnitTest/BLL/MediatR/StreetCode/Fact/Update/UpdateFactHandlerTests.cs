@@ -12,7 +12,7 @@ using Streetcode.BLL.MediatR.Streetcode.Fact.Update;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
-using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
 {
@@ -47,9 +47,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             string errorMsg = $"Fact with Id {fact.Id} not found!";
 
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
-                It.IsAny<Expression<Func<FactEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
-                .ReturnsAsync((FactEntity)null!);
+                It.IsAny<Expression<Func<Facts, bool>>>(),
+                It.IsAny<Func<IQueryable<Facts>, IIncludableQueryable<Facts, object>>>()))
+                .ReturnsAsync((Facts)null!);
 
             var command = new UpdateFactCommand(new FactUpdateCreateDto { Id = 1 });
 
@@ -62,8 +62,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
 
             _repositoryWrapperMock.Verify(
                 r => r.FactRepository.GetSingleOrDefaultAsync(
-                    It.IsAny<Expression<Func<FactEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()), Times.Once);
+                    It.IsAny<Expression<Func<Facts, bool>>>(),
+                    It.IsAny<Func<IQueryable<Facts>, IIncludableQueryable<Facts, object>>>()), Times.Once);
 
             _loggerMock.Verify(l => l.LogError(command, It.Is<string>(s => s.Contains(errorMsg))), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
@@ -74,14 +74,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
         public async Task Handle_CreateImageFails_ReturnsFail()
         {
             // Arrange
-            var fact = new FactEntity { Id = 2, Title = "Old Title" };
+            var fact = new Facts { Id = 2, Title = "Old Title" };
             var factDto = new FactUpdateCreateDto { Id = fact.Id, Title = fact.Title, NewImage = new ImageFileBaseCreateDTO() };
             const string errorMsg = "Failed to create an image";
 
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
-               It.IsAny<Expression<Func<FactEntity, bool>>>(),
-               It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
-               .ReturnsAsync(new FactEntity { Id = 2 });
+               It.IsAny<Expression<Func<Facts, bool>>>(),
+               It.IsAny<Func<IQueryable<Facts>, IIncludableQueryable<Facts, object>>>()))
+               .ReturnsAsync(new Facts { Id = 2 });
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<CreateImageCommand>(), CancellationToken.None))
                 .ReturnsAsync(Result.Fail<ImageDTO>(new Error(errorMsg)));
@@ -97,10 +97,10 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
 
             _repositoryWrapperMock.Verify(
                 r => r.FactRepository.GetSingleOrDefaultAsync(
-                    It.IsAny<Expression<Func<FactEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()), Times.Once);
+                    It.IsAny<Expression<Func<Facts, bool>>>(),
+                    It.IsAny<Func<IQueryable<Facts>, IIncludableQueryable<Facts, object>>>()), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<CreateImageCommand>(), CancellationToken.None), Times.Once);
-            _repositoryWrapperMock.Verify(r => r.FactRepository.Update(It.IsAny<FactEntity>()), Times.Never);
+            _repositoryWrapperMock.Verify(r => r.FactRepository.Update(It.IsAny<Facts>()), Times.Never);
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Never);
             _loggerMock.VerifyNoOtherCalls();
             _mapperMock.VerifyNoOtherCalls();
@@ -112,14 +112,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             // Arrange
             const string imageDescription = "Alt desc";
             const int imageId = 42;
-            var fact = new FactEntity { Id = 4, ImageId = imageId };
+            var fact = new Facts { Id = 4, ImageId = imageId };
             var factDto = new FactUpdateCreateDto
             {
                 Id = fact.Id,
                 NewImage = new ImageFileBaseCreateDTO(),
                 ImageDescription = imageDescription
             };
-            var expectedResult = new FactDto { Id = fact.Id, ImageId = imageId };
+            var expectedResult = new FactDTO { Id = fact.Id, ImageId = imageId };
 
             SetupRepositories(fact, imageId, imageDescription);
             SetupMediator(imageId);
@@ -148,13 +148,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             const string imageDescription = "Alt desc";
             const int imageId = 60;
 
-            var fact = new FactEntity { Id = 6, ImageId = imageId };
+            var fact = new Facts { Id = 6, ImageId = imageId };
             var factDto = new FactUpdateCreateDto { Id = fact.Id, ImageDescription = imageDescription };
-            var expectedResult = new FactDto { Id = fact.Id, ImageId = imageId };
+            var expectedResult = new FactDTO { Id = fact.Id, ImageId = imageId };
 
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
-              It.IsAny<Expression<Func<FactEntity, bool>>>(),
-              It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
+              It.IsAny<Expression<Func<Facts, bool>>>(),
+              It.IsAny<Func<IQueryable<Facts>, IIncludableQueryable<Facts, object>>>()))
               .ReturnsAsync(fact);
 
             _repositoryWrapperMock.Setup(r => r.ImageDetailsRepository.GetSingleOrDefaultAsync(
@@ -165,7 +165,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
 
             _mapperMock.Setup(m => m.Map(factDto, fact)).Returns(fact);
-            _mapperMock.Setup(m => m.Map<FactDto>(fact)).Returns(expectedResult);
+            _mapperMock.Setup(m => m.Map<FactDTO>(fact)).Returns(expectedResult);
 
             var command = new UpdateFactCommand(factDto);
 
@@ -182,7 +182,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
 
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
             _mapperMock.Verify(m => m.Map(factDto, fact), Times.Once);
-            _mapperMock.Verify(m => m.Map<FactDto>(fact), Times.Once);
+            _mapperMock.Verify(m => m.Map<FactDTO>(fact), Times.Once);
             _mediatorMock.VerifyNoOtherCalls();
         }
 
@@ -191,18 +191,18 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
         {
             // Arrange
             const string errorMsg = "Failed to update a fact";
-            var fact = new FactEntity { Id = 7 };
+            var fact = new Facts { Id = 7 };
             var factDto = new FactUpdateCreateDto { Id = fact.Id };
 
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
-              It.IsAny<Expression<Func<FactEntity, bool>>>(),
-              It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
+              It.IsAny<Expression<Func<Facts, bool>>>(),
+              It.IsAny<Func<IQueryable<Facts>, IIncludableQueryable<Facts, object>>>()))
               .ReturnsAsync(fact);
 
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
             _mapperMock.Setup(m => m.Map(factDto, fact)).Returns(fact);
-            _mapperMock.Setup(m => m.Map<FactDto>(fact)).Returns(new FactDto { Id = fact.Id });
+            _mapperMock.Setup(m => m.Map<FactDTO>(fact)).Returns(new FactDTO { Id = fact.Id });
 
             var command = new UpdateFactCommand(factDto);
 
@@ -218,14 +218,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             _loggerMock.Verify(l => l.LogError(fact, It.Is<string>(s => s.Contains(errorMsg))), Times.Once);
 
             _mapperMock.Verify(m => m.Map(factDto, fact), Times.Once);
-            _mapperMock.Verify(m => m.Map<FactDto>(fact), Times.Never);
+            _mapperMock.Verify(m => m.Map<FactDTO>(fact), Times.Never);
             _mediatorMock.VerifyNoOtherCalls();
         }
 
-        private void SetupRepositories(FactEntity fact, int imageId, string imageDesc)
+        private void SetupRepositories(Facts fact, int imageId, string imageDesc)
         {
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
-                It.IsAny<Expression<Func<FactEntity, bool>>>(), It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
+                It.IsAny<Expression<Func<Facts, bool>>>(), It.IsAny<Func<IQueryable<Facts>, IIncludableQueryable<Facts, object>>>()))
                 .ReturnsAsync(fact);
 
             _repositoryWrapperMock.Setup(r => r.ImageDetailsRepository.GetSingleOrDefaultAsync(
@@ -239,20 +239,20 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             _mediatorMock.Setup(m => m.Send(It.IsAny<CreateImageCommand>(), CancellationToken.None))
                 .ReturnsAsync(Result.Ok(new ImageDTO { Id = imageId }));
 
-        private void SetupMapper(FactUpdateCreateDto factDto, FactEntity fact, FactDto expected)
+        private void SetupMapper(FactUpdateCreateDto factDto, Facts fact, FactDTO expected)
         {
             _mapperMock.Setup(m => m.Map(factDto, fact))
-                .Returns((FactUpdateCreateDto src, FactEntity dest) =>
+                .Returns((FactUpdateCreateDto src, Facts dest) =>
                 {
                     dest.Title = src.Title;
                     dest.FactContent = src.FactContent;
                     return dest;
                 });
 
-            _mapperMock.Setup(m => m.Map<FactDto>(fact)).Returns(expected);
+            _mapperMock.Setup(m => m.Map<FactDTO>(fact)).Returns(expected);
         }
 
-        private void VerifyCalls(FactEntity fact, int imageId, string imageDesc, FactUpdateCreateDto dto)
+        private void VerifyCalls(Facts fact, int imageId, string imageDesc, FactUpdateCreateDto dto)
         {
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
             _repositoryWrapperMock.Verify(
@@ -260,7 +260,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
                 It.Is<ImageDetails>(id => id.ImageId == imageId && id.Alt == imageDesc)), Times.Once);
 
             _mapperMock.Verify(m => m.Map(dto, fact), Times.Once);
-            _mapperMock.Verify(m => m.Map<FactDto>(fact), Times.Once);
+            _mapperMock.Verify(m => m.Map<FactDTO>(fact), Times.Once);
             _mediatorMock.Verify(m => m.Send(It.IsAny<CreateImageCommand>(), CancellationToken.None), Times.Once);
             _repositoryWrapperMock.Verify(r => r.FactRepository.Update(fact), Times.Once);
             _loggerMock.VerifyNoOtherCalls();

@@ -6,11 +6,11 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Image.Create;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 {
-    public class UpdateFactHandler : IRequestHandler<UpdateFactCommand, Result<FactDto>>
+    public class UpdateFactHandler : IRequestHandler<UpdateFactCommand, Result<FactDTO>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -29,7 +29,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             _mediator = mediator;
         }
 
-        public async Task<Result<FactDto>> Handle(UpdateFactCommand request, CancellationToken cancellationToken)
+        public async Task<Result<FactDTO>> Handle(UpdateFactCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             }
         }
 
-        private async Task UpdateImageDetailsAsync(UpdateFactCommand request, FactEntity existingFact)
+        private async Task UpdateImageDetailsAsync(UpdateFactCommand request, Facts existingFact)
         {
             if (!existingFact.ImageId.HasValue)
             {
@@ -106,7 +106,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             }
         }
 
-        private async Task<Result<FactDto>> UpdateFactAsync(FactEntity existingFact)
+        private async Task<Result<FactDTO>> UpdateFactAsync(Facts existingFact)
         {
             _repositoryWrapper.FactRepository.Update(existingFact);
             var success = await _repositoryWrapper.SaveChangesAsync() > 0;
@@ -118,7 +118,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
                 return Result.Fail(errorMsg);
             }
 
-            return Result.Ok(_mapper.Map<FactDto>(existingFact));
+            return Result.Ok(_mapper.Map<FactDTO>(existingFact));
         }
     }
 }

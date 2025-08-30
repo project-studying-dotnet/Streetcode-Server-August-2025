@@ -243,9 +243,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             };
         }
 
-        private Streetcode.BLL.DTO.Streetcode.TextContent.Fact.FactCreateDto CreateValidFactDTO(int id = 0, int? imageId = 1)
+        private FactCreateDto CreateValidFactDTO(int id = 0, int? imageId = 1)
         {
-            return new Streetcode.BLL.DTO.Streetcode.TextContent.Fact.FactCreateDto
+            return new FactCreateDto
             {
                 Title = "Sample Fact",
                 FactContent = "This is a sample fact content.",
