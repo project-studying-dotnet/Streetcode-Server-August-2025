@@ -5,14 +5,14 @@ using Streetcode.DAL.Entities.Media.Images;
 namespace Streetcode.DAL.Entities.Streetcode.TextContent;
 
 [Table("facts", Schema = "streetcode")]
-public class Fact
+public class Facts
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [Required]
-    [MaxLength(100)]
+    [MaxLength(68)]
     public string? Title { get; set; }
 
     [Required]
