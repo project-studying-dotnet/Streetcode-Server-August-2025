@@ -1,4 +1,5 @@
 ﻿using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.DAL.Enums;
 
 namespace Streetcode.BLL.DTO.Streetcode;
@@ -26,4 +27,5 @@ public class StreetcodeCreateUpdateDTO
     public StreetcodeStatus Status { get; set; }
     public int? AudioId { get; set; }
     public IEnumerable<ImageDetailsDto> ImagesDetails { get; set; } = new List<ImageDetailsDto>();
+    public IEnumerable<StreetcodeToponymCreateUpdateDTO>? Toponyms { get; set; } = new List<StreetcodeToponymCreateUpdateDTO>();
 }
