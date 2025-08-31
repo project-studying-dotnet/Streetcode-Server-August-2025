@@ -80,7 +80,7 @@ public class StreetcodeContent
 
     public List<Subtitle> Subtitles { get; set; } = new ();
 
-    public List<Fact> Facts { get; set; } = new ();
+    public List<Facts> Facts { get; set; } = new ();
 
     public List<Video> Videos { get; set; } = new ();
 
