@@ -1,6 +1,8 @@
+using System.Text;
 using FluentValidation;
 using Hangfire;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
@@ -14,6 +16,7 @@ using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
 using Microsoft.FeatureManagement;
+using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Interfaces.Payment;
 using Streetcode.BLL.Services.Payment;
 using Streetcode.BLL.Interfaces.Instagram;
@@ -96,6 +99,26 @@ public static class ServiceCollectionExtensions
             opt.IncludeSubDomains = true;
             opt.MaxAge = TimeSpan.FromDays(30);
         });
+
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtEnvironmentVariables>();
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+                };
+            });
 
         services.AddLogging();
         services.AddControllers();

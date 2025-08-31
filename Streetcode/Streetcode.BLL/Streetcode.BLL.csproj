@@ -46,7 +46,6 @@
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
     <Folder Include="MediatR\Analytics\" />
-    <Folder Include="Services\JwtService\" />
     <Folder Include="Validators\Email\" />
     <Folder Include="Validators\Media\Image\" />
     <Folder Include="Validators\Helpers\" />
