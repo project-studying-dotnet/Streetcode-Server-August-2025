@@ -22,6 +22,8 @@ using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.MediatR;
 using Streetcode.BLL;
+using Streetcode.BLL.Interfaces.Jwt;
+using Streetcode.BLL.Services.JwtService;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -52,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped<IJwtService, JwtService>();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
