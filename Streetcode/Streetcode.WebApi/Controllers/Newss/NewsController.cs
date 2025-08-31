@@ -8,7 +8,7 @@ using Streetcode.BLL.MediatR.Newss.GetById;
 using Streetcode.BLL.MediatR.Newss.GetByUrl;
 using Streetcode.BLL.MediatR.Newss.Update;
 
-namespace Streetcode.WebApi.Controllers;
+namespace Streetcode.WebApi.Controllers.Newss;
 
 /// <summary>
 /// Not finished controller created for testing purposes

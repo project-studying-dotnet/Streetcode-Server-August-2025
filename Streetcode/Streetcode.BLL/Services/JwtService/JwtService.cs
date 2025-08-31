@@ -1,32 +1,93 @@
-﻿using Streetcode.BLL.Interfaces.Jwt;
-using Streetcode.DAL.Persistence;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
+using Streetcode.BLL.Interfaces.Jwt;
+using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Entities.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Streetcode.BLL.Services.JwtService;
 
-public class JwtService: IJwtService
+public class JwtService : IJwtService
 {
-    private readonly JwtEnvironmentVariables _jwtVar;
+    private readonly JwtEnvironmentVariables _jwtVariables;
     private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
     private readonly StreetcodeDbContext _dbContext;
     private readonly SigningCredentials _signingCredentials;
 
     public JwtService(IConfiguration configuration, StreetcodeDbContext dbContext)
     {
-        _jwtVar = configuration
+        _jwtVariables = configuration
             .GetSection("JwtSettings")
             .Get<JwtEnvironmentVariables>()!;
 
         _dbContext = dbContext;
 
-        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtVar.SecretKey));
+        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtVariables.SecretKey));
         _signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
         _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+    }
+
+    public Task<string> GenerateTokenAsync(User user, CancellationToken ct = default)
+    {
+        var descriptor = GetTokenDescriptor(user);
+        var token = _jwtSecurityTokenHandler.CreateToken(descriptor);
+        var jwt = _jwtSecurityTokenHandler.WriteToken(token);
+
+        return Task.FromResult(jwt);
+    }
+
+    public ClaimsPrincipal? ValidateToken(string token)
+    {
+        var key = Encoding.UTF8.GetBytes(_jwtVariables.SecretKey);
+
+        try
+        {
+            var principal = _jwtSecurityTokenHandler.ValidateToken(
+                token,
+                new TokenValidationParameters
+                {
+                ValidateIssuer = true,
+                ValidIssuer = _jwtVariables.Issuer,
+                ValidateAudience = true,
+                ValidAudience = _jwtVariables.Audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+                },
+                out _);
+
+            return principal;
+        }
+        catch
+        {
+            // invalid token
+            return null;
+        }
+    }
+
+    public int? GetUserIdFromToken(string token)
+    {
+        var principal = ValidateToken(token);
+        if (principal == null)
+        {
+            return null;
+        }
+
+        var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+        {
+            return null;
+        }
+
+        if (int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return userId;
+        }
+
+        return null;
     }
 
     private SecurityTokenDescriptor GetTokenDescriptor(User user)
@@ -41,11 +102,15 @@ public class JwtService: IJwtService
                 new Claim(ClaimTypes.Surname, user.Surname),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(
+                    JwtRegisteredClaimNames.Iat,
+                    DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                    ClaimValueTypes.Integer64)
             }),
-            Expires = DateTime.UtcNow.AddMinutes(_jwtVar.ExpiryMinutes),
+            Expires = DateTime.UtcNow.AddMinutes(_jwtVariables.ExpiryMinutes),
             SigningCredentials = _signingCredentials,
-            Issuer = _jwtVar.Issuer,
-            Audience = _jwtVar.Audience
+            Issuer = _jwtVariables.Issuer,
+            Audience = _jwtVariables.Audience
         };
     }
 }
