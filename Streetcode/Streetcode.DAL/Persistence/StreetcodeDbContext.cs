@@ -24,7 +24,7 @@ using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Persistence;
 
-public class StreetcodeDbContext : IdentityDbContext<IdentityUser>
+public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public StreetcodeDbContext()
     {

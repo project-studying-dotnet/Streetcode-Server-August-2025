@@ -7,6 +7,7 @@ using Streetcode.DAL.Persistence;
 using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
+using Streetcode.DAL.Entities.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
@@ -19,27 +20,11 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 
-builder.Services.AddDbContext<StreetcodeDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<StreetcodeDbContext>()
     .AddDefaultTokenProviders();
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        await SeedData.InitializeAsync(services);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred seeding the DB.");
-    }
-}
 
 if (app.Environment.EnvironmentName == "Local")
 {
