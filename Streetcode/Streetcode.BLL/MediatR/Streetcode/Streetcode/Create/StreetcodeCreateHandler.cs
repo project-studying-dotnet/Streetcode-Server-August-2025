@@ -162,14 +162,14 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
             return;
         }
 
-        // Отримуємо список Id артів, які реально використовуються в слайдах
+        // Get the list of Art IDs that are actually used in slides
         var usedArtIds = new HashSet<int>(
             artSlidesList.SelectMany(slide => slide.StreetcodeArts)
                          .Select(streetcodeArt => streetcodeArt.ArtId));
 
         var filteredArts = artsList.Where(art => usedArtIds.Contains(art.Id)).ToList();
 
-        // Перевірка, що всі потрібні ImageId існують
+        // Verify that all required ImageIds exist
         var imageIds = filteredArts.Select(a => a.ImageId).Distinct().ToList();
         var existingImages = await _repositoryWrapper.ImageRepository.GetAllAsync(i => imageIds.Contains(i.Id));
         var existingImageIds = new HashSet<int>(existingImages.Select(i => i.Id));
@@ -182,27 +182,27 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
             }
         }
 
-        // Створюємо Arts
+        // Create Arts
         var newArts = _mapper.Map<List<Art>>(filteredArts);
 
         await _repositoryWrapper.ArtRepository.CreateRangeAsync(newArts);
         await _repositoryWrapper.SaveChangesAsync();
 
-        // Створюємо ArtSlides
+        // Create ArtSlides
         var newArtSlides = _mapper.Map<List<StreetcodeArtSlide>>(artSlidesList);
         newArtSlides.ForEach(artSlide => artSlide.StreetcodeId = streetcode.Id);
 
         await _repositoryWrapper.StreetcodeArtSlideRepository.CreateRangeAsync(newArtSlides);
         await _repositoryWrapper.SaveChangesAsync();
 
-        // Мапа старих Id => нових Id
+        // Map old Ids => new Ids
         var artIdMap = filteredArts
             .Zip(newArts, (placeholderArt, newArt) => new { PlaceholderId = placeholderArt.Id, RealId = newArt.Id })
             .ToDictionary(x => x.PlaceholderId, x => x.RealId);
 
         var streetcodeArtEntities = new List<StreetcodeArt>();
 
-        // Створюємо StreetcodeArts
+        // Create StreetcodeArts
         for (int i = 0; i < artSlidesList.Count; i++)
         {
             var slideDto = artSlidesList[i];
@@ -210,7 +210,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
 
             foreach (var streetcodeArtDto in slideDto.StreetcodeArts)
             {
-                // Перевіряємо, що ArtId існує у мапі
+                // Ensure that ArtId exists in the map
                 if (!artIdMap.TryGetValue(streetcodeArtDto.ArtId, out var newArtId))
                 {
                     throw new KeyNotFoundException($"Art ID '{streetcodeArtDto.ArtId}' not found in the mapped arts.");
