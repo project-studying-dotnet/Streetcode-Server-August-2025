@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Entities.Users;
@@ -29,13 +30,21 @@ public class JwtService : IJwtService
         _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
     }
 
-    public Task<string> GenerateTokenAsync(User user, CancellationToken ct = default)
+    public async Task<string?> GenerateTokenAsync(int userId, CancellationToken ct = default)
     {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(
+            u => u.Id == userId, cancellationToken: ct);
+
+        if (user is null)
+        {
+            throw new KeyNotFoundException("User with this userId was not found");
+        }
+
         var descriptor = GetTokenDescriptor(user);
         var token = _jwtSecurityTokenHandler.CreateToken(descriptor);
         var jwt = _jwtSecurityTokenHandler.WriteToken(token);
 
-        return Task.FromResult(jwt);
+        return jwt;
     }
 
     public ClaimsPrincipal? ValidateToken(string token)
