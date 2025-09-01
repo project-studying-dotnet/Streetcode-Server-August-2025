@@ -16,6 +16,9 @@ namespace Streetcode.DAL.Entities.Media.Images
         [MaxLength(300)]
         public string? Alt { get; set; }
 
+        [MaxLength(200)]
+        public string? Description { get; set; }
+
         [Required]
         public int ImageId { get; set; }
 

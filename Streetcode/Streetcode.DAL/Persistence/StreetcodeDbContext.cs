@@ -37,7 +37,7 @@ public class StreetcodeDbContext : DbContext
     public DbSet<Audio> Audios { get; set; }
     public DbSet<ToponymCoordinate> ToponymCoordinates { get; set; }
     public DbSet<StreetcodeCoordinate> StreetcodeCoordinates { get; set; }
-    public DbSet<Fact> Facts { get; set; }
+    public DbSet<Facts> Facts { get; set; }
     public DbSet<HistoricalContext> HistoricalContexts { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<ImageDetails> ImageDetailses { get; set; }
@@ -58,6 +58,7 @@ public class StreetcodeDbContext : DbContext
     public DbSet<Video> Videos { get; set; }
     public DbSet<StreetcodeCategoryContent> StreetcodeCategoryContent { get; set; }
     public DbSet<StreetcodeArt> StreetcodeArts { get; set; }
+    public DbSet<StreetcodeArtSlide> StreetcodeArtSlides { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<StreetcodeTagIndex> StreetcodeTagIndices { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }
@@ -194,24 +195,35 @@ public class StreetcodeDbContext : DbContext
 
         modelBuilder.Entity<StreetcodeArt>(entity =>
         {
-            entity.HasKey(d => new { d.ArtId, d.StreetcodeId });
-
-            entity.HasOne(d => d.Streetcode)
-               .WithMany(d => d.StreetcodeArts)
-               .HasForeignKey(d => d.StreetcodeId)
-               .OnDelete(DeleteBehavior.Cascade);
+            entity.HasKey(d => new { d.Id });
 
             entity.HasOne(d => d.Art)
                 .WithMany(d => d.StreetcodeArts)
                 .HasForeignKey(d => d.ArtId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasOne(d => d.StreetcodeArtSlide)
+                .WithMany(d => d.StreetcodeArts)
+                .HasForeignKey(d => d.StreetcodeArtSlideId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.Property(e => e.Index)
                 .HasDefaultValue(1);
 
             entity
-                .HasIndex(d => new { d.ArtId, d.StreetcodeId })
+                .HasIndex(d => new { d.ArtId, d.StreetcodeArtSlideId })
                 .IsUnique(false);
+        });
+
+        modelBuilder.Entity<StreetcodeArtSlide>(entity =>
+        {
+            entity.HasOne(d => d.Streetcode)
+               .WithMany(d => d.StreetcodeArtSlides)
+               .HasForeignKey(d => d.StreetcodeId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.Index)
+                .HasDefaultValue(1);
         });
 
         modelBuilder.Entity<StreetcodeContent>(entity =>
