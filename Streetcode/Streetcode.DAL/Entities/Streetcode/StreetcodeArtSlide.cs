@@ -1,23 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Entities.Streetcode;
 
-[Table("streetcode_art", Schema = "streetcode")]
-public class StreetcodeArt
+[Table("streetcode_art_slides", Schema = "streetcode")]
+public class StreetcodeArtSlide
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public int Index { get; set; }
+    [Required]
+    public GallerySlideTemplate Template { get; set; }
 
     [Required]
-    public int ArtId { get; set; }
-    public int? StreetcodeId { get; set; }
-    public int? StreetcodeArtSlideId { get; set; }
+    public int StreetcodeId { get; set; }
 
-    public Art? Art { get; set; }
     public StreetcodeContent? Streetcode { get; set; }
-    public StreetcodeArtSlide? StreetcodeArtSlide { get; set; }
+    public List<StreetcodeArt>? StreetcodeArts { get; set; }
 }
