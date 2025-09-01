@@ -1,4 +1,5 @@
-﻿using Streetcode.BLL.DTO.ArtGallery;
+using Streetcode.BLL.DTO.Toponyms;
+using Streetcode.BLL.DTO.ArtGallery;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.DAL.Enums;
@@ -28,6 +29,7 @@ public class StreetcodeCreateUpdateDTO
     public StreetcodeStatus Status { get; set; }
     public int? AudioId { get; set; }
     public IEnumerable<ImageDetailsDto> ImagesDetails { get; set; } = new List<ImageDetailsDto>();
+    public IEnumerable<StreetcodeToponymCreateUpdateDTO>? Toponyms { get; set; } = new List<StreetcodeToponymCreateUpdateDTO>();
     public IEnumerable<ArtCreateUpdateDTO> Arts { get; set; } = new List<ArtCreateUpdateDTO>();
     public IEnumerable<StreetcodeArtSlideCreateUpdateDTO> StreetcodeArtSlides { get; set; } = new List<StreetcodeArtSlideCreateUpdateDTO>();
 }
