@@ -6,7 +6,7 @@ using Streetcode.BLL.DTO.ArtGallery;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.ArtGallery;
+namespace Streetcode.BLL.MediatR.ArtGallery.GetSlidesByStreetcodeId;
 
 public class GetArtSlidesByStreetcodeIdHandler : IRequestHandler<GetArtSlidesByStreetcodeIdQuery, Result<IEnumerable<StreetcodeArtSlideDTO>>>
 {

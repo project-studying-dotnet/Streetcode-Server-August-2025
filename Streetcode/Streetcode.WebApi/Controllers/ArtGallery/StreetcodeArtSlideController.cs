@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.MediatR.ArtGallery;
+using Streetcode.BLL.MediatR.ArtGallery.GetSlidesByStreetcodeId;
 
 namespace Streetcode.WebApi.Controllers.ArtGallery;
 

@@ -6,14 +6,14 @@ using Streetcode.BLL.DTO.ArtGallery;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.MediatR.ArtGallery;
+using Streetcode.BLL.MediatR.ArtGallery.GetSlidesByStreetcodeId;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
-namespace Streetcode.XUnitTest.BLL_Tests.MediatR.ArtGallery
+namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesByStreetcodeId
 {
     public class GetArtSlidesByStreetcodeIdHandlerTests
     {
@@ -58,7 +58,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.ArtGallery
                 .Setup(b => b.FindFileInStorageAsBase64(BlobName))
                 .Returns(Base64Value);
 
-            var query = new GetArtSlidesByStreetcodeIdQuery((uint)StreetcodeId);
+            var query = new GetArtSlidesByStreetcodeIdQuery(StreetcodeId);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -77,7 +77,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.ArtGallery
             const int StreetcodeId = 1;
             _repositoryWrapperMock
                 .Setup(r => r.StreetcodeArtSlideRepository.GetAllAsync(
-                    It.IsAny<Expression<System.Func<StreetcodeArtSlide, bool>>>(),
+                    It.IsAny<Expression<Func<StreetcodeArtSlide, bool>>>(),
                     It.IsAny<Func<IQueryable<StreetcodeArtSlide>, IIncludableQueryable<StreetcodeArtSlide, object>>>()))
                 .ReturnsAsync(new List<StreetcodeArtSlide>());
 
@@ -85,7 +85,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.ArtGallery
                 .Setup(m => m.Map<IEnumerable<StreetcodeArtSlideDTO>>(It.IsAny<IEnumerable<StreetcodeArtSlide>>()))
                 .Returns(new List<StreetcodeArtSlideDTO>());
 
-            var query = new GetArtSlidesByStreetcodeIdQuery((uint)StreetcodeId);
+            var query = new GetArtSlidesByStreetcodeIdQuery(StreetcodeId);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -106,7 +106,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.ArtGallery
 
             _repositoryWrapperMock
                 .Setup(r => r.StreetcodeArtSlideRepository.GetAllAsync(
-                    It.IsAny<Expression<System.Func<StreetcodeArtSlide, bool>>>(),
+                    It.IsAny<Expression<Func<StreetcodeArtSlide, bool>>>(),
                     It.IsAny<Func<IQueryable<StreetcodeArtSlide>, IIncludableQueryable<StreetcodeArtSlide, object>>>()))
                 .ReturnsAsync(slides);
 
@@ -114,7 +114,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.ArtGallery
                 .Setup(m => m.Map<IEnumerable<StreetcodeArtSlideDTO>>(slides))
                 .Returns(slideDtos);
 
-            var query = new GetArtSlidesByStreetcodeIdQuery((uint)StreetcodeId);
+            var query = new GetArtSlidesByStreetcodeIdQuery(StreetcodeId);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -136,7 +136,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.ArtGallery
 
             _repositoryWrapperMock
                 .Setup(r => r.StreetcodeArtSlideRepository.GetAllAsync(
-                    It.IsAny<Expression<System.Func<StreetcodeArtSlide, bool>>>(),
+                    It.IsAny<Expression<Func<StreetcodeArtSlide, bool>>>(),
                     It.IsAny<Func<IQueryable<StreetcodeArtSlide>, IIncludableQueryable<StreetcodeArtSlide, object>>>()))
                 .ReturnsAsync(slides);
 
