@@ -1,8 +1,9 @@
 ﻿using Hangfire;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Services.BlobStorageService;
+using Streetcode.DAL.Persistence;
 using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
@@ -18,10 +19,10 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 
-builder.Services.AddDbContext<DbContext>(options =>
+builder.Services.AddDbContext<StreetcodeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<DbContext>()
+    .AddEntityFrameworkStores<StreetcodeDbContext>()
     .AddDefaultTokenProviders();
 
 var app = builder.Build();
