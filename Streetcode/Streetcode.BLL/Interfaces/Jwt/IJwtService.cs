@@ -9,4 +9,5 @@ public interface IJwtService
     Task<LoginResultDTO> GenerateTokenAsync(int userId);
     ClaimsPrincipal? ValidateToken(string token);
     int? GetUserIdFromToken(string token);
+    Task<LoginResultDTO> RefreshTokenAsync(string token, string refreshToken);
 }

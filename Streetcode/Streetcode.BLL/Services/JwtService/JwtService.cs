@@ -126,6 +126,73 @@ public class JwtService : IJwtService
         return null;
     }
 
+    public async Task<LoginResultDTO> RefreshTokenAsync(string token, string refreshToken)
+    {
+        var principal = GetPrincipalFromExpiredToken(token);
+
+        if (principal == null)
+        {
+            throw new SecurityTokenException("Invalid access token");
+        }
+
+        var userId = int.Parse(principal.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            throw new SecurityTokenException("Invalid refresh token");
+        }
+
+        // generate new tokens
+        var descriptor = GetTokenDescriptor(user);
+        var newToken = _jwtSecurityTokenHandler.CreateToken(descriptor);
+        var jwt = _jwtSecurityTokenHandler.WriteToken(newToken);
+
+        var newRefreshToken = GenerateRefreshToken();
+        var refreshExpiryDate = DateTime.UtcNow.AddDays(7);
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = refreshExpiryDate;
+        await _dbContext.SaveChangesAsync();
+
+        var userDto = _mapper.Map<UserDTO>(user);
+
+        return new LoginResultDTO
+        {
+            User = userDto,
+            AccessToken = jwt,
+            RefreshToken = new RefreshTokenDTO
+            {
+                Token = newRefreshToken,
+                ExpireAt = refreshExpiryDate
+            },
+            AccessTokenExpireAt = newToken.ValidTo
+        };
+    }
+
+    private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtVariables.SecretKey)),
+            ValidateLifetime = false
+        };
+
+        var principal = _jwtSecurityTokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+
+        if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new SecurityTokenException("Invalid token");
+        }
+
+        return principal;
+    }
+
     public string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
