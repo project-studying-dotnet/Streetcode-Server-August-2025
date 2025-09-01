@@ -1,11 +1,12 @@
 ﻿using System.Security.Claims;
+using Streetcode.BLL.DTO.Users;
 using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.Interfaces.Jwt;
 
 public interface IJwtService
 {
-    Task<string?> GenerateTokenAsync(int userId, CancellationToken ct = default);
+    Task<LoginResultDTO> GenerateTokenAsync(int userId);
     ClaimsPrincipal? ValidateToken(string token);
     int? GetUserIdFromToken(string token);
 }

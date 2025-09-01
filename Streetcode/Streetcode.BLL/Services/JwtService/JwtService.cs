@@ -1,12 +1,15 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Entities.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
+using Streetcode.BLL.DTO.Users;
 
 namespace Streetcode.BLL.Services.JwtService;
 
@@ -16,35 +19,59 @@ public class JwtService : IJwtService
     private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
     private readonly StreetcodeDbContext _dbContext;
     private readonly SigningCredentials _signingCredentials;
+    private readonly IMapper _mapper;
 
-    public JwtService(IConfiguration configuration, StreetcodeDbContext dbContext)
+    public JwtService(IConfiguration configuration, StreetcodeDbContext dbContext, IMapper mapper)
     {
         _jwtVariables = configuration
             .GetSection("JwtSettings")
             .Get<JwtEnvironmentVariables>()!;
 
         _dbContext = dbContext;
+        _mapper = mapper;
 
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtVariables.SecretKey));
         _signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
         _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
     }
 
-    public async Task<string?> GenerateTokenAsync(int userId, CancellationToken ct = default)
+    public async Task<LoginResultDTO> GenerateTokenAsync(int userId)
     {
         var user = await _dbContext.Users.FirstOrDefaultAsync(
-            u => u.Id == userId, cancellationToken: ct);
+            u => u.Id == userId);
 
         if (user is null)
         {
             throw new KeyNotFoundException("User with this userId was not found");
         }
 
+        // Create JWT access token
         var descriptor = GetTokenDescriptor(user);
         var token = _jwtSecurityTokenHandler.CreateToken(descriptor);
         var jwt = _jwtSecurityTokenHandler.WriteToken(token);
 
-        return jwt;
+        var expireAt = token.ValidTo;
+
+        // Create refresh token
+        var refreshToken = GenerateRefreshToken();
+        var refreshExpiryDate = DateTime.UtcNow.AddDays(7);
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = refreshExpiryDate;
+
+        await _dbContext.SaveChangesAsync();
+        var userDto = _mapper.Map<UserDTO>(user);
+
+        return new LoginResultDTO
+        {
+            User = userDto,
+            AccessToken = jwt,
+            RefreshToken = new RefreshTokenDTO()
+            {
+                Token = refreshToken,
+                ExpireAt = refreshExpiryDate
+            },
+            AccessTokenExpireAt = expireAt
+        };
     }
 
     public ClaimsPrincipal? ValidateToken(string token)
@@ -97,6 +124,14 @@ public class JwtService : IJwtService
         }
 
         return null;
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
     }
 
     private SecurityTokenDescriptor GetTokenDescriptor(User user)
