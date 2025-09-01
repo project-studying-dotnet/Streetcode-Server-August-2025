@@ -49,20 +49,20 @@ namespace Streetcode.DAL.Persistence.Migrations
                 name: "Users");
 
             migrationBuilder.CreateTable(
-                name: "audios",
-                schema: "media",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    BlobName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    MimeType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_audios", x => x.Id);
-                });
+               name: "audios",
+               schema: "media",
+               columns: table => new
+               {
+                   Id = table.Column<int>(type: "int", nullable: false)
+                       .Annotation("SqlServer:Identity", "1, 1"),
+                   Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                   BlobName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                   MimeType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+               },
+               constraints: table =>
+               {
+                   table.PrimaryKey("PK_audios", x => x.Id);
+               });
 
             migrationBuilder.CreateTable(
                 name: "historical_contexts",
