@@ -45,16 +45,11 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create
 
             var saveResult = await _repositoryWrapper.SaveChangesAsync();
 
-            if (saveResult < 0)
+            if (saveResult <= 0)
             {
                 const string errorMsg = "Failed to save category content in database";
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail<StreetcodeCategoryContentDTO>(errorMsg);
-            }
-
-            if (saveResult == 0)
-            {
-                _loggerService.LogInformation($"No changes detected");
             }
 
             _loggerService.LogInformation($"Success! StreetcodeCategoryContent was created.");

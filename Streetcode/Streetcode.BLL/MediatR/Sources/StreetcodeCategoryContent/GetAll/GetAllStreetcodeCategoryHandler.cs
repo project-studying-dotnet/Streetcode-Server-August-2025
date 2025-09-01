@@ -39,12 +39,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var dtosList = new List<StreetcodeCategoryContentDTO>();
-            foreach (var entity in entities)
-            {
-                var dto = _mapper.Map<StreetcodeCategoryContentDTO>(entity);
-                dtosList.Add(dto);
-            }
+            var dtosList = _mapper.Map<List<StreetcodeCategoryContentDTO>>(entities);
 
             return Result.Ok(dtosList.AsEnumerable());
         }
