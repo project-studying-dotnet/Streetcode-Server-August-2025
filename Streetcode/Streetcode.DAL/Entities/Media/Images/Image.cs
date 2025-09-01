@@ -30,7 +30,7 @@ public class Image
 
     public List<StreetcodeContent> Streetcodes { get; set; } = new ();
 
-    public List<Fact> Facts { get; set; } = new ();
+    public List<Facts> Facts { get; set; } = new ();
 
     public Art? Art { get; set; }
 

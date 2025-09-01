@@ -37,7 +37,7 @@ public class StreetcodeDbContext : DbContext
     public DbSet<Audio> Audios { get; set; }
     public DbSet<ToponymCoordinate> ToponymCoordinates { get; set; }
     public DbSet<StreetcodeCoordinate> StreetcodeCoordinates { get; set; }
-    public DbSet<Fact> Facts { get; set; }
+    public DbSet<Facts> Facts { get; set; }
     public DbSet<HistoricalContext> HistoricalContexts { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<ImageDetails> ImageDetailses { get; set; }
