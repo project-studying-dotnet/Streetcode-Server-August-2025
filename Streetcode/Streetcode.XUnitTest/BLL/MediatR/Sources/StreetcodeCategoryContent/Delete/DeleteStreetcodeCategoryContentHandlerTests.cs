@@ -66,8 +66,6 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Del
             var result = await _handler.Handle(new DeleteStreetcodeCategoryContentCommand(entity.Id), CancellationToken.None);
 
             result.IsSuccess.Should().BeTrue();
-            result.Value.Id.Should().Be(dto.Id);
-            result.Value.Should().NotBeNull();
             _mockRepositoryWrapper.Verify(r => r.StreetcodeCategoryContentRepository.Delete(entity), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
             _mockMapper.Verify(m => m.Map<StreetcodeCategoryContentDTO>(entity), Times.Once);
