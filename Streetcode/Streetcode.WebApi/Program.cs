@@ -20,9 +20,8 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 
-builder.Services.AddIdentity<User, IdentityRole<int>>()
-    .AddEntityFrameworkStores<StreetcodeDbContext>()
-    .AddDefaultTokenProviders();
+// Connect extension method Identity
+builder.Services.AddIdentityServices();
 
 var app = builder.Build();
 

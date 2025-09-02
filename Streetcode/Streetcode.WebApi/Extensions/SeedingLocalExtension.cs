@@ -25,6 +25,15 @@ namespace Streetcode.WebApi.Extensions
 {
     public static class SeedingLocalExtension
     {
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<User, IdentityRole<int>>()
+                .AddEntityFrameworkStores<StreetcodeDbContext>()
+                .AddDefaultTokenProviders();
+
+            return services;
+        }
+
         public static async Task SeedDataAsync(this WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
