@@ -6,16 +6,21 @@ using System.Text.Json;
 using Streetcode.WebApi.Middlewares;
 using Xunit;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Hosting;
 
 namespace Streetcode.XUnitTest.WebApi.Middlewares;
 
 public class ErrorHandlerMiddlewareTests
 {
     private readonly Mock<ILogger<ErrorHandlerMiddleware>> _loggerMock;
+    private readonly Mock<IHostEnvironment> _envMock;
 
     public ErrorHandlerMiddlewareTests()
     {
         _loggerMock = new Mock<ILogger<ErrorHandlerMiddleware>>();
+        _envMock = new Mock<IHostEnvironment>();
+
+        _envMock.Setup(e => e.EnvironmentName).Returns("Development");
     }
 
     private DefaultHttpContext CreateHttpContext()
@@ -37,7 +42,11 @@ public class ErrorHandlerMiddlewareTests
     {
         // Arrange
         var context = CreateHttpContext();
-        var middleware = new ErrorHandlerMiddleware(_ => Task.CompletedTask, _loggerMock.Object);
+        var middleware = new ErrorHandlerMiddleware(
+            _ => Task.CompletedTask,
+            _loggerMock.Object,
+            _envMock.Object
+            );
 
         // Act
         await middleware.InvokeAsync(context);
@@ -51,7 +60,11 @@ public class ErrorHandlerMiddlewareTests
     {
         // Arrange
         var context = CreateHttpContext();
-        var middleware = new ErrorHandlerMiddleware(_ => throw new Exception("Test error"), _loggerMock.Object);
+        var middleware = new ErrorHandlerMiddleware(
+            _ => throw new Exception("Test error"),
+            _loggerMock.Object,
+            _envMock.Object
+        );
 
         // Act
         await middleware.InvokeAsync(context);
@@ -72,8 +85,12 @@ public class ErrorHandlerMiddlewareTests
     {
         // Arrange
         var context = CreateHttpContext();
-        var middleware = new ErrorHandlerMiddleware(_ => throw new KeyNotFoundException("Not found"), _loggerMock.Object);
 
+        var middleware = new ErrorHandlerMiddleware(
+            _ => throw new KeyNotFoundException("Not found"),
+            _loggerMock.Object,
+            _envMock.Object
+        );
         // Act
         await middleware.InvokeAsync(context);
 
