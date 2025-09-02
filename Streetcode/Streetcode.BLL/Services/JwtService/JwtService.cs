@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Entities.Users;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using AutoMapper;
 using Streetcode.BLL.DTO.Users;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.Services.JwtService;
 
@@ -17,18 +17,18 @@ public class JwtService : IJwtService
 {
     private readonly JwtEnvironmentVariables _jwtVariables;
     private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
-    private readonly StreetcodeDbContext _dbContext;
     private readonly SigningCredentials _signingCredentials;
+    private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly IMapper _mapper;
 
-    public JwtService(IConfiguration configuration, StreetcodeDbContext dbContext, IMapper mapper)
+    public JwtService(IConfiguration configuration, IMapper mapper, IRepositoryWrapper repositoryWrapper)
     {
         _jwtVariables = configuration
             .GetSection("JwtSettings")
             .Get<JwtEnvironmentVariables>()!;
 
-        _dbContext = dbContext;
         _mapper = mapper;
+        _repositoryWrapper = repositoryWrapper;
 
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtVariables.SecretKey));
         _signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
@@ -37,8 +37,7 @@ public class JwtService : IJwtService
 
     public async Task<LoginResultDTO> GenerateTokenAsync(int userId)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(
-            u => u.Id == userId);
+        var user = await _repositoryWrapper.UserRepository.GetFirstOrDefaultAsync(u => u.Id == userId);
 
         if (user is null)
         {
@@ -58,7 +57,9 @@ public class JwtService : IJwtService
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiryTime = refreshExpiryDate;
 
-        await _dbContext.SaveChangesAsync();
+        _repositoryWrapper.UserRepository.Update(user);
+
+        await _repositoryWrapper.SaveChangesAsync();
         var userDto = _mapper.Map<UserDTO>(user);
 
         return new LoginResultDTO
@@ -137,7 +138,7 @@ public class JwtService : IJwtService
 
         var userId = int.Parse(principal.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await _repositoryWrapper.UserRepository.GetFirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
@@ -154,7 +155,8 @@ public class JwtService : IJwtService
 
         user.RefreshToken = newRefreshToken;
         user.RefreshTokenExpiryTime = refreshExpiryDate;
-        await _dbContext.SaveChangesAsync();
+        _repositoryWrapper.UserRepository.Update(user);
+        await _repositoryWrapper.SaveChangesAsync();
 
         var userDto = _mapper.Map<UserDTO>(user);
 
@@ -169,6 +171,14 @@ public class JwtService : IJwtService
             },
             AccessTokenExpireAt = newToken.ValidTo
         };
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
     }
 
     private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
@@ -191,14 +201,6 @@ public class JwtService : IJwtService
         }
 
         return principal;
-    }
-
-    public string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
     }
 
     private SecurityTokenDescriptor GetTokenDescriptor(User user)
