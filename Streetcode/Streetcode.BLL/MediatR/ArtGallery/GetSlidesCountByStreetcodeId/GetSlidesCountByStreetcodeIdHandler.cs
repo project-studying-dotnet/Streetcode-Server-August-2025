@@ -15,10 +15,15 @@ public class GetSlidesCountByStreetcodeIdHandler : IRequestHandler<GetSlidesCoun
 
     public Task<Result<int>> Handle(GetSlidesCountByStreetcodeIdQuery request, CancellationToken cancellationToken)
     {
-        var count = _repositoryWrapper.StreetcodeArtSlideRepository
-            .FindAll(predicate: s => s.StreetcodeId == request.StreetcodeId)
-            .Count();
+        var query = _repositoryWrapper.StreetcodeArtSlideRepository
+            .FindAll(predicate: s => s.StreetcodeId == request.StreetcodeId);
 
+        if (query is null)
+        {
+            return Task.FromResult(Result.Ok(0));
+        }
+
+        var count = query.Count();
         return Task.FromResult(Result.Ok(count));
     }
 }

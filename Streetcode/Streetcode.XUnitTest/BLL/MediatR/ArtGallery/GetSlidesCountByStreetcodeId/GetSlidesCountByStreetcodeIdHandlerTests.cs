@@ -30,7 +30,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
             // Arrange
             uint streetcodeId = 5;
             var slides = PrepareSlides((int)streetcodeId, 3);
-            _mockStreetcodeArtSlideRepository.Setup(r => r.FindAll(It.IsAny<System.Linq.Expressions.Expression<System.Func<StreetcodeArtSlide, bool>>>()))
+            _mockStreetcodeArtSlideRepository.Setup(r => r.FindAll(It.IsAny<Expression<Func<StreetcodeArtSlide, bool>>>()))
                 .Returns(slides.AsQueryable());
             var request = new GetSlidesCountByStreetcodeIdQuery(streetcodeId);
 
@@ -48,7 +48,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
             // Arrange
             uint streetcodeId = 10;
             var slides = PrepareSlides((int)streetcodeId, 0);
-            _mockStreetcodeArtSlideRepository.Setup(r => r.FindAll(It.IsAny<System.Linq.Expressions.Expression<System.Func<StreetcodeArtSlide, bool>>>()))
+            _mockStreetcodeArtSlideRepository.Setup(r => r.FindAll(It.IsAny<Expression<Func<StreetcodeArtSlide, bool>>>()))
                 .Returns(slides.AsQueryable());
             var request = new GetSlidesCountByStreetcodeIdQuery(streetcodeId);
 
@@ -61,7 +61,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
         }
 
         [Fact]
-        public async Task Handle_ShouldThrowException_WhenRepositoryReturnsNull()
+        public async Task Handle_ShouldReturnZero_WhenRepositoryReturnsNull()
         {
             // Arrange
             uint streetcodeId = 15;
@@ -69,11 +69,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
                 .Returns((IQueryable<StreetcodeArtSlide>)null!);
             var request = new GetSlidesCountByStreetcodeIdQuery(streetcodeId);
 
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                await _handler.Handle(request, CancellationToken.None);
-            });
+            // Act
+            var result = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().Be(0);
         }
 
         private List<StreetcodeArtSlide> PrepareSlides(int streetcodeId, int count)
