@@ -1,6 +1,6 @@
 ﻿namespace Streetcode.BLL.DTO.Timeline.TimelineItem
 {
-    public class TimelineItemUpdateDTO : TimelineItemBaseDTO
+    public class TimelineItemUpdateDto : TimelineItemBaseDto
     {
         public int Id { get; set; }
     }

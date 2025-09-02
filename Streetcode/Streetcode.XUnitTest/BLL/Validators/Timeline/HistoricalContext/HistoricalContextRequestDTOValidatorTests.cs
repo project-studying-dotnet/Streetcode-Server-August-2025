@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
 {
-    public class HistoricalContextRequestDTOValidatorTests
+    public class HistoricalContextRequestDtoValidatorTests
     {
-        private readonly HistoricalContextRequestDTOValidator _validator;
+        private readonly HistoricalContextRequestDtoValidator _validator;
 
-        public HistoricalContextRequestDTOValidatorTests()
+        public HistoricalContextRequestDtoValidatorTests()
         {
-            _validator = new HistoricalContextRequestDTOValidator();
+            _validator = new HistoricalContextRequestDtoValidator();
         }
 
         [Fact]
@@ -19,7 +19,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         {
             const string errorMessage = "Context must have either an ID or a title.";
 
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = null,
                 Title = null
@@ -36,7 +36,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         {
             const string errorMessage = "Cannot provide both an ID and a title for one context.";
 
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = 1,
                 Title = "Valid Title"
@@ -53,10 +53,10 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         {
             const string errorMessage = "Context must have either an ID or a title.";
 
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = null,
-                Title = ""
+                Title = "   "
             };
 
             var result = _validator.TestValidate(context);
@@ -72,7 +72,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         {
             const string errorMessage = "ID must be greater than zero.";
 
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = invalidId,
                 Title = null
@@ -88,7 +88,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         public void Should_Have_Error_When_Title_Too_Long()
         {
             const string errorMessage = "Title cannot exceed 50 characters.";
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = null,
                 Title = new string('a', 51)
@@ -105,7 +105,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         {
             const string errorMessage = "Title can only contain letters and spaces.";
 
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = null,
                 Title = "Invalid@Title#123"
@@ -120,7 +120,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [Fact]
         public void Should_Not_Have_Error_When_Valid_Id()
         {
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = 1,
                 Title = null
@@ -139,7 +139,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [InlineData(50)]
         public void Should_Not_Have_Error_When_Valid_Title(int titleLength)
         {
-            var context = new HistoricalContextRequestDTO
+            var context = new HistoricalContextRequestDto
             {
                 Id = null,
                 Title = new string('a', titleLength)

@@ -4,10 +4,10 @@ using Streetcode.BLL.Validators.Timeline.HistoricalContext;
 
 namespace Streetcode.BLL.Validators.Timeline.TimelineItem
 {
-    public class TimelineItemBaseDTOValidator<T> : AbstractValidator<T>
-        where T : TimelineItemBaseDTO
+    public class TimelineItemBaseDtoValidator<T> : AbstractValidator<T>
+        where T : TimelineItemBaseDto
     {
-        public TimelineItemBaseDTOValidator()
+        public TimelineItemBaseDtoValidator()
         {
             RuleFor(x => x.Title)
                 .NotEmpty()
@@ -24,15 +24,15 @@ namespace Streetcode.BLL.Validators.Timeline.TimelineItem
             RuleFor(x => x.Date)
                 .NotEmpty()
                 .WithMessage("Date is required.")
-                .LessThanOrEqualTo(DateTime.Now)
-                .WithMessage("Date cannot be from the future.");
+                .LessThanOrEqualTo(_ => DateTime.UtcNow)
+                .WithMessage("Date cannot be in the future.");
 
             RuleFor(x => x.DateViewPattern)
                 .IsInEnum()
                 .WithMessage("Provided date view pattern is not a valid value.");
 
             RuleForEach(x => x.HistoricalContexts)
-                .SetValidator(new HistoricalContextRequestDTOValidator())
+                .SetValidator(new HistoricalContextRequestDtoValidator())
                 .When(x => x.HistoricalContexts != null);
         }
     }

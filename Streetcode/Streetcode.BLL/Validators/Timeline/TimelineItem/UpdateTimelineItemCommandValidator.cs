@@ -14,7 +14,7 @@ namespace Streetcode.BLL.Validators.Timeline.TimelineItem
             When(command => command.TimelineItem != null, () =>
             {
                 RuleFor(command => command.TimelineItem)
-                    .SetValidator(new TimelineItemUpdateDTOValidator());
+                    .SetValidator(new TimelineItemUpdateDtoValidator());
             });
         }
     }

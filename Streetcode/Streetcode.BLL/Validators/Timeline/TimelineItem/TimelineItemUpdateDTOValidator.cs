@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
-using Streetcode.BLL.Validators.Timeline.HistoricalContext;
 using Streetcode.BLL.Validators.Timeline.TimelineItem;
 
-public class TimelineItemUpdateDTOValidator : TimelineItemBaseDTOValidator<TimelineItemUpdateDTO>
+public class TimelineItemUpdateDtoValidator : TimelineItemBaseDtoValidator<TimelineItemUpdateDto>
 {
-    public TimelineItemUpdateDTOValidator()
+    public TimelineItemUpdateDtoValidator()
     {
         RuleFor(x => x.Id)
             .GreaterThan(0)

@@ -9,6 +9,6 @@ public class HistoricalContextProfile : Profile
     public HistoricalContextProfile()
     {
         CreateMap<HistoricalContext, HistoricalContextDTO>().ReverseMap();
-        CreateMap<HistoricalContextRequestDTO, HistoricalContext>();
+        CreateMap<HistoricalContextRequestDto, HistoricalContext>();
     }
 }

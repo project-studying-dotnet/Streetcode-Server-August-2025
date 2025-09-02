@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Streetcode.BLL.DTO.Timeline.HistoricalContext
 {
-    public class HistoricalContextRequestDTO
+    public class HistoricalContextRequestDto
     {
         public int? Id { get; set; }
         public string? Title { get; set; }

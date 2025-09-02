@@ -34,13 +34,13 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Title cannot exceed 28 characters.";
 
-            var invalidTimelineItem = new TimelineItemUpdateDTO
+            var invalidTimelineItem = new TimelineItemUpdateDto
             {
                 Id = 1,
                 Title = new string('A', 29),
                 Description = "Valid Description",
                 Date = DateTime.Now.AddYears(-1),
-                HistoricalContexts = new List<HistoricalContextRequestDTO>()
+                HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
 
             var command = new UpdateTimelineItemCommand(invalidTimelineItem);
@@ -54,13 +54,13 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Not_Have_Error_When_TimelineItem_Is_Valid()
         {
-            var validTimelineItem = new TimelineItemUpdateDTO
+            var validTimelineItem = new TimelineItemUpdateDto
             {
                 Id = 1,
                 Title = "Valid Title",
                 Description = "Valid Description",
                 Date = DateTime.Now.AddYears(-1),
-                HistoricalContexts = new List<HistoricalContextRequestDTO>()
+                HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
 
             var command = new UpdateTimelineItemCommand(validTimelineItem);

@@ -3,12 +3,12 @@ using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 
 namespace Streetcode.BLL.Validators.Timeline.HistoricalContext
 {
-    public class HistoricalContextRequestDTOValidator : AbstractValidator<HistoricalContextRequestDTO>
+    public class HistoricalContextRequestDtoValidator : AbstractValidator<HistoricalContextRequestDto>
     {
-        public HistoricalContextRequestDTOValidator()
+        public HistoricalContextRequestDtoValidator()
         {
             RuleFor(x => x)
-                .Must(x => x.Id.HasValue || !string.IsNullOrEmpty(x.Title))
+                .Must(x => x.Id.HasValue || !string.IsNullOrWhiteSpace(x.Title))
                 .WithMessage("Context must have either an ID or a title.")
                 .Must(x => !(x.Id.HasValue && !string.IsNullOrEmpty(x.Title)))
                 .WithMessage("Cannot provide both an ID and a title for one context.");

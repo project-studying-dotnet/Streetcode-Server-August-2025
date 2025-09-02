@@ -1,19 +1,17 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
-using Streetcode.BLL.Validators.Timeline.TimelineItem;
-using Streetcode.DAL.Enums;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
 {
-    public class TimelineItemUpdateDTOValidatorTests
+    public class TimelineItemUpdateDtoValidatorTests
     {
-        private readonly TimelineItemUpdateDTOValidator _validator;
+        private readonly TimelineItemUpdateDtoValidator _validator;
 
-        public TimelineItemUpdateDTOValidatorTests()
+        public TimelineItemUpdateDtoValidatorTests()
         {
-            _validator = new TimelineItemUpdateDTOValidator();
+            _validator = new TimelineItemUpdateDtoValidator();
         }
 
         [Theory]
@@ -23,13 +21,13 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "ID must be greater than 0 for an update operation.";
 
-            var timelineItem = new TimelineItemUpdateDTO
+            var timelineItem = new TimelineItemUpdateDto
             {
                 Id = invalidId,
                 Title = "Valid Title",
                 Description = "Valid Description",
-                Date = DateTime.Now.AddYears(-1),
-                HistoricalContexts = new List<HistoricalContextRequestDTO>()
+                Date = DateTime.UtcNow.AddYears(-1),
+                HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
 
             var result = _validator.TestValidate(timelineItem);
@@ -45,13 +43,13 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [InlineData(999)]
         public void Should_Not_Have_Error_When_Id_Is_Valid(int validId)
         {
-            var timelineItem = new TimelineItemUpdateDTO
+            var timelineItem = new TimelineItemUpdateDto
             {
                 Id = validId,
                 Title = "Valid Title",
                 Description = "Valid Description",
-                Date = DateTime.Now.AddYears(-1),
-                HistoricalContexts = new List<HistoricalContextRequestDTO>()
+                Date = DateTime.UtcNow,
+                HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
             var result = _validator.TestValidate(timelineItem);
             result.ShouldNotHaveValidationErrorFor(x => x.Id);
