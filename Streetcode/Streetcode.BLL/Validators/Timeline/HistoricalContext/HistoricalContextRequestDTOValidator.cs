@@ -19,8 +19,6 @@ namespace Streetcode.BLL.Validators.Timeline.HistoricalContext
                 .WithMessage("ID must be greater than zero.");
 
             RuleFor(x => x.Title)
-                .NotEmpty()
-                .WithMessage("Title is required.")
                 .MaximumLength(50)
                 .WithMessage("Title cannot exceed 50 characters.")
                 .Matches(@"^[a-zA-Zа-яА-ЯіІїЇєЄ\s]+$")

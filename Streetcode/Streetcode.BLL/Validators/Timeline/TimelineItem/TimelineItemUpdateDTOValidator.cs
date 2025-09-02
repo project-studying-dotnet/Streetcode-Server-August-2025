@@ -28,7 +28,12 @@ public class TimelineItemUpdateDTOValidator : AbstractValidator<TimelineItemUpda
             .LessThanOrEqualTo(DateTime.Now)
             .WithMessage("Date cannot be from the future.");
 
+        RuleFor(x => x.DateViewPattern)
+            .IsInEnum()
+            .WithMessage("Provided date view pattern is not a valid value.");
+
         RuleForEach(x => x.HistoricalContexts)
-            .SetValidator(new HistoricalContextRequestDTOValidator());
+            .SetValidator(new HistoricalContextRequestDTOValidator())
+            .When(x => x.HistoricalContexts != null);
     }
 }
