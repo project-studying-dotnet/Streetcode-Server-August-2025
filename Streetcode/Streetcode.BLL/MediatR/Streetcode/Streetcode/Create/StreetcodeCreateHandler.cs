@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Streetcode.BLL.DTO.AdditionalContent.Tag;
+using Streetcode.BLL.DTO.ArtGallery;
+using Streetcode.BLL.DTO.Media.Art;
+using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.DAL.Entities.Streetcode;
-using Streetcode.DAL.Entities.Media.Images;
-using Streetcode.BLL.DTO.Media.Images;
-using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.DAL.Entities.AdditionalContent;
+using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Entities.Streetcode;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 
@@ -39,6 +41,10 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
                 _repositoryWrapper.StreetcodeRepository.Create(streetcodeEntity);
 
                 var saveResult = await _repositoryWrapper.SaveChangesAsync();
+                if (saveResult == 0)
+                {
+                    return CreateErrorResult<StreetcodeDTO>(request, "Failed to save streetcode to database");
+                }
 
                 var imagesDetails = request.NewStreetcode.ImagesDetails;
                 if (imagesDetails is null || !imagesDetails.Any())
@@ -60,15 +66,15 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
                 }
 
                 await AddTags(streetcodeEntity, request.NewStreetcode.Tags);
-                await _repositoryWrapper.SaveChangesAsync();
-
                 await AddImagesDetails(request.NewStreetcode.ImagesDetails);
+                saveResult = await _repositoryWrapper.SaveChangesAsync();
 
-                await _repositoryWrapper.SaveChangesAsync();
                 if (saveResult == 0)
                 {
                     return CreateErrorResult<StreetcodeDTO>(request, "Failed to save streetcode to database");
                 }
+
+                await AddArtGalleryAsync(streetcodeEntity, request.NewStreetcode.Arts, request.NewStreetcode.StreetcodeArtSlides);
 
                 var resultDto = _mapper.Map<StreetcodeDTO>(streetcodeEntity);
 
@@ -144,5 +150,85 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
         }
 
         await _repositoryWrapper.StreetcodeTagIndexRepository.CreateRangeAsync(indexedTags);
+    }
+
+    private async Task AddArtGalleryAsync(StreetcodeContent streetcode, IEnumerable<ArtCreateUpdateDTO> arts, IEnumerable<StreetcodeArtSlideCreateUpdateDTO> streetcodeArtSlides)
+    {
+        var artSlidesList = streetcodeArtSlides?.ToList() ?? new List<StreetcodeArtSlideCreateUpdateDTO>();
+        var artsList = arts?.ToList() ?? new List<ArtCreateUpdateDTO>();
+
+        if (artSlidesList.Count == 0 && artsList.Count == 0)
+        {
+            return;
+        }
+
+        // Get the list of Art IDs that are actually used in slides
+        var usedArtIds = new HashSet<int>(
+            artSlidesList.SelectMany(slide => slide.StreetcodeArts)
+                         .Select(streetcodeArt => streetcodeArt.ArtId));
+
+        var filteredArts = artsList.Where(art => usedArtIds.Contains(art.Id)).ToList();
+
+        // Verify that all required ImageIds exist
+        var imageIds = filteredArts.Select(a => a.ImageId).Distinct().ToList();
+        var existingImages = await _repositoryWrapper.ImageRepository.GetAllAsync(i => imageIds.Contains(i.Id));
+        var existingImageIds = new HashSet<int>(existingImages.Select(i => i.Id));
+
+        foreach (var artDto in filteredArts)
+        {
+            if (!existingImageIds.Contains(artDto.ImageId))
+            {
+                throw new InvalidOperationException($"Image with ID {artDto.ImageId} does not exist");
+            }
+        }
+
+        // Create Arts
+        var newArts = _mapper.Map<List<Art>>(filteredArts);
+
+        await _repositoryWrapper.ArtRepository.CreateRangeAsync(newArts);
+        await _repositoryWrapper.SaveChangesAsync();
+
+        // Create ArtSlides
+        var newArtSlides = _mapper.Map<List<StreetcodeArtSlide>>(artSlidesList);
+        newArtSlides.ForEach(artSlide => artSlide.StreetcodeId = streetcode.Id);
+
+        await _repositoryWrapper.StreetcodeArtSlideRepository.CreateRangeAsync(newArtSlides);
+        await _repositoryWrapper.SaveChangesAsync();
+
+        // Map old Ids => new Ids
+        var artIdMap = filteredArts
+            .Zip(newArts, (placeholderArt, newArt) => new { PlaceholderId = placeholderArt.Id, RealId = newArt.Id })
+            .ToDictionary(x => x.PlaceholderId, x => x.RealId);
+
+        var streetcodeArtEntities = new List<StreetcodeArt>();
+
+        // Create StreetcodeArts
+        for (int i = 0; i < artSlidesList.Count; i++)
+        {
+            var slideDto = artSlidesList[i];
+            var slideId = newArtSlides[i].Id;
+
+            foreach (var streetcodeArtDto in slideDto.StreetcodeArts)
+            {
+                // Ensure that ArtId exists in the map
+                if (!artIdMap.TryGetValue(streetcodeArtDto.ArtId, out var newArtId))
+                {
+                    throw new KeyNotFoundException($"Art ID '{streetcodeArtDto.ArtId}' not found in the mapped arts.");
+                }
+
+                var streetcodeArtEntity = _mapper.Map<StreetcodeArt>(streetcodeArtDto);
+                streetcodeArtEntity.StreetcodeId = streetcode.Id;
+                streetcodeArtEntity.StreetcodeArtSlideId = slideId;
+                streetcodeArtEntity.ArtId = newArtId;
+
+                streetcodeArtEntities.Add(streetcodeArtEntity);
+            }
+        }
+
+        if (streetcodeArtEntities.Count != 0)
+        {
+            await _repositoryWrapper.StreetcodeArtRepository.CreateRangeAsync(streetcodeArtEntities);
+            await _repositoryWrapper.SaveChangesAsync();
+        }
     }
 }

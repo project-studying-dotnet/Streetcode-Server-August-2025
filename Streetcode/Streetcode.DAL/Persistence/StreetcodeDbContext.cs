@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Streetcode.DAL.Entities.AdditionalContent;
@@ -22,7 +24,7 @@ using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Persistence;
 
-public class StreetcodeDbContext : DbContext
+public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public StreetcodeDbContext()
     {
