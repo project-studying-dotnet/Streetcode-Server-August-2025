@@ -256,7 +256,15 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
                 x.Latitude == newMapPoint.StreetcodeCoordinate.Latitude
                 && x.Longtitude == newMapPoint.StreetcodeCoordinate.Longtitude);
 
-            newMapPoint.StreetcodeCoordinate = streetcodeCoordinate ?? throw new InvalidOperationException();
+            if (streetcodeCoordinate is null)
+            {
+                throw new InvalidOperationException();
+            }
+            else
+            {
+                newMapPoint.StreetcodeCoordinate = streetcodeCoordinate;
+            }
+
             mapPointsToCreate.Add(newMapPoint);
         }
 
