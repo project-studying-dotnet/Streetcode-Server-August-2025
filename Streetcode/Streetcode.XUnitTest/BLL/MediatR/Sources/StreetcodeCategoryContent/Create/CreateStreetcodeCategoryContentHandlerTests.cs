@@ -81,7 +81,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Cre
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnFail_When_StreetcodeCatrgoryContentAlreadyExist()
+        public async Task Handle_ShouldReturnFail_When_StreetcodeCategoryContentAlreadyExist()
         {
             var createDto = new CategoryContentCreateDTO
             {
