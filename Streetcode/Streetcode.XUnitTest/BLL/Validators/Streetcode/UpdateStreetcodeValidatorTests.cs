@@ -6,7 +6,10 @@ using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
+using Streetcode.BLL.Validators.ArtGallery;
+using Streetcode.BLL.Validators.Media.Image.Art;
 using Streetcode.BLL.Validators.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.ImageDetails;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -26,6 +29,14 @@ public class UpdateStreetcodeValidatorTests
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
         _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>();
         _mockTagValidator = new Mock<TagValidator>();
+        var mockArtSlideValidator = new Mock<StreetcodeArtSlideValidator>();
+        var mockImageDetailsValidator = new Mock<ImageDetailsValidator>(_mockRepositoryWrapper.Object);
+        var mockArtValidator = new Mock<ArtCreateUpdateDTOValidator>();
+
+        _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(
+            mockArtSlideValidator.Object,
+            mockArtValidator.Object,
+            mockImageDetailsValidator.Object);
 
         _validator = new UpdateStreetcodeValidator(
             _mockRepositoryWrapper.Object,
