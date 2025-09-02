@@ -3,11 +3,14 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.ArtGallery;
+using Streetcode.BLL.DTO.Locations;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.AdditionalContent;
+using Streetcode.DAL.Entities.Analytics;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -67,6 +70,10 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
 
                 await AddTags(streetcodeEntity, request.NewStreetcode.Tags);
                 await AddImagesDetails(request.NewStreetcode.ImagesDetails);
+                await AddToponyms(streetcodeEntity, request.NewStreetcode.Toponyms);
+
+                AddMapPoints(streetcodeEntity, request.NewStreetcode.MapPoints);
+
                 saveResult = await _repositoryWrapper.SaveChangesAsync();
 
                 if (saveResult == 0)
@@ -230,5 +237,44 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
             await _repositoryWrapper.StreetcodeArtRepository.CreateRangeAsync(streetcodeArtEntities);
             await _repositoryWrapper.SaveChangesAsync();
         }
+    }
+
+    private void AddMapPoints(StreetcodeContent streetcode, IEnumerable<MapPointDTO>? mapPoints)
+    {
+        if (mapPoints is null || !mapPoints.Any())
+        {
+            return;
+        }
+
+        var mapPointsToCreate = new List<StatisticRecord>();
+
+        foreach (var mapPointDto in mapPoints)
+        {
+            var newMapPoint = _mapper.Map<StatisticRecord>(mapPointDto);
+
+            var streetcodeCoordinate = streetcode.Coordinates.FirstOrDefault(x =>
+                x.Latitude == newMapPoint.StreetcodeCoordinate.Latitude
+                && x.Longtitude == newMapPoint.StreetcodeCoordinate.Longtitude);
+
+            newMapPoint.StreetcodeCoordinate = streetcodeCoordinate ?? throw new InvalidOperationException();
+            mapPointsToCreate.Add(newMapPoint);
+        }
+
+        streetcode.StatisticRecords.AddRange(mapPointsToCreate);
+    }
+
+    private async Task AddToponyms(StreetcodeContent streetcode, IEnumerable<StreetcodeToponymCreateUpdateDTO>? toponyms)
+    {
+        if (toponyms is null || !toponyms.Any())
+        {
+            return;
+        }
+
+        var toponymNames = toponyms.Select(x => x.StreetName.Trim()).Distinct().ToList();
+
+        var existingToponyms = await _repositoryWrapper.ToponymRepository
+            .GetAllAsync(x => toponymNames.Contains(x.StreetName));
+
+        streetcode.Toponyms.AddRange(existingToponyms);
     }
 }
