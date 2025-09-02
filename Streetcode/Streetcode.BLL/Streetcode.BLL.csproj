@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Validators\Sourse\**" />
+    <EmbeddedResource Remove="Validators\Sourse\**" />
+    <None Remove="Validators\Sourse\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ardalis.Specification" Version="8.0.0" />
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
@@ -45,7 +51,6 @@
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
     <Folder Include="MediatR\Analytics\" />
-    <Folder Include="Validators\Sourse\" />
     <Folder Include="Validators\Email\" />
     <Folder Include="Validators\Helpers\" />
     <Folder Include="Validators\Payment\" />
