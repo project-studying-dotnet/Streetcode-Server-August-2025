@@ -20,6 +20,7 @@ public interface IRepositoryWrapper
     IFactRepository FactRepository { get; }
     IArtRepository ArtRepository { get; }
     IStreetcodeArtRepository StreetcodeArtRepository { get; }
+    IStreetcodeArtSlideRepository StreetcodeArtSlideRepository { get; }
     IVideoRepository VideoRepository { get; }
     IImageRepository ImageRepository { get; }
     IImageDetailsRepository ImageDetailsRepository { get; }
@@ -46,7 +47,7 @@ public interface IRepositoryWrapper
     IPartnerSourceLinkRepository PartnerSourceLinkRepository { get; }
     IUserRepository UserRepository { get; }
     IStreetcodeTagIndexRepository StreetcodeTagIndexRepository { get; }
-    IPartnerStreetcodeRepository PartnerStreetcodeRepository { get;  }
+    IPartnerStreetcodeRepository PartnerStreetcodeRepository { get; }
     INewsRepository NewsRepository { get; }
     IPositionRepository PositionRepository { get; }
     IHistoricalContextTimelineRepository HistoricalContextTimelineRepository { get; }

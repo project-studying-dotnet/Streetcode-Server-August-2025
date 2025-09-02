@@ -1,7 +1,13 @@
-using Hangfire;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Services.BlobStorageService;
+using Streetcode.DAL.Persistence;
+using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
+using Streetcode.DAL.Entities.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
@@ -14,6 +20,9 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.ConfigureJwt(builder);
+
+// Connect extension method Identity
+builder.Services.AddIdentityServices();
 
 var app = builder.Build();
 
@@ -29,7 +38,7 @@ else
 
 await app.ApplyMigrations();
 
-// await app.SeedDataAsync();
+await app.SeedDataAsync();
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -41,19 +50,19 @@ app.UseHangfireDashboard("/dash");
 
 if (app.Environment.EnvironmentName != "Local")
 {
-    BackgroundJob.Schedule<WebParsingUtils>(
-        wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
-
-    RecurringJob.AddOrUpdate<WebParsingUtils>(
-        "WebParsingUtils_ParseZipFile",
-        wp => wp.ParseZipFileFromWebAsync(),
-        Cron.Monthly);
-
     RecurringJob.AddOrUpdate<BlobService>(
         "BlobService_CleanBlobStorage",
         b => b.CleanBlobStorage(),
         Cron.Monthly);
 }
+
+// BackgroundJob.Schedule<WebParsingUtils>(
+//     wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
+
+// RecurringJob.AddOrUpdate<WebParsingUtils>(
+//     "WebParsingUtils_ParseZipFile",
+//     wp => wp.ParseZipFileFromWebAsync(),
+//     Cron.Monthly);
 
 app.MapControllers();
 
