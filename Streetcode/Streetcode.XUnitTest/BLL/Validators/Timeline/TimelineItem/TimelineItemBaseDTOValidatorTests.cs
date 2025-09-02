@@ -7,13 +7,13 @@ using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
 {
-    public class TimelineItemCreateDTOValidatorTests
+    public class TimelineItemBaseDTOValidatorTests
     {
-        private readonly TimelineItemCreateDTOValidator _validator;
+        private readonly TimelineItemBaseDTOValidator<TimelineItemBaseDTO> _validator;
 
-        public TimelineItemCreateDTOValidatorTests()
+        public TimelineItemBaseDTOValidatorTests()
         {
-            _validator = new TimelineItemCreateDTOValidator();
+            _validator = new TimelineItemBaseDTOValidator<TimelineItemBaseDTO>();
         }
 
         [Fact]
@@ -21,7 +21,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Title cannot exceed 28 characters.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = new string('A', 29),
                 Description = "Valid Description",
@@ -40,7 +40,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Description cannot exceed 400 characters.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = new string('A', 401),
@@ -59,7 +59,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Date cannot be from the future.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "Valid Description",
@@ -76,7 +76,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Not_Have_Error_When_All_Fields_Are_Valid()
         {
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "Valid Description",
@@ -94,7 +94,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Title is required.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "",
                 Description = "Valid Description",
@@ -113,7 +113,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Description is required.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "",
@@ -132,7 +132,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Date is required.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "Valid Description",
@@ -149,7 +149,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Not_Have_Error_When_HistoricalContexts_Are_Valid()
         {
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "Valid Description",
@@ -172,7 +172,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
             const string errorMessage1 = "Context must have either an ID or a title.";
             const string errorMessage2 = "Cannot provide both an ID and a title for one context.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "Valid Description",
@@ -196,7 +196,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Not_Have_Error_When_HistoricalContexts_Are_Null()
         {
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "Valid Description",
@@ -214,7 +214,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Provided date view pattern is not a valid value.";
 
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = "Valid Description",
@@ -236,7 +236,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [InlineData(28)]
         public void Should_Not_Have_Error_When_Title_Length_Is_Valid(int validLength)
         {
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = new string('A', validLength),
                 Description = "Valid Description",
@@ -257,7 +257,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [InlineData(400)]
         public void Should_Not_Have_Error_When_Description_Length_Is_Valid(int validLength)
         {
-            var timelineItem = new TimelineItemCreateDTO
+            var timelineItem = new TimelineItemBaseDTO
             {
                 Title = "Valid Title",
                 Description = new string('A', validLength),
