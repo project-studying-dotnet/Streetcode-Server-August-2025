@@ -40,6 +40,8 @@ await app.ApplyMigrations();
 await app.SeedDataAsync();
 app.UseCors();
 app.UseHttpsRedirection();
+app.UseMiddleware<ErrorHandlerMiddleware>();
+
 app.UseRouting();
 
 app.UseAuthentication();
