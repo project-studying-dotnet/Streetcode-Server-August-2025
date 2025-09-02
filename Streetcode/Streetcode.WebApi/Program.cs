@@ -1,6 +1,7 @@
 using Hangfire;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.WebApi.Extensions;
+using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,8 @@ await app.ApplyMigrations();
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
