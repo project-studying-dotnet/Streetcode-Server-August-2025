@@ -15,6 +15,6 @@ public class StreetcodeArtSlideController : BaseApiController
     [HttpGet("{streetcodeId:int}")]
     public async Task<IActionResult> GetCountByStreetcodeId([FromRoute] uint streetcodeId)
     {
-        return HandleResult(await Mediator.Send(new GetSlidesCountByStreetcodeIdQuerry(streetcodeId)));
+        return HandleResult(await Mediator.Send(new GetSlidesCountByStreetcodeIdQuery(streetcodeId)));
     }
 }

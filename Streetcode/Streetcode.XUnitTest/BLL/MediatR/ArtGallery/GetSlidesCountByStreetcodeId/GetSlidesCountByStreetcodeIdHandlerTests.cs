@@ -32,7 +32,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
             var slides = PrepareSlides((int)streetcodeId, 3);
             _mockStreetcodeArtSlideRepository.Setup(r => r.FindAll(It.IsAny<System.Linq.Expressions.Expression<System.Func<StreetcodeArtSlide, bool>>>()))
                 .Returns(slides.AsQueryable());
-            var request = new GetSlidesCountByStreetcodeIdQuerry(streetcodeId);
+            var request = new GetSlidesCountByStreetcodeIdQuery(streetcodeId);
 
             // Act
             var result = await _handler.Handle(request, CancellationToken.None);
@@ -50,7 +50,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
             var slides = PrepareSlides((int)streetcodeId, 0);
             _mockStreetcodeArtSlideRepository.Setup(r => r.FindAll(It.IsAny<System.Linq.Expressions.Expression<System.Func<StreetcodeArtSlide, bool>>>()))
                 .Returns(slides.AsQueryable());
-            var request = new GetSlidesCountByStreetcodeIdQuerry(streetcodeId);
+            var request = new GetSlidesCountByStreetcodeIdQuery(streetcodeId);
 
             // Act
             var result = await _handler.Handle(request, CancellationToken.None);
@@ -67,7 +67,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
             uint streetcodeId = 15;
             _mockStreetcodeArtSlideRepository.Setup(r => r.FindAll(It.IsAny<Expression<Func<StreetcodeArtSlide, bool>>>()))
                 .Returns((IQueryable<StreetcodeArtSlide>)null!);
-            var request = new GetSlidesCountByStreetcodeIdQuerry(streetcodeId);
+            var request = new GetSlidesCountByStreetcodeIdQuery(streetcodeId);
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>

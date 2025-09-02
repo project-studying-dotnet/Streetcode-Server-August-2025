@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Streetcode.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcodeId;
 
-public record GetSlidesCountByStreetcodeIdQuerry(uint StreetcodeId)
+public record GetSlidesCountByStreetcodeIdQuery(uint StreetcodeId)
     : IRequest<Result<int>>;
