@@ -12,8 +12,8 @@ using Streetcode.DAL.Persistence;
 namespace Streetcode.DAL.Persistence.Migrations
 {
     [DbContext(typeof(StreetcodeDbContext))]
-    [Migration("20250901185812_AddIdentityAndSeedData")]
-    partial class AddIdentityAndSeedData
+    [Migration("20250903061724_AddInitialIdentity")]
+    partial class AddInitialIdentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
