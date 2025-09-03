@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Create;
 
 namespace Streetcode.BLL.Validators.Timeline.TimelineItem
@@ -14,7 +15,7 @@ namespace Streetcode.BLL.Validators.Timeline.TimelineItem
             When(command => command.TimelineItem != null, () =>
             {
                 RuleFor(command => command.TimelineItem)
-                    .SetValidator(new TimelineItemCreateDtoValidator());
+                    .SetValidator(new TimelineItemBaseDtoValidator<TimelineItemBaseDto>());
             });
         }
     }

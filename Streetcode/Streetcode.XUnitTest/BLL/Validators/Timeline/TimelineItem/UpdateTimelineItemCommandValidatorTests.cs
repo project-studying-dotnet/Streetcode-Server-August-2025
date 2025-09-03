@@ -21,7 +21,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Timeline item data is required.";
 
-            var command = new UpdateTimelineItemCommand(null);
+            var command = new UpdateTimelineItemCommand(null!);
 
             var result = _validator.TestValidate(command);
 

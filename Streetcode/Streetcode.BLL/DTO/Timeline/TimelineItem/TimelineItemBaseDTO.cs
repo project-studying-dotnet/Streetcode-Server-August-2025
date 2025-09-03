@@ -5,10 +5,10 @@ namespace Streetcode.BLL.DTO.Timeline.TimelineItem
 {
     public class TimelineItemBaseDto
     {
-        public string Title { get; init; }
-        public string Description { get; init; }
-        public DateTime Date { get; init; }
-        public DateViewPattern DateViewPattern { get; init; }
-        public IEnumerable<HistoricalContextRequestDto>? HistoricalContexts { get; init; }
+        required public string Title { get; set; }
+        required public string Description { get; set; }
+        public DateTime Date { get; set; }
+        public DateViewPattern DateViewPattern { get; set; }
+        public IEnumerable<HistoricalContextRequestDto>? HistoricalContexts { get; set; }
     }
 }

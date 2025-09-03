@@ -32,8 +32,9 @@ namespace Streetcode.BLL.Validators.Timeline.TimelineItem
                 .WithMessage("Provided date view pattern is not a valid value.");
 
             RuleForEach(x => x.HistoricalContexts)
-                .SetValidator(new HistoricalContextRequestDtoValidator())
-                .When(x => x.HistoricalContexts != null);
+                .NotNull()
+                .WithMessage("Historical context cannot be null.")
+                .SetValidator(new HistoricalContextRequestDtoValidator());
         }
     }
 }

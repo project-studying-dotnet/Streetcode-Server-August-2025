@@ -1,6 +1,7 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
+using Streetcode.BLL.Validators.Timeline.TimelineItem;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem

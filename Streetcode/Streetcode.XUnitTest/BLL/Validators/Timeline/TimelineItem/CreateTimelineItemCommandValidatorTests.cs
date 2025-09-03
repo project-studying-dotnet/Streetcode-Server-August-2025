@@ -21,7 +21,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Timeline item data is required.";
 
-            var command = new CreateTimelineItemCommand(null);
+            var command = new CreateTimelineItemCommand(null!);
 
             var result = _validator.TestValidate(command);
 
@@ -34,7 +34,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Title cannot exceed 28 characters.";
 
-            var invalidTimelineItem = new TimelineItemCreateDto
+            var invalidTimelineItem = new TimelineItemBaseDto
             {
                 Title = new string('A', 29),
                 Description = "Valid Description",
@@ -53,7 +53,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Not_Have_Error_When_TimelineItem_Is_Valid()
         {
-            var validTimelineItem = new TimelineItemCreateDto
+            var validTimelineItem = new TimelineItemBaseDto
             {
                 Title = "Valid Title",
                 Description = "Valid Description",

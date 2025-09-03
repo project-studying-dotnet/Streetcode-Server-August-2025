@@ -194,6 +194,29 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         }
 
         [Fact]
+        public void Should_Have_Error_When_HistoricalContexts_Contain_Null_Element()
+        {
+            const string errorMessage = "Historical context cannot be null.";
+
+            var timelineItem = new TimelineItemBaseDto
+            {
+                Title = "Valid Title",
+                Description = "Valid Description",
+                Date = DateTime.UtcNow,
+                HistoricalContexts = new List<HistoricalContextRequestDto>
+                {
+                    new HistoricalContextRequestDto { Id = 1, Title = null },
+                    null!
+                }
+            };
+
+            var result = _validator.TestValidate(timelineItem);
+
+            result.ShouldHaveValidationErrorFor("HistoricalContexts[1]")
+                    .WithErrorMessage(errorMessage);
+        }
+
+        [Fact]
         public void Should_Not_Have_Error_When_HistoricalContexts_Are_Null()
         {
             var timelineItem = new TimelineItemBaseDto

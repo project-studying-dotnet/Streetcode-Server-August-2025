@@ -19,7 +19,7 @@ public class TimelineItemProfile : Profile
                     Title = x.HistoricalContext.Title
                 }).ToList()));
 
-        CreateMap<TimelineItemCreateDto, TimelineItem>()
+        CreateMap<TimelineItemBaseDto, TimelineItem>()
             .ForMember(dest => dest.HistoricalContextTimelines, opt => opt.MapFrom(src =>
             (src.HistoricalContexts ?? Enumerable.Empty<HistoricalContextRequestDto>())
                  .Select(hc => hc.Id.HasValue
