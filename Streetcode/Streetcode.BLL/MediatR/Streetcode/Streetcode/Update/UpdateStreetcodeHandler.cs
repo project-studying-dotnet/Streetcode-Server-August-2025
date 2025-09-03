@@ -339,7 +339,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                            "LEFT JOIN toponyms.toponyms AS t ON st.ToponymId = t.Id " +
                            $"WHERE st.StreetcodeId = {streetcodeId} AND (";
 
-            string condition = string.Join(" OR ", toponymsName.Select(name => $"t.StreetName LIKE '%{name.Replace("'", "''")}%'"));
+            string condition = string.Join(" OR ", toponymsName.Select(name => $"t.StreetName LIKE '%{name}%'"));
             query += condition + ")";
 
             return query;
