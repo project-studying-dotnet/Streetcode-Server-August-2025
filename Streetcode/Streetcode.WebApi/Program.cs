@@ -39,9 +39,9 @@ else
 await app.ApplyMigrations();
 
 await app.SeedDataAsync();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseCors();
 app.UseHttpsRedirection();
-app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseRouting();
 

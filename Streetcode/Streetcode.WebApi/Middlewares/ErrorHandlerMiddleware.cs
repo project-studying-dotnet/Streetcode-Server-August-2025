@@ -41,9 +41,13 @@ public class ErrorHandlerMiddleware
 
         var statusCode = exception switch
         {
-            ArgumentNullException => HttpStatusCode.BadRequest,
+            BadHttpRequestException bhr => (HttpStatusCode)bhr.StatusCode,
+            ArgumentException => HttpStatusCode.BadRequest,
+            FormatException => HttpStatusCode.BadRequest,
             UnauthorizedAccessException => HttpStatusCode.Unauthorized,
             KeyNotFoundException => HttpStatusCode.NotFound,
+            NotImplementedException => HttpStatusCode.NotImplemented,
+            OperationCanceledException => (HttpStatusCode)408,
             _ => HttpStatusCode.InternalServerError
         };
 

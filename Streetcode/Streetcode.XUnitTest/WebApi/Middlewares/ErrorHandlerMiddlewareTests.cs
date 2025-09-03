@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Net;
-using System.Text.Json;
 using Streetcode.WebApi.Middlewares;
 using Xunit;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Hosting;
 
 namespace Streetcode.XUnitTest.WebApi.Middlewares;
@@ -23,20 +23,6 @@ public class ErrorHandlerMiddlewareTests
         _envMock.Setup(e => e.EnvironmentName).Returns("Development");
     }
 
-    private DefaultHttpContext CreateHttpContext()
-    {
-        var context = new DefaultHttpContext();
-        context.Response.Body = new MemoryStream();
-        return context;
-    }
-
-    private static string GetResponseBody(HttpResponse response)
-    {
-        response.Body.Seek(0, SeekOrigin.Begin);
-        using var reader = new StreamReader(response.Body);
-        return reader.ReadToEnd();
-    }
-
     [Fact]
     public async Task InvokeAsync_NoException_CallsNext()
     {
@@ -45,8 +31,7 @@ public class ErrorHandlerMiddlewareTests
         var middleware = new ErrorHandlerMiddleware(
             _ => Task.CompletedTask,
             _loggerMock.Object,
-            _envMock.Object
-            );
+            _envMock.Object);
 
         // Act
         await middleware.InvokeAsync(context);
@@ -63,8 +48,7 @@ public class ErrorHandlerMiddlewareTests
         var middleware = new ErrorHandlerMiddleware(
             _ => throw new Exception("Test error"),
             _loggerMock.Object,
-            _envMock.Object
-        );
+            _envMock.Object);
 
         // Act
         await middleware.InvokeAsync(context);
@@ -89,8 +73,8 @@ public class ErrorHandlerMiddlewareTests
         var middleware = new ErrorHandlerMiddleware(
             _ => throw new KeyNotFoundException("Not found"),
             _loggerMock.Object,
-            _envMock.Object
-        );
+            _envMock.Object);
+
         // Act
         await middleware.InvokeAsync(context);
 
@@ -105,7 +89,21 @@ public class ErrorHandlerMiddlewareTests
         Assert.Equal((int)HttpStatusCode.NotFound, errorResponse.StatusCode);
     }
 
-    public class ErrorResponse
+    private DefaultHttpContext CreateHttpContext()
+    {
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        return context;
+    }
+
+    private static string GetResponseBody(HttpResponse response)
+    {
+        response.Body.Seek(0, SeekOrigin.Begin);
+        using var reader = new StreamReader(response.Body);
+        return reader.ReadToEnd();
+    }
+
+    private class ErrorResponse
     {
         [JsonPropertyName("error")]
         public string Error { get; set; }
