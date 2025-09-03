@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoryById;
+using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoriesByStreetcodeId;
+using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoryById;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetCategoryContentByStreetcodeId;
+using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
+using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
+using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll;
+using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
 
 namespace Streetcode.WebApi.Controllers.Source;
 
@@ -36,5 +41,29 @@ public class SourcesController : BaseApiController
     public async Task<IActionResult> GetCategoriesByStreetcodeId([FromRoute] int streetcodeId)
     {
         return HandleResult(await Mediator.Send(new GetCategoriesByStreetcodeIdQuery(streetcodeId)));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateStreetCodeCategoryContent([FromBody] CategoryContentCreateDTO categoryContentCreateDTO)
+    {
+        return HandleResult(await Mediator.Send(new CreateStreetcodeCategoryContentCommand(categoryContentCreateDTO)));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllStreetCodeCategoryContent()
+    {
+        return HandleResult(await Mediator.Send(new GetAllStreetcodeCategoryContentQuery()));
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteStreetcodeCategoryContent([FromRoute] int id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteStreetcodeCategoryContentCommand(id)));
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdateStreetcodeCategoryContent([FromBody] CategoryContentUpdateDTO categoryContentUpdateDTO)
+    {
+        return HandleResult(await Mediator.Send(new UpdateStreetcodeCategoryContentCommand(categoryContentUpdateDTO)));
     }
 }
