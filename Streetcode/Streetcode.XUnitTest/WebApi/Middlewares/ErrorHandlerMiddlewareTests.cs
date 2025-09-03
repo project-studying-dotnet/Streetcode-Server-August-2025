@@ -112,13 +112,13 @@ public class ErrorHandlerMiddlewareTests
 
     public static IEnumerable<object[]> GetExceptionTestData()
     {
-        yield return [new ArgumentException(), HttpStatusCode.BadRequest];
-        yield return [new FormatException(), HttpStatusCode.BadRequest];
-        yield return [new UnauthorizedAccessException(), HttpStatusCode.Unauthorized];
-        yield return [new KeyNotFoundException(), HttpStatusCode.NotFound];
-        yield return [new NotImplementedException(), HttpStatusCode.NotImplemented];
-        yield return [new OperationCanceledException(), (HttpStatusCode)408];
-        yield return [new Exception(), HttpStatusCode.InternalServerError];
+        yield return[new ArgumentException(), HttpStatusCode.BadRequest];
+        yield return[new FormatException(), HttpStatusCode.BadRequest];
+        yield return[new UnauthorizedAccessException(), HttpStatusCode.Unauthorized];
+        yield return[new KeyNotFoundException(), HttpStatusCode.NotFound];
+        yield return[new NotImplementedException(), HttpStatusCode.NotImplemented];
+        yield return[new OperationCanceledException(), (HttpStatusCode)408];
+        yield return[new Exception(), HttpStatusCode.InternalServerError];
     }
 
     private DefaultHttpContext CreateHttpContext()
