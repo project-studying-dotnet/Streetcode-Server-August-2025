@@ -89,6 +89,38 @@ public class ErrorHandlerMiddlewareTests
         Assert.Equal((int)HttpStatusCode.NotFound, errorResponse.StatusCode);
     }
 
+    [Theory]
+    [MemberData(nameof(GetExceptionTestData))]
+    public async Task HandleExceptionAsync_ReturnsExpectedStatusCode(Exception exception, HttpStatusCode expectedStatusCode)
+    {
+        // Arrange
+        var logger = new Mock<ILogger<ErrorHandlerMiddleware>>();
+        var env = new Mock<IHostEnvironment>();
+        env.Setup(e => e.EnvironmentName).Returns("Development");
+
+        var middleware = new ErrorHandlerMiddleware(_ => throw exception, logger.Object, env.Object);
+
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+
+        // Act
+        await middleware.InvokeAsync(context);
+
+        // Assert
+        Assert.Equal((int)expectedStatusCode, context.Response.StatusCode);
+    }
+
+    public static IEnumerable<object[]> GetExceptionTestData()
+    {
+        yield return [new ArgumentException(), HttpStatusCode.BadRequest];
+        yield return [new FormatException(), HttpStatusCode.BadRequest];
+        yield return [new UnauthorizedAccessException(), HttpStatusCode.Unauthorized];
+        yield return [new KeyNotFoundException(), HttpStatusCode.NotFound];
+        yield return [new NotImplementedException(), HttpStatusCode.NotImplemented];
+        yield return [new OperationCanceledException(), (HttpStatusCode)408];
+        yield return [new Exception(), HttpStatusCode.InternalServerError];
+    }
+
     private DefaultHttpContext CreateHttpContext()
     {
         var context = new DefaultHttpContext();
