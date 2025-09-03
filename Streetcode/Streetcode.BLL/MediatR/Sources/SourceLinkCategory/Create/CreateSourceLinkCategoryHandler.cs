@@ -27,7 +27,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create
 
         public async Task<Result<SourceLinkCategoryDTO>> Handle(CreateSourceLinkCategoryCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<DAL.Entities.Sources.SourceLinkCategory>(request.sourceLinkCategoryCreateDTO);
+            var entity = _mapper.Map<DAL.Entities.Sources.SourceLinkCategory>(request.SourceLinkCategoryCreateDTO);
 
             var existing = await _repositoryWrapper.SourceCategoryRepository
             .GetFirstOrDefaultAsync(c => c.Title == entity.Title
