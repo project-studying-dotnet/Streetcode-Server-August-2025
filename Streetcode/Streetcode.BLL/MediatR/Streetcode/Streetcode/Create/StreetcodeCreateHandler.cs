@@ -2,8 +2,8 @@
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
-using Streetcode.BLL.DTO.ArtGallery;
 using Streetcode.BLL.DTO.Locations;
+using Streetcode.BLL.DTO.ArtGallery;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;

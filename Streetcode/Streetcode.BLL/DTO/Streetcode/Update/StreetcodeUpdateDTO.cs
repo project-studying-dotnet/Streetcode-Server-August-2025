@@ -1,6 +1,5 @@
 ﻿using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Media.Images;
-using Streetcode.BLL.DTO.Locations;
 using Streetcode.BLL.DTO.Locations.Update;
 
 namespace Streetcode.BLL.DTO.Streetcode.Update;

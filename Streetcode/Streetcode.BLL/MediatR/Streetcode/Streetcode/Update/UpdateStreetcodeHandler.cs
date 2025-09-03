@@ -48,6 +48,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                     _mapper.Map(request.Streetcode, existingEntity);
 
                     existingEntity.UpdatedAt = DateTime.UtcNow;
+
                     await UpdateEntitiesAsync(request.Streetcode.MapPoints, _repositoryWrapper.StreetcodeCoordinateRepository);
 
                     await UpdateTags(request.Streetcode.Tags);
