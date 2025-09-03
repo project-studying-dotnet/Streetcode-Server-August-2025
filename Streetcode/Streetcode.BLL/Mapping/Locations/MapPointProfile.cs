@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Streetcode.BLL.DTO.Locations;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
-using Streetcode.BLL.DTO.Locations.Update;
 using Streetcode.DAL.Entities.Analytics;
+using Streetcode.BLL.DTO.Locations;
+using Streetcode.BLL.DTO.Locations.Update;
 
 namespace Streetcode.BLL.Mapping.Locations;
 

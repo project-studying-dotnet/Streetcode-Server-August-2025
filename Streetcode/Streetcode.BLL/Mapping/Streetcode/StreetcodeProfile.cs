@@ -36,6 +36,7 @@ public class StreetcodeProfile : Profile
             .ForMember(x => x.StreetcodeArtSlides, conf => conf.Ignore())
             .ForMember(x => x.Tags, conf => conf.Ignore())
             .ForMember(x => x.Images, conf => conf.Ignore())
+            .ForMember(x => x.StatisticRecords, conf => conf.Ignore())
             .ReverseMap();
 
         CreateMap<StreetcodeUpdateDTO, PersonStreetcode>()
