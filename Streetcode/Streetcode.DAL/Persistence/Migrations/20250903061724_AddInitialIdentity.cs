@@ -218,6 +218,7 @@ namespace Streetcode.DAL.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // 1. Видаляємо нові колонки, додані в Up()
             migrationBuilder.DropColumn(
                 name: "Name",
                 table: "AspNetUsers");
@@ -230,9 +231,66 @@ namespace Streetcode.DAL.Persistence.Migrations
                 name: "Surname",
                 table: "AspNetUsers");
 
-            migrationBuilder.EnsureSchema(
-                name: "Users");
+            // 2. Видаляємо зовнішні ключі, які залежать від AspNetUsers та AspNetRoles
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                table: "AspNetUserTokens");
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                table: "AspNetUserRoles");
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                table: "AspNetUserLogins");
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                table: "AspNetUserClaims");
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                table: "AspNetUserRoles");
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                table: "AspNetRoleClaims");
 
+            // 3. Видаляємо первинні ключі
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AspNetUsers",
+                table: "AspNetUsers");
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AspNetRoles",
+                table: "AspNetRoles");
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AspNetUserTokens",
+                table: "AspNetUserTokens");
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AspNetUserRoles",
+                table: "AspNetUserRoles");
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AspNetUserLogins",
+                table: "AspNetUserLogins");
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AspNetRoleClaims",
+                table: "AspNetRoleClaims");
+
+            // 4. Повертаємо колонки Id з int на string (видаляємо та створюємо заново)
+            migrationBuilder.DropColumn(
+                name: "Id",
+                table: "AspNetUsers");
+            migrationBuilder.AddColumn<string>(
+                name: "Id",
+                table: "AspNetUsers",
+                type: "nvarchar(450)",
+                nullable: false);
+
+            migrationBuilder.DropColumn(
+                name: "Id",
+                table: "AspNetRoles");
+            migrationBuilder.AddColumn<string>(
+                name: "Id",
+                table: "AspNetRoles",
+                type: "nvarchar(450)",
+                nullable: false);
+
+            // 5. Повертаємо колонки UserId та RoleId на string
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
                 table: "AspNetUserTokens",
@@ -240,24 +298,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                 nullable: false,
                 oldClrType: typeof(int),
                 oldType: "int");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Id",
-                table: "AspNetUsers",
-                type: "nvarchar(450)",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "RoleId",
-                table: "AspNetUserRoles",
-                type: "nvarchar(450)",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int");
-
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
                 table: "AspNetUserRoles",
@@ -265,7 +305,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                 nullable: false,
                 oldClrType: typeof(int),
                 oldType: "int");
-
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
                 table: "AspNetUserLogins",
@@ -273,7 +312,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                 nullable: false,
                 oldClrType: typeof(int),
                 oldType: "int");
-
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
                 table: "AspNetUserClaims",
@@ -281,16 +319,13 @@ namespace Streetcode.DAL.Persistence.Migrations
                 nullable: false,
                 oldClrType: typeof(int),
                 oldType: "int");
-
             migrationBuilder.AlterColumn<string>(
-                name: "Id",
-                table: "AspNetRoles",
+                name: "RoleId",
+                table: "AspNetUserRoles",
                 type: "nvarchar(450)",
                 nullable: false,
                 oldClrType: typeof(int),
-                oldType: "int")
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
+                oldType: "int");
             migrationBuilder.AlterColumn<string>(
                 name: "RoleId",
                 table: "AspNetRoleClaims",
@@ -299,6 +334,79 @@ namespace Streetcode.DAL.Persistence.Migrations
                 oldClrType: typeof(int),
                 oldType: "int");
 
+            // 6. Відновлюємо первинні ключі
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AspNetUsers",
+                table: "AspNetUsers",
+                column: "Id");
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AspNetRoles",
+                table: "AspNetRoles",
+                column: "Id");
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AspNetUserTokens",
+                table: "AspNetUserTokens",
+                columns: new[] { "UserId", "LoginProvider", "Name" });
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AspNetUserRoles",
+                table: "AspNetUserRoles",
+                columns: new[] { "UserId", "RoleId" });
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AspNetUserLogins",
+                table: "AspNetUserLogins",
+                columns: new[] { "LoginProvider", "ProviderKey" });
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AspNetRoleClaims",
+                table: "AspNetRoleClaims",
+                column: "Id");
+
+            // 7. Відновлюємо зовнішні ключі
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                table: "AspNetUserTokens",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                table: "AspNetUserRoles",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId",
+                principalTable: "AspNetRoles",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId",
+                principalTable: "AspNetRoles",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            // 8. Відновлюємо таблицю Users, яка була видалена в Up()
+            migrationBuilder.EnsureSchema(
+                name: "Users");
             migrationBuilder.CreateTable(
                 name: "Users",
                 schema: "Users",
