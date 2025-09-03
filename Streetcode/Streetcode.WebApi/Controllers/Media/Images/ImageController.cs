@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.MediatR.Media.Image.Create;
+using Streetcode.BLL.MediatR.Media.Image.Delete;
 using Streetcode.BLL.MediatR.Media.Image.GetAll;
 using Streetcode.BLL.MediatR.Media.Image.GetBaseImage;
 using Streetcode.BLL.MediatR.Media.Image.GetById;
 using Streetcode.BLL.MediatR.Media.Image.GetByStreetcodeId;
-using Streetcode.BLL.MediatR.Media.Image.Create;
-using Streetcode.BLL.MediatR.Media.Image.Delete;
+using Streetcode.DAL.Enums;
+using Streetcode.WebApi.Attributes;
 
 namespace Streetcode.WebApi.Controllers.Media.Images;
 
@@ -29,12 +31,14 @@ public class ImageController : BaseApiController
         return HandleResult(await Mediator.Send(new GetImageByIdQuery(id)));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ImageFileBaseCreateDTO image)
     {
         return HandleResult(await Mediator.Send(new CreateImageCommand(image)));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
