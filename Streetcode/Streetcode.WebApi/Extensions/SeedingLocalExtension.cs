@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Streetcode.BLL.Services.BlobStorageService;
@@ -15,6 +16,7 @@ using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Entities.Team;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Entities.Transactions;
+using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Realizations.Base;
@@ -23,6 +25,15 @@ namespace Streetcode.WebApi.Extensions
 {
     public static class SeedingLocalExtension
     {
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<User, IdentityRole<int>>()
+                .AddEntityFrameworkStores<StreetcodeDbContext>()
+                .AddDefaultTokenProviders();
+
+            return services;
+        }
+
         public static async Task SeedDataAsync(this WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
@@ -267,20 +278,56 @@ namespace Streetcode.WebApi.Extensions
                         }
                     }
 
-                    if (!dbContext.Users.Any())
-                    {
-                        dbContext.Users.AddRange(
-                            new DAL.Entities.Users.User
-                            {
-                                Email = "admin",
-                                Role = UserRole.MainAdministrator,
-                                Login = "admin",
-                                Name = "admin",
-                                Password = "admin",
-                                Surname = "admin",
-                            });
+                    // Seed Roles and Admin User
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
-                        await dbContext.SaveChangesAsync();
+                    // Seed Roles
+                    string[] roleNames = Enum.GetNames(typeof(UserRole));
+
+                    foreach (var roleName in roleNames)
+                    {
+                        if (roleName != "None" && !await roleManager.RoleExistsAsync(roleName))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole<int>(roleName));
+                        }
+                    }
+
+                    // Seed Admin User
+                    var adminUser = await userManager.FindByEmailAsync("admin@gmail.com");
+                    if (adminUser == null)
+                    {
+                        var newAdminUser = new User
+                        {
+                            Email = "admin@gmail.com",
+                            Name = "admin",
+                            Surname = "admin",
+                        };
+
+                        var createResult = await userManager.CreateAsync(newAdminUser, "admin_password_123!");
+                        if (createResult.Succeeded)
+                        {
+                            await userManager.AddToRoleAsync(newAdminUser, UserRole.MainAdministrator.ToString());
+                        }
+                    }
+
+                    // Seed a regular user
+                    var regularUser = await userManager.FindByEmailAsync("user@gmail.com");
+                    if (regularUser == null)
+                    {
+                        var newRegularUser = new User
+                        {
+                            Email = "user@gmail.com",
+                            Name = "user",
+                            Surname = "user"
+                        };
+
+                        var createResult = await userManager.CreateAsync(newRegularUser, "user_password_123!");
+                        if (createResult.Succeeded)
+                        {
+                            // Add user to the User role
+                            await userManager.AddToRoleAsync(newRegularUser, UserRole.User.ToString());
+                        }
                     }
 
                     if (!dbContext.News.Any())
