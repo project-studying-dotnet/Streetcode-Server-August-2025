@@ -6,6 +6,7 @@ using Streetcode.BLL.DTO.ArtGallery;
 using Streetcode.BLL.DTO.Interfaces;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.AdditionalContent;
@@ -47,9 +48,12 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                     _mapper.Map(request.Streetcode, existingEntity);
 
                     existingEntity.UpdatedAt = DateTime.UtcNow;
+                    await UpdateEntitiesAsync(request.Streetcode.MapPoints, _repositoryWrapper.StreetcodeCoordinateRepository);
+
                     await UpdateTags(request.Streetcode.Tags);
                     await UpdateImagesAsync(request.Streetcode.Images);
                     await UpdateArtGalleryAsync(existingEntity.Id, request.Streetcode.Arts, request.Streetcode.StreetcodeArtSlides);
+                    await UpdateStreetcodeToponymAsync(existingEntity, request.Streetcode.Toponyms);
 
                     _repositoryWrapper.StreetcodeRepository.Update(existingEntity);
 
@@ -287,6 +291,74 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
             {
                 await _repositoryWrapper.StreetcodeArtRepository.CreateRangeAsync(newStreetcodeArts);
             }
+        }
+
+        private async Task UpdateStreetcodeToponymAsync(StreetcodeContent streetcodeContent, IEnumerable<StreetcodeToponymCreateUpdateDTO>? toponyms)
+        {
+            if (toponyms is null || !toponyms.Any())
+            {
+                return;
+            }
+
+            var (_, toCreate, toDelete) = CategorizeItems(toponyms);
+
+            await DeleteToponymsAsync(streetcodeContent.Id, toDelete);
+            await AddToponymsAsync(streetcodeContent, toCreate);
+        }
+
+        private async Task DeleteToponymsAsync(int streetcodeId, IEnumerable<StreetcodeToponymCreateUpdateDTO> toponymsToDelete)
+        {
+            if (!toponymsToDelete.Any())
+            {
+                return;
+            }
+
+            var toponymNames = toponymsToDelete.Select(x => x.StreetName).ToList();
+            var deleteQuery = GetToponymDeleteQuery(streetcodeId, toponymNames);
+
+            await _repositoryWrapper.ToponymRepository.ExecuteSqlRaw(deleteQuery);
+        }
+
+        private async Task AddToponymsAsync(StreetcodeContent streetcodeContent, IEnumerable<StreetcodeToponymCreateUpdateDTO> toponymsToCreate)
+        {
+            if (!toponymsToCreate.Any())
+            {
+                return;
+            }
+
+            var toponymNames = toponymsToCreate.Select(x => x.StreetName).ToList();
+            var toponymsToAdd = await _repositoryWrapper.ToponymRepository
+                .GetAllAsync(predicate: t => toponymNames.Contains(t.StreetName));
+
+            streetcodeContent.Toponyms.AddRange(toponymsToAdd);
+        }
+
+        private static string GetToponymDeleteQuery(int streetcodeId, IEnumerable<string> toponymsName)
+        {
+            string query = "DELETE st FROM streetcode.streetcode_toponym AS st " +
+                           "LEFT JOIN toponyms.toponyms AS t ON st.ToponymId = t.Id " +
+                           $"WHERE st.StreetcodeId = {streetcodeId} AND (";
+
+            string condition = string.Join(" OR ", toponymsName.Select(name => $"t.StreetName LIKE '%{name.Replace("'", "''")}%'"));
+            query += condition + ")";
+
+            return query;
+        }
+
+        private async Task UpdateEntitiesAsync<T, TU>(IEnumerable<TU>? updates, IRepositoryBase<T> repository)
+            where T : class
+            where TU : IModelState
+        {
+            if (updates is null)
+            {
+                return;
+            }
+
+            var (toUpdate, toCreate, toDelete) = CategorizeItems(updates);
+
+            await repository.CreateRangeAsync(_mapper.Map<IEnumerable<T>>(toCreate));
+            repository.DeleteRange(_mapper.Map<IEnumerable<T>>(toDelete));
+            repository.UpdateRange(_mapper.Map<IEnumerable<T>>(toUpdate));
         }
 
         private static (IEnumerable<T> toUpdate, IEnumerable<T> toCreate, IEnumerable<T> toDelete) CategorizeItems<T>(IEnumerable<T> items)

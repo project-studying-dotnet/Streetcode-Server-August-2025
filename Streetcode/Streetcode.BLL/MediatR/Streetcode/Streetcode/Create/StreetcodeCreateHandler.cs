@@ -109,7 +109,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
     private async Task AddImagesDetails(IEnumerable<ImageDetailsDto> imagesDetailsDtos)
     {
         var imageDetails = _mapper.Map<IEnumerable<ImageDetails>>(imagesDetailsDtos);
-        await _repositoryWrapper.ImageDetailsRepository.CreateRangeAsync(_mapper.Map<IEnumerable<ImageDetails>>(imagesDetailsDtos));
+        await _repositoryWrapper.ImageDetailsRepository.CreateRangeAsync(imageDetails);
     }
 
     private async Task AddImagesAsync(StreetcodeContent streetcode, IEnumerable<int> imagesIds)
