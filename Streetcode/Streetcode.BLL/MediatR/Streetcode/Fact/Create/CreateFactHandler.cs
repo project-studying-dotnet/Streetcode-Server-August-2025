@@ -11,6 +11,7 @@ using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Services.Text.Fact;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
 {
@@ -19,12 +20,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ILoggerService _logger;
+        private readonly FactAutoOrder _autoOrder;
 
-        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger, FactAutoOrder autoOrder)
         {
             _mapper = mapper;
             _repositoryWrapper = repositoryWrapper;
             _logger = logger;
+            _autoOrder = autoOrder;
         }
 
         public async Task<Result<FactCreateDto>> Handle(CreateFactCommand request, CancellationToken cancellationToken)
@@ -53,6 +56,11 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
             }
 
             newFact.StreetcodeId = request.streetcodeId;
+
+            if (newFact.Order == 0)
+            {
+                newFact.Order = await _autoOrder.SetOrderForFacts(request.streetcodeId);
+            }
 
             var entity = _repositoryWrapper.FactRepository.Create(newFact);
             var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
