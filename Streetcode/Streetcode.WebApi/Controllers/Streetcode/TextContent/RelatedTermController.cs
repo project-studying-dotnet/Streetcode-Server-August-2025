@@ -28,9 +28,9 @@ namespace Streetcode.WebApi.Controllers.Streetcode.TextContent
         }
 
         [HttpDelete("{word}")]
-        public async Task<IActionResult> Delete([FromRoute] string word)
+        public async Task<IActionResult> Delete([FromRoute] string word, int TermId)
         {
-            return HandleResult(await Mediator.Send(new DeleteRelatedTermCommand(word)));
+            return HandleResult(await Mediator.Send(new DeleteRelatedTermCommand(word, TermId)));
         }
     }
 }
