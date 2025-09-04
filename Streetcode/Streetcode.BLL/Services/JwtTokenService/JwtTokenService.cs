@@ -13,7 +13,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.Services.JwtService;
 
-public class JwtService : IJwtService
+public class JwtTokenService : IJwtService
 {
     private readonly JwtEnvironmentVariables _jwtVariables;
     private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
@@ -21,7 +21,7 @@ public class JwtService : IJwtService
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly IMapper _mapper;
 
-    public JwtService(IConfiguration configuration, IMapper mapper, IRepositoryWrapper repositoryWrapper)
+    public JwtTokenService(IConfiguration configuration, IMapper mapper, IRepositoryWrapper repositoryWrapper)
     {
         _jwtVariables = configuration
             .GetSection("JwtSettings")
