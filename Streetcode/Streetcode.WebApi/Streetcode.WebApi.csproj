@@ -66,6 +66,7 @@
   <ItemGroup>
     <Folder Include="Controllers\Analytics\" />
     <Folder Include="Controllers\Newss\" />
+    <Folder Include="Middlewares\" />
   </ItemGroup>
 
 </Project>
