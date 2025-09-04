@@ -10,6 +10,8 @@ using Streetcode.BLL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
 using Streetcode.DAL.Entities.AdditionalContent;
+using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
+using Streetcode.DAL.Entities.Analytics;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Enums;
@@ -374,6 +376,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
                 .Verifiable();
             _repositoryWrapperMock.Setup(r => r.StreetcodeTagIndexRepository.UpdateRange(It.IsAny<IEnumerable<StreetcodeTagIndex>>()))
                 .Verifiable();
+
+            _repositoryWrapperMock.Setup(r => r.StreetcodeCoordinateRepository.CreateRangeAsync(It.IsAny<IEnumerable<StreetcodeCoordinate>>()))
+                .Returns(Task.CompletedTask);
+            _repositoryWrapperMock.Setup(r => r.StreetcodeCoordinateRepository.DeleteRange(It.IsAny<IEnumerable<StreetcodeCoordinate>>()))
+                .Verifiable();
+            _repositoryWrapperMock.Setup(r => r.StreetcodeCoordinateRepository.UpdateRange(It.IsAny<IEnumerable<StreetcodeCoordinate>>()))
+                .Verifiable();
+
             _repositoryWrapperMock.Setup(r => r.ImageRepository.DeleteRange(It.IsAny<IEnumerable<Image>>()))
                 .Verifiable();
             _repositoryWrapperMock.Setup(r => r.StreetcodeImageRepository.CreateRangeAsync(It.IsAny<IEnumerable<StreetcodeImage>>()))
