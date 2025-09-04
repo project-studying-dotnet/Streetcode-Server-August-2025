@@ -43,6 +43,9 @@ app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseHangfireDashboard("/dash");
 
 if (app.Environment.EnvironmentName != "Local")
