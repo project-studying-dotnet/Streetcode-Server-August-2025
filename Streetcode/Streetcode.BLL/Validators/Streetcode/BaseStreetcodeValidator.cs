@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.Toponyms;
 using Streetcode.DAL.Enums;
 
 namespace Streetcode.BLL.Validators.Streetcode;
@@ -18,7 +19,7 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
     public const int TeaserMaxLength = 520;
     public const int TeaserMaxLengthWithNewLine = 455;
 
-    public BaseStreetcodeValidator()
+    public BaseStreetcodeValidator(StreetcodeToponymValidator streetcodeToponymValidator)
     {
         RuleFor(dto => dto.Index)
             .NotNull().WithMessage("Index is required.")
@@ -77,6 +78,9 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
         RuleFor(dto => dto.ImagesDetails)
             .Must(HaveAtMostOneRelatedFigure)
             .WithMessage("There can be at most one related figure image.");
+
+        RuleForEach(dto => dto.Toponyms)
+            .SetValidator(streetcodeToponymValidator);
     }
 
     private bool BeValidTeaserLength(string? teaser)
