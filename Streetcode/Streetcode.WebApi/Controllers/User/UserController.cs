@@ -13,9 +13,9 @@ namespace Streetcode.WebApi.Controllers.User
     public class UserController : ControllerBase
     {
         private readonly JwtEnvironmentVariables _jwtSettings;
-        private readonly IJwtService _jwtService;
+        private readonly IJwtTokenService _jwtService;
 
-        public UserController(IOptions<JwtEnvironmentVariables> jwtSettings, IJwtService jwtService)
+        public UserController(IOptions<JwtEnvironmentVariables> jwtSettings, IJwtTokenService jwtService)
         {
             _jwtService = jwtService;
             _jwtSettings = jwtSettings.Value;
@@ -40,23 +40,26 @@ namespace Streetcode.WebApi.Controllers.User
         {
             var result = await _jwtService.GenerateTokenAsync(userId);
 
-            return Ok(result);
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors.Select(e => e.Message));
+            }
+
+            return Ok(result.Value);
         }
 
         // Endpoint for testing purposes, can be removed later
         [HttpPost("validate-token")]
         public IActionResult ValidateToken([FromBody] string token)
         {
-            var principal = _jwtService.ValidateToken(token);
-            if (principal == null)
+            var result = _jwtService.ValidateToken(token);
+
+            if (result.IsFailed)
             {
-                return Unauthorized(new
-                {
-                    message = "Invalid or expired token."
-                });
+                return Unauthorized(result.Errors.Select(e => e.Message));
             }
 
-            var claims = principal.Claims.Select(c => new { c.Type, c.Value });
+            var claims = result.Value.Claims.Select(c => new { c.Type, c.Value });
             return Ok(claims);
         }
 
@@ -64,31 +67,28 @@ namespace Streetcode.WebApi.Controllers.User
         [HttpPost("get-user-id")]
         public IActionResult GetUserIdFromToken([FromBody] string token)
         {
-            var userId = _jwtService.GetUserIdFromToken(token);
-            if (userId == null)
+            var result = _jwtService.GetUserIdFromToken(token);
+
+            if (result.IsFailed)
             {
-                return Unauthorized(new
-                {
-                    message = "Invalid token."
-                });
+                return Unauthorized(result.Errors.Select(e => e.Message));
             }
 
-            return Ok(new { userId });
+            return Ok(new { userId = result.Value });
         }
 
         // Endpoint for testing purposes, can be removed later
         [HttpPost("refresh")]
         public async Task<ActionResult<LoginResultDTO>> Refresh([FromBody] RefreshRequest request)
         {
-            try
+            var result = await _jwtService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
+
+            if (result.IsFailed)
             {
-                var result = await _jwtService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
-                return Ok(result);
+                return Unauthorized(result.Errors.Select(e => e.Message));
             }
-            catch (SecurityTokenException ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
+
+            return Ok(result.Value);
         }
     }
 }

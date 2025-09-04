@@ -1,13 +1,14 @@
 ﻿using System.Security.Claims;
+using FluentResults;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.Interfaces.Jwt;
 
-public interface IJwtService
+public interface IJwtTokenService
 {
-    Task<LoginResultDTO> GenerateTokenAsync(int userId);
-    ClaimsPrincipal? ValidateToken(string token);
-    int? GetUserIdFromToken(string token);
-    Task<LoginResultDTO> RefreshTokenAsync(string token, string refreshToken);
+    Task<Result<LoginResultDTO>> GenerateTokenAsync(int userId);
+    Result<ClaimsPrincipal> ValidateToken(string token);
+    Result<int> GetUserIdFromToken(string token);
+    Task<Result<LoginResultDTO>> RefreshTokenAsync(string token, string refreshToken);
 }
