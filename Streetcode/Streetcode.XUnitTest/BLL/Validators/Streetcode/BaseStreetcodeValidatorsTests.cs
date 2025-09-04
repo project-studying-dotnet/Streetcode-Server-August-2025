@@ -434,6 +434,15 @@ public class BaseStreetcodeValidatorsTests
                     Title = "Franko_black&white",
                     Alt = "1",
                 },
+            ],
+            Toponyms =
+            [
+                new ()
+                {
+                    StreetcodeId = 1,
+                    ToponymId = 5,
+                    StreetName = "Lesia Ukrainka",
+                },
             ]
         };
     }
