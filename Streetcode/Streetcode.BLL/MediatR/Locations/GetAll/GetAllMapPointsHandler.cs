@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Locations;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -20,8 +21,26 @@ public class GetAllMapPointsHandler : IRequestHandler<GetAllMapPointsQuery, Resu
         _logger = logger;
     }
 
-    public Task<Result<IEnumerable<MapPointDTO>>> Handle(GetAllMapPointsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<MapPointDTO>>> Handle(GetAllMapPointsQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var mapPoints = await _repositoryWrapper.StatisticRecordRepository.GetAllAsync(include: x => x.Include(x => x.StreetcodeCoordinate));
+
+        if (mapPoints is null)
+        {
+            string errorMsg = "CannotGetPoints";
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
+
+        var mappedEntities = _mapper.Map<IEnumerable<MapPointDTO>>(mapPoints);
+
+        if (mappedEntities is null)
+        {
+            string errorMsg = "CannotMapPoints";
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
+
+        return Result.Ok(mappedEntities.OrderByDescending(x => x.PlateNumber).AsEnumerable());
     }
 }
