@@ -3,6 +3,8 @@ using FluentValidation;
 using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
@@ -27,6 +29,7 @@ using Streetcode.BLL.MediatR;
 using Streetcode.BLL;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.BLL.Services.JwtService;
+using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -119,6 +122,11 @@ public static class ServiceCollectionExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
                 };
             });
+
+        services.AddAuthorization(options => options.DefaultPolicy =
+            new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build());
 
         services.AddLogging();
         services.AddControllers();
