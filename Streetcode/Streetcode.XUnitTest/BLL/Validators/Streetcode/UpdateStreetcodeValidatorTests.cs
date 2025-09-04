@@ -7,6 +7,7 @@ using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.BLL.Validators.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.Toponyms;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -20,11 +21,13 @@ public class UpdateStreetcodeValidatorTests
     private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<BaseStreetcodeValidator> _mockBaseStreetcodeValidator;
     private readonly Mock<TagValidator> _mockTagValidator;
+    private readonly Mock<StreetcodeToponymValidator> _streetcodeToponymValidatorMock;
 
     public UpdateStreetcodeValidatorTests()
     {
+        _streetcodeToponymValidatorMock = new Mock<StreetcodeToponymValidator>();
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-        _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>();
+        _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(_streetcodeToponymValidatorMock.Object);
         _mockTagValidator = new Mock<TagValidator>();
 
         _validator = new UpdateStreetcodeValidator(

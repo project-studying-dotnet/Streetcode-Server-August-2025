@@ -1,7 +1,9 @@
 ﻿using FluentValidation.TestHelper;
+using Moq;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Validators.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.Toponyms;
 using Streetcode.DAL.Enums;
 using Xunit;
 
@@ -10,10 +12,12 @@ namespace Streetcode.XUnitTest.BLL.Validators.Streetcode;
 public class BaseStreetcodeValidatorsTests
 {
     private readonly BaseStreetcodeValidator _validator;
+    private readonly Mock<StreetcodeToponymValidator> _streetcodeToponymValidatorMock;
 
     public BaseStreetcodeValidatorsTests()
     {
-        _validator = new BaseStreetcodeValidator();
+        _streetcodeToponymValidatorMock = new Mock<StreetcodeToponymValidator>();
+        _validator = new BaseStreetcodeValidator(_streetcodeToponymValidatorMock.Object);
     }
 
     [Fact]
