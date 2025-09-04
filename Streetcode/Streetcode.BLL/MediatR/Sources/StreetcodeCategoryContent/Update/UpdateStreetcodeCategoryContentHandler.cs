@@ -28,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
         public async Task<Result<StreetcodeCategoryContentDTO>> Handle(UpdateStreetcodeCategoryContentCommand request, CancellationToken cancellationToken)
         {
             var streetcodeCategoryContent = await _repositoryWrapper.StreetcodeCategoryContentRepository
-                .GetFirstOrDefaultAsync(t => t.Id == request.categoryContentUpdateDTO.Id);
+                .GetFirstOrDefaultAsync(t => t.Id == request.CategoryContentUpdateDTO.Id);
 
             if (streetcodeCategoryContent == null)
             {
@@ -37,13 +37,13 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
                 return Result.Fail(new Error(errorMsg));
             }
 
-            _mapper.Map(request.categoryContentUpdateDTO, streetcodeCategoryContent);
+            _mapper.Map(request.CategoryContentUpdateDTO, streetcodeCategoryContent);
 
             var exists = await _repositoryWrapper.StreetcodeCategoryContentRepository
                 .GetFirstOrDefaultAsync(x =>
-                x.Id != request.categoryContentUpdateDTO.Id &&
-                x.SourceLinkCategoryId == request.categoryContentUpdateDTO.SourceLinkCategoryId &&
-                x.StreetcodeId == request.categoryContentUpdateDTO.StreetcodeId);
+                x.Id != request.CategoryContentUpdateDTO.Id &&
+                x.SourceLinkCategoryId == request.CategoryContentUpdateDTO.SourceLinkCategoryId &&
+                x.StreetcodeId == request.CategoryContentUpdateDTO.StreetcodeId);
 
             if(exists != null)
             {

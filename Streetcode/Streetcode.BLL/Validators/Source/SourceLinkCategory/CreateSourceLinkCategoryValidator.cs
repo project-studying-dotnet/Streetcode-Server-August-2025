@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using Streetcode.BLL.DTO.Sources;
+﻿using FluentValidation;
+using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
 
 namespace Streetcode.BLL.Validators.Source.SourceLinkCategory
 {
-    public class CreateSourceLinkCategoryValidator : AbstractValidator<SourceLinkCategoryCreateDTO>
+    public class CreateSourceLinkCategoryValidator : AbstractValidator<CreateSourceLinkCategoryCommand>
     {
         public CreateSourceLinkCategoryValidator()
         {
-            RuleFor(dto => dto.Title)
+            RuleFor(c => c.SourceLinkCategoryCreateDTO.Title)
             .MaximumLength(23).WithMessage("Category can`t be more than 23 symbols.");
         }
     }
