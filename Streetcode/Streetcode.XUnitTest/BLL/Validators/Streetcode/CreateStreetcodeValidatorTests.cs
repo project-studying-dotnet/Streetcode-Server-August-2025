@@ -28,22 +28,22 @@ public class CreateStreetcodeValidatorTests
     private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<BaseStreetcodeValidator> _mockBaseStreetcodeValidator;
     private readonly Mock<TagValidator> _mockTagValidator;
-    private readonly Mock<StreetcodeToponymValidator> _streetcodeToponymValidatorMock;
 
     public CreateStreetcodeValidatorTests()
     {
-        _streetcodeToponymValidatorMock = new Mock<StreetcodeToponymValidator>();
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
         _mockTagValidator = new Mock<TagValidator>();
+
         var mockArtSlideValidator = new Mock<StreetcodeArtSlideValidator>();
         var mockImageDetailsValidator = new Mock<ImageDetailsValidator>(_mockRepositoryWrapper.Object);
         var mockArtValidator = new Mock<ArtCreateUpdateDTOValidator>();
+        var mockToponymValidator = new Mock<StreetcodeToponymValidator>();
 
         _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(
-            _streetcodeToponymValidatorMock.Object,  // Додано з feature/135
             mockArtSlideValidator.Object,
             mockArtValidator.Object,
-            mockImageDetailsValidator.Object);
+            mockImageDetailsValidator.Object,
+            mockToponymValidator.Object);
 
         _validator = new CreateStreetcodeValidator(
             _mockRepositoryWrapper.Object,

@@ -88,7 +88,7 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
 
         RuleForEach(dto => dto.Toponyms)
             .SetValidator(streetcodeToponymValidator);
-            
+
         RuleForEach(dto => dto.ImagesDetails)
             .SetValidator(imageDetailsValidator);
 

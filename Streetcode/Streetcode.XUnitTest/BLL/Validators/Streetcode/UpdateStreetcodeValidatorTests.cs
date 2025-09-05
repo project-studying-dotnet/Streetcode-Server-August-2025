@@ -25,22 +25,22 @@ public class UpdateStreetcodeValidatorTests
     private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
     private readonly Mock<BaseStreetcodeValidator> _mockBaseStreetcodeValidator;
     private readonly Mock<TagValidator> _mockTagValidator;
-    private readonly Mock<StreetcodeToponymValidator> _streetcodeToponymValidatorMock;
 
     public UpdateStreetcodeValidatorTests()
     {
-        _streetcodeToponymValidatorMock = new Mock<StreetcodeToponymValidator>();
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-        _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(_streetcodeToponymValidatorMock.Object);
         _mockTagValidator = new Mock<TagValidator>();
+
         var mockArtSlideValidator = new Mock<StreetcodeArtSlideValidator>();
         var mockImageDetailsValidator = new Mock<ImageDetailsValidator>(_mockRepositoryWrapper.Object);
         var mockArtValidator = new Mock<ArtCreateUpdateDTOValidator>();
+        var mockToponymValidator = new Mock<StreetcodeToponymValidator>();
 
         _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(
             mockArtSlideValidator.Object,
             mockArtValidator.Object,
-            mockImageDetailsValidator.Object);
+            mockImageDetailsValidator.Object,
+            mockToponymValidator.Object);
 
         _validator = new UpdateStreetcodeValidator(
             _mockRepositoryWrapper.Object,
