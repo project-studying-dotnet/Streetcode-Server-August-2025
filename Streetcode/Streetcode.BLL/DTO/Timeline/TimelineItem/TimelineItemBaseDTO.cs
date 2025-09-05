@@ -9,6 +9,6 @@ namespace Streetcode.BLL.DTO.Timeline.TimelineItem
         required public string Description { get; set; }
         public DateTime Date { get; set; }
         public DateViewPattern DateViewPattern { get; set; }
-        public IEnumerable<HistoricalContextRequestDto>? HistoricalContexts { get; set; }
+        required public IEnumerable<HistoricalContextRequestDto> HistoricalContexts { get; set; }
     }
 }
