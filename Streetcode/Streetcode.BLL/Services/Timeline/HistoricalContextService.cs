@@ -63,7 +63,11 @@ namespace Streetcode.BLL.Services.Timeline
             if (timelineItem.HistoricalContextTimelines.Any())
             {
                 _repositoryWrapper.HistoricalContextTimelineRepository.DeleteRange(timelineItem.HistoricalContextTimelines);
+                timelineItem.HistoricalContextTimelines.Clear();
             }
+
+            var seenIds = new HashSet<int>();
+            var seenNewTitles = new HashSet<string>();
 
             foreach (var contextDto in contexts)
             {
@@ -71,6 +75,11 @@ namespace Streetcode.BLL.Services.Timeline
 
                 if (contextDto.Id.HasValue)
                 {
+                    if (!seenIds.Add(contextDto.Id.Value))
+                    {
+                        continue;
+                    }
+
                     historicalContext = await _repositoryWrapper.HistoricalContextRepository
                         .GetFirstOrDefaultAsync(hc => hc.Id == contextDto.Id.Value);
 
@@ -82,6 +91,11 @@ namespace Streetcode.BLL.Services.Timeline
                 }
                 else
                 {
+                    if (!seenNewTitles.Add(contextDto.Title!))
+                    {
+                        continue;
+                    }
+
                     historicalContext = new HistoricalContextEntity { Title = contextDto.Title! };
                     await _repositoryWrapper.HistoricalContextRepository.CreateAsync(historicalContext);
                 }
