@@ -55,7 +55,7 @@ partial class Build
         {
             DotNetRestore(_ => _
                 .SetProjectFile(Solution)
-                .SetVerbosity(DotNetVerbosity.Quiet)
+                .SetVerbosity(DotNetVerbosity.minimal)
             );
         });
 
