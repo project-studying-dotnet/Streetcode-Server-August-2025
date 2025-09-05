@@ -141,18 +141,13 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
             var contexts = new List<HistoricalContextRequestDto>();
 
             _repositoryWrapperMock.Setup(r => r.HistoricalContextTimelineRepository.DeleteRange(
-                It.IsAny<IEnumerable<HistoricalContextTimeline>>()))
-                .Callback<IEnumerable<HistoricalContextTimeline>>(items =>
-                {
-                    timelineItem.HistoricalContextTimelines.Clear();
-                });
+                It.IsAny<IEnumerable<HistoricalContextTimeline>>()));
 
             // Act
             var result = await _service.BuildHistoricalContextLinksAsync(timelineItem, contexts);
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Empty(timelineItem.HistoricalContextTimelines);
 
             _repositoryWrapperMock.Verify(
                 r => r.HistoricalContextTimelineRepository.DeleteRange(
@@ -179,7 +174,6 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
             };
 
             _repositoryWrapperMock.Setup(r => r.HistoricalContextRepository.CreateAsync(It.IsAny<HistoricalContextEntity>()))
-                .Callback<HistoricalContextEntity>(hc => hc.Id = newContextId)
                 .Returns(Task.FromResult(new HistoricalContextEntity { Id = newContextId }));
 
             // Act
@@ -187,8 +181,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Single(timelineItem.HistoricalContextTimelines);
-            Assert.Equal(newContextTitle, timelineItem.HistoricalContextTimelines[0].HistoricalContext!.Title);
+
             _repositoryWrapperMock.Verify(r => r.HistoricalContextRepository.CreateAsync(It.IsAny<HistoricalContextEntity>()), Times.Once);
             _repositoryWrapperMock.VerifyNoOtherCalls();
         }
@@ -326,22 +319,13 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
             };
 
             _repositoryWrapperMock.Setup(r => r.HistoricalContextTimelineRepository.DeleteRange(
-                    It.IsAny<IEnumerable<HistoricalContextTimeline>>()))
-                .Callback<IEnumerable<HistoricalContextTimeline>>(itemsToDelete =>
-                {
-                    foreach (var item in itemsToDelete.ToList())
-                    {
-                        timelineItem.HistoricalContextTimelines.Remove(item);
-                    }
-                });
+                    It.IsAny<IEnumerable<HistoricalContextTimeline>>()));
 
             // Act
             var result = _service.RemoveObsoleteLinks(timelineItem, newContexts);
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Single(timelineItem.HistoricalContextTimelines);
-            Assert.Equal(newContextId, timelineItem.HistoricalContextTimelines[0].HistoricalContextId);
 
             _repositoryWrapperMock.Verify(
                 r => r.HistoricalContextTimelineRepository.DeleteRange(

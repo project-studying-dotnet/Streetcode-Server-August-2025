@@ -7,7 +7,6 @@ using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Timeline;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Create;
-using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
@@ -88,13 +87,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
         }
 
         [Fact]
-        public async Task Handle_WhenMappingReturnsNull_ReturnsFailResult()
+        public async Task Handle_WhenMappingReturnsNull_ReturnsFailAndLogsError()
         {
             // Arrange
             var createTimelineItem = new TimelineItemBaseDto
             {
                 Title = "Title",
                 Description = "Description",
+                HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
             var command = new CreateTimelineItemCommand(createTimelineItem);
             const string expectedError = "Cannot convert null to timeline item";
@@ -115,7 +115,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
         }
 
         [Fact]
-        public async Task Handle_WhenHistoricalContextValidationFails_ReturnsFailResult()
+        public async Task Handle_WhenHistoricalContextValidationFails_ReturnsFailAndLogsError()
         {
             // Arrange
             var createTimelineItem = new TimelineItemBaseDto
@@ -152,7 +152,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
         }
 
         [Fact]
-        public async Task Handle_WhenBuildLinksFails_ReturnsFailResult()
+        public async Task Handle_WhenBuildLinksFails_ReturnsFailAndLogsError()
         {
             // Arrange
             var createTimelineItem = new TimelineItemBaseDto
@@ -197,7 +197,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
         }
 
         [Fact]
-        public async Task Handle_WhenSaveChangesFails_ReturnsFailResult()
+        public async Task Handle_WhenSaveChangesFails_ReturnsFailAndLogsError()
         {
             // Arrange
             var createTimelineItem = new TimelineItemBaseDto
@@ -250,7 +250,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
         }
 
         [Fact]
-        public async Task Handle_WhenAnExceptionIsThrown_ReturnsFailResult()
+        public async Task Handle_WhenAnExceptionIsThrown_ReturnsFailAndLogsError()
         {
             // Arrange
             var createTimelineItem = new TimelineItemBaseDto
@@ -271,6 +271,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
             // Assert
             Assert.True(result.IsFailed);
             Assert.Contains(exceptionMessage, result.Errors[0].Message);
+
+            _loggerMock.Verify(l => l.LogError(command, exceptionMessage), Times.Once);
 
             _mapperMock.Verify(m => m.Map<TimelineItemEntity>(command.TimelineItem), Times.Once);
             _loggerMock.Verify(l => l.LogError(command, exceptionMessage), Times.Once);

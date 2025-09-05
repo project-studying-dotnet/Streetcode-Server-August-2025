@@ -45,13 +45,10 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
 
                 _mapper.Map(request.TimelineItem, timelineItem);
 
-                if (request.TimelineItem.HistoricalContexts is not null)
+                var contextUpdateResult = await UpdateHistoricalContextsAsync(request, timelineItem);
+                if (contextUpdateResult.IsFailed)
                 {
-                    var contextUpdateResult = await UpdateHistoricalContextsAsync(request, timelineItem);
-                    if (contextUpdateResult.IsFailed)
-                    {
-                        return contextUpdateResult;
-                    }
+                    return contextUpdateResult;
                 }
 
                 _repositoryWrapper.TimelineRepository.Update(timelineItem);
