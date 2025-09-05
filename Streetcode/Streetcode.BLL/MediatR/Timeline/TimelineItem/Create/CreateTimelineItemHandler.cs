@@ -41,15 +41,24 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
                     return Result.Fail(errorMsg);
                 }
 
+                var streetcodeExists = await _repositoryWrapper.StreetcodeRepository
+                .GetFirstOrDefaultAsync(s => s.Id == request.streetcodeId);
+
+                if (streetcodeExists is null)
+                {
+                    string errorMsg = $"Streetcode with Id={request.streetcodeId} not found";
+                    _logger.LogError(request, errorMsg);
+                    return Result.Fail(errorMsg);
+                }
+
+                newTimelineItem.StreetcodeId = request.streetcodeId;
+
                 newTimelineItem.HistoricalContextTimelines = new List<HistoricalContextTimeline>();
 
-                if (request.TimelineItem.HistoricalContexts is not null)
+                var validationCheck = await ValidateAndBuildHistoricalContextsAsync(request, newTimelineItem);
+                if (validationCheck.IsFailed)
                 {
-                    var validationCheck = await ValidateAndBuildHistoricalContextsAsync(request, newTimelineItem);
-                    if (validationCheck.IsFailed)
-                    {
-                        return validationCheck;
-                    }
+                    return validationCheck;
                 }
 
                 var entity = await _repositoryWrapper.TimelineRepository.CreateAsync(newTimelineItem);

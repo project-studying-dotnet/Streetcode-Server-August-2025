@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
@@ -9,7 +10,7 @@ using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
 namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
 {
-    public class UpdateTimelineItemHandler
+    public class UpdateTimelineItemHandler : IRequestHandler<UpdateTimelineItemCommand, Result<TimelineItemDTO>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -34,7 +35,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
             {
                 var timelineItem = await _repositoryWrapper.TimelineRepository.GetFirstOrDefaultAsync(
                     predicate: x => x.Id == request.TimelineItem.Id,
-                    include: i => i.Include(ti => ti.HistoricalContextTimelines).ThenInclude(hct => hct.HistoricalContext));
+                    include: i => i.Include(ti => ti.HistoricalContextTimelines));
 
                 if (timelineItem == null)
                 {

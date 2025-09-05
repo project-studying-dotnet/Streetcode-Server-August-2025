@@ -29,10 +29,10 @@ public class TimelineItemController : BaseApiController
         return HandleResult(await Mediator.Send(new GetTimelineItemsByStreetcodeIdQuery(streetcodeId)));
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] TimelineItemBaseDto timelineItem)
+    [HttpPost("{streetcodeId:int}")]
+    public async Task<IActionResult> Create(int streetcodeId, [FromBody] TimelineItemBaseDto timelineItem)
     {
-        return HandleResult(await Mediator.Send(new CreateTimelineItemCommand(timelineItem)));
+        return HandleResult(await Mediator.Send(new CreateTimelineItemCommand(streetcodeId, timelineItem)));
     }
 
     [HttpPut]

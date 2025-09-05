@@ -18,18 +18,15 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<ILoggerService> _loggerMock;
-        private readonly Mock<IMapper> _mapperMock;
         private readonly DeleteTimelineItemHandler _handler;
 
         public DeleteTimelineItemHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _loggerMock = new Mock<ILoggerService>();
-            _mapperMock = new Mock<IMapper>();
             _handler = new DeleteTimelineItemHandler(
                 _repositoryWrapperMock.Object,
-                _loggerMock.Object,
-                _mapperMock.Object);
+                _loggerMock.Object);
         }
 
         [Fact]
@@ -57,14 +54,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
             _repositoryWrapperMock.Setup(r => r.HistoricalContextTimelineRepository.DeleteRange(It.IsAny<IEnumerable<HistoricalContextTimeline>>()));
             _repositoryWrapperMock.Setup(r => r.TimelineRepository.Delete(It.IsAny<TimelineItemEntity>()));
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
-            _mapperMock.Setup(m => m.Map<TimelineItemDTO>(It.IsAny<TimelineItemEntity>())).Returns(timelineItemDto);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(timelineItemDto, result.Value);
 
             _repositoryWrapperMock.Verify(
                 r => r.TimelineRepository.GetFirstOrDefaultAsync(
@@ -75,7 +70,6 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
             _repositoryWrapperMock.Verify(r => r.TimelineRepository.Delete(timelineItemEntity), Times.Once);
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
             _loggerMock.VerifyNoOtherCalls();
-            _mapperMock.Verify(m => m.Map<TimelineItemDTO>(timelineItemEntity), Times.Once);
         }
 
         [Fact]
@@ -103,7 +97,6 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
                 It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()), Times.Once);
             _repositoryWrapperMock.VerifyNoOtherCalls();
             _loggerMock.Verify(l => l.LogError(command, expectedError), Times.Once);
-            _mapperMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,7 +132,6 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
             _repositoryWrapperMock.Verify(r => r.TimelineRepository.Delete(It.IsAny<TimelineItemEntity>()), Times.Once);
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
             _loggerMock.Verify(l => l.LogError(request, expectedError), Times.Once);
-            _mapperMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -165,7 +157,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
                 r => r.TimelineRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()), Times.Once);
-            _mapperMock.VerifyNoOtherCalls();
+
             _repositoryWrapperMock.VerifyNoOtherCalls();
             _loggerMock.Verify(l => l.LogError(request, exceptionMessage), Times.Once);
         }

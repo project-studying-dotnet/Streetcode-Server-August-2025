@@ -9,23 +9,20 @@ using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
 namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete
 {
-    public class DeleteTimelineItemHandler : IRequestHandler<DeleteTimelineItemCommand, Result<TimelineItemDTO>>
+    public class DeleteTimelineItemHandler : IRequestHandler<DeleteTimelineItemCommand, Result<Unit>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ILoggerService _logger;
-        private readonly IMapper _mapper;
 
         public DeleteTimelineItemHandler(
             IRepositoryWrapper repositoryWrapper,
-            ILoggerService logger,
-            IMapper mapper)
+            ILoggerService logger)
         {
             _repositoryWrapper = repositoryWrapper;
             _logger = logger;
-            _mapper = mapper;
         }
 
-        public async Task<Result<TimelineItemDTO>> Handle(DeleteTimelineItemCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Unit>> Handle(DeleteTimelineItemCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -48,7 +45,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete
 
                 if (isSuccess)
                 {
-                    return Result.Ok(_mapper.Map<TimelineItemDTO>(timelineItem));
+                    return Result.Ok(Unit.Value);
                 }
                 else
                 {
