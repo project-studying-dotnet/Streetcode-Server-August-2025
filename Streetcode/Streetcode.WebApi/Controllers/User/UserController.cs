@@ -21,6 +21,7 @@ namespace Streetcode.WebApi.Controllers.User
             _jwtSettings = jwtSettings.Value;
         }
 
+        /* Endpoints for testing
         // Endpoint for testing purposes, can be removed later
         [HttpGet("jwt-settings")]
         public IActionResult GetJwtSettings()
@@ -89,6 +90,6 @@ namespace Streetcode.WebApi.Controllers.User
             }
 
             return Ok(result.Value);
-        }
+        }*/
     }
 }
