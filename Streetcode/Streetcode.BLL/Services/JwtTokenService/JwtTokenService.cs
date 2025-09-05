@@ -65,7 +65,7 @@ public class JwtTokenService : IJwtTokenService
             await _repositoryWrapper.SaveChangesAsync();
             var userDto = _mapper.Map<UserDTO>(user);
 
-            return new LoginResultDTO
+            return Result.Ok(new LoginResultDTO
             {
                 User = userDto,
                 AccessToken = new TokenDTO
@@ -78,7 +78,7 @@ public class JwtTokenService : IJwtTokenService
                     Token = refreshToken,
                     ExpireAt = refreshExpiryDate
                 },
-            };
+            });
         }
         catch (Exception ex)
         {
