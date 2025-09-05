@@ -8,6 +8,7 @@ using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.DAL.Entities.Users;
+using Streetcode.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
@@ -39,8 +40,10 @@ else
 await app.ApplyMigrations();
 
 await app.SeedDataAsync();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseCors();
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
 app.UseAuthentication();

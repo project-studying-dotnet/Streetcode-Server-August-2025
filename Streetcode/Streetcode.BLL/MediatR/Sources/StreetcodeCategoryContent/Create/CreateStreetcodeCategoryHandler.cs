@@ -28,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create
 
         public async Task<Result<StreetcodeCategoryContentDTO>> Handle(CreateStreetcodeCategoryContentCommand request, CancellationToken cancellationToken)
         {
-            var streetcodeCategoryContentEntity = _mapper.Map<DAL.Entities.Sources.StreetcodeCategoryContent>(request.createCategoryContentDto);
+            var streetcodeCategoryContentEntity = _mapper.Map<DAL.Entities.Sources.StreetcodeCategoryContent>(request.CreateCategoryContentDto);
 
             var isDuplicate = await _repositoryWrapper.StreetcodeCategoryContentRepository.GetFirstOrDefaultAsync(predicate: c =>
             c.StreetcodeId == streetcodeCategoryContentEntity.StreetcodeId &&

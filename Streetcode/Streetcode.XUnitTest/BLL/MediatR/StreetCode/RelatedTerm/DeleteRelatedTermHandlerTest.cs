@@ -34,7 +34,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         {
             var entity = new Entity { Id = 1, Word = "Test", TermId = 1 };
             var relatedTerm = new RelatedTermDTO { Id = 1, Word = "Test", TermId = 1 };
-            var request = new DeleteRelatedTermCommand(relatedTerm.Word);
+            var request = new DeleteRelatedTermCommand(relatedTerm.Word, relatedTerm.TermId);
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
@@ -58,7 +58,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         {
             var entity = new Entity { Id = 1, Word = "Test", TermId = 1 };
             var relatedTerm = new RelatedTermDTO { Id = 1, Word = "Test", TermId = 1 };
-            var request = new DeleteRelatedTermCommand(relatedTerm.Word);
+            var request = new DeleteRelatedTermCommand(relatedTerm.Word, relatedTerm.TermId);
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
@@ -68,8 +68,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(result.Errors.FirstOrDefault().Message, "Cannot find a related term: Test");
-            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot find a related term: Test"), Times.Once);
+            Assert.Equal(result.Errors.FirstOrDefault().Message, "Cannot find a related term: Test for termId 1");
+            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot find a related term: Test for termId 1"), Times.Once);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         {
             var entity = new Entity { Id = 1, Word = "Test", TermId = 1 };
             var relatedTerm = new RelatedTermDTO { Id = 1, Word = "Test", TermId = 1 };
-            var request = new DeleteRelatedTermCommand(relatedTerm.Word);
+            var request = new DeleteRelatedTermCommand(relatedTerm.Word, relatedTerm.TermId);
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
