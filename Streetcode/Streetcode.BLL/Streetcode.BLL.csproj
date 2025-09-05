@@ -46,7 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\Jwt\" />
     <Folder Include="Mapping\Analytics\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
     <Folder Include="Exceptions\" />

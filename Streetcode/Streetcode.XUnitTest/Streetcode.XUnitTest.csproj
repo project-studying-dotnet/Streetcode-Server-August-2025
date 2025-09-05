@@ -51,6 +51,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="BLL\Services\" />
 	  <Folder Include="BLL\Validators\Other\" />
 	</ItemGroup>
 
