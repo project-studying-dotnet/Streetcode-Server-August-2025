@@ -36,13 +36,9 @@ public class JwtTokenServiceTests
         _userRepositoryMock = new Mock<IUserRepository>();
         _mapperMock = new Mock<IMapper>();
 
-        // Create real configuration without any mocking
         var configuration = BuildConfiguration();
 
-        // Setup repository mock
         _repositoryWrapperMock.Setup(x => x.UserRepository).Returns(_userRepositoryMock.Object);
-
-        // Setup test data
         _testUser = new User
         {
             Id = 1,
@@ -50,7 +46,7 @@ public class JwtTokenServiceTests
             UserName = "johndoe",
             Surname = "Doe",
             Email = "john.doe@example.com",
-            Role = UserRole.User, // Assuming UserRole enum exists
+            Role = UserRole.User,
             RefreshToken = null,
             RefreshTokenExpiryTime = null
         };
@@ -67,7 +63,6 @@ public class JwtTokenServiceTests
 
         _mapperMock.Setup(x => x.Map<UserDTO>(_testUser)).Returns(_testUserDto);
 
-        // Create service instance
         _jwtTokenService = new JwtTokenService(configuration, _mapperMock.Object, _repositoryWrapperMock.Object);
     }
 
@@ -168,7 +163,6 @@ public class JwtTokenServiceTests
         jsonToken.Issuer.Should().Be("TestIssuer");
         jsonToken.Audiences.Should().Contain("TestAudience");
 
-        // JWT uses short claim names when serialized, so we check for the actual claim types in the token
         jsonToken.Claims.Should().Contain(c => c.Type == "nameid" && c.Value == "1");
         jsonToken.Claims.Should().Contain(c => c.Type == "given_name" && c.Value == "John");
         jsonToken.Claims.Should().Contain(c => c.Type == "unique_name" && c.Value == "johndoe");
@@ -278,7 +272,7 @@ public class JwtTokenServiceTests
         result.Value.Should().NotBeNull();
         result.Value.AccessToken.Token.Should().NotBeNullOrEmpty();
         result.Value.RefreshToken.Token.Should().NotBeNullOrEmpty();
-        result.Value.RefreshToken.Token.Should().NotBe(refreshToken); // Should be a new refresh token
+        result.Value.RefreshToken.Token.Should().NotBe(refreshToken);
     }
 
     [Fact]
@@ -384,7 +378,6 @@ public class JwtTokenServiceTests
         // Assert
         refreshToken.Should().NotBeNullOrEmpty();
 
-        // Test that it's valid base64
         var act = () => Convert.FromBase64String(refreshToken);
         act.Should().NotThrow();
     }

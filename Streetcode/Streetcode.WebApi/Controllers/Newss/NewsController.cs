@@ -17,7 +17,6 @@ namespace Streetcode.WebApi.Controllers.Newss;
 public class NewsController : BaseApiController
 {
     /* Endpoints for testing, will be redone in future PR
-     
     [HttpPost]
     public async Task<IActionResult> CreateNews([FromBody] NewsDTO newsDto)
     {
