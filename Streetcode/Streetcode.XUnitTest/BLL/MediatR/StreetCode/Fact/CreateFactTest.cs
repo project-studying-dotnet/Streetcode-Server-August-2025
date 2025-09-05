@@ -6,6 +6,7 @@ using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
+using Streetcode.BLL.Services.Text.Fact;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -41,10 +42,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository)
                 .Returns(_mockStreetcodeRepository.Object);
 
+            var factAutoOrder = new FactAutoOrder(_mockRepositoryWrapper.Object);
+
             _handler = new CreateFactHandler(
                 _mockMapper.Object,
                 _mockRepositoryWrapper.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                factAutoOrder);
         }
 
         [Fact]
