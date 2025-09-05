@@ -11,6 +11,8 @@ using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
+using Streetcode.DAL.Enums;
+using Streetcode.WebApi.Attributes;
 
 namespace Streetcode.WebApi.Controllers.Source;
 
@@ -28,18 +30,21 @@ public class SourcesController : BaseApiController
         return HandleResult(await Mediator.Send(new GetAllCategoriesQuery()));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPost]
     public async Task<IActionResult> CreateCategory([FromBody] SourceLinkCategoryCreateDTO sourceLinkCategoryCreateDTO)
     {
         return HandleResult(await Mediator.Send(new CreateSourceLinkCategoryCommand(sourceLinkCategoryCreateDTO)));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPut]
     public async Task<IActionResult> UpdateCategory([FromBody] SourceLinkCategoryUpdateDTO sourceLinkCategoryUpdateDTO)
     {
         return HandleResult(await Mediator.Send(new UpdateSourceLinkCategoryCommand(sourceLinkCategoryUpdateDTO)));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCategory([FromRoute] int id)
     {
@@ -64,6 +69,7 @@ public class SourcesController : BaseApiController
         return HandleResult(await Mediator.Send(new GetCategoriesByStreetcodeIdQuery(streetcodeId)));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPost]
     public async Task<IActionResult> CreateStreetCodeCategoryContent([FromBody] CategoryContentCreateDTO categoryContentCreateDTO)
     {
@@ -76,12 +82,14 @@ public class SourcesController : BaseApiController
         return HandleResult(await Mediator.Send(new GetAllStreetcodeCategoryContentQuery()));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteStreetcodeCategoryContent([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteStreetcodeCategoryContentCommand(id)));
     }
 
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPut]
     public async Task<IActionResult> UpdateStreetcodeCategoryContent([FromBody] CategoryContentUpdateDTO categoryContentUpdateDTO)
     {
