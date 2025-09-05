@@ -60,54 +60,9 @@ namespace Streetcode.BLL.Services.Timeline
                 return Result.Fail("TimelineItem cannot be null.");
             }
 
-            if (timelineItem.HistoricalContextTimelines.Any())
-            {
-                _repositoryWrapper.HistoricalContextTimelineRepository.DeleteRange(timelineItem.HistoricalContextTimelines);
-                timelineItem.HistoricalContextTimelines.Clear();
-            }
+            ClearExistingLinks(timelineItem);
 
-            var seenIds = new HashSet<int>();
-            var seenNewTitles = new HashSet<string>();
-
-            foreach (var contextDto in contexts)
-            {
-                HistoricalContextEntity? historicalContext = null;
-
-                if (contextDto.Id.HasValue)
-                {
-                    if (!seenIds.Add(contextDto.Id.Value))
-                    {
-                        continue;
-                    }
-
-                    historicalContext = await _repositoryWrapper.HistoricalContextRepository
-                        .GetFirstOrDefaultAsync(hc => hc.Id == contextDto.Id.Value);
-
-                    if (historicalContext == null)
-                    {
-                        string errorMsg = $"Historical context with Id={contextDto.Id.Value} not found";
-                        return Result.Fail(errorMsg);
-                    }
-                }
-                else
-                {
-                    if (!seenNewTitles.Add(contextDto.Title!))
-                    {
-                        continue;
-                    }
-
-                    historicalContext = new HistoricalContextEntity { Title = contextDto.Title! };
-                    await _repositoryWrapper.HistoricalContextRepository.CreateAsync(historicalContext);
-                }
-
-                timelineItem.HistoricalContextTimelines.Add(new HistoricalContextTimeline
-                {
-                    HistoricalContext = historicalContext,
-                    Timeline = timelineItem
-                });
-            }
-
-            return Result.Ok();
+            return await CreateLinksForNewContextsAsync(timelineItem, contexts);
         }
 
         public Result RemoveObsoleteLinks(TimelineItem timelineItem, IEnumerable<HistoricalContextRequestDto> newContexts)
@@ -134,6 +89,62 @@ namespace Streetcode.BLL.Services.Timeline
             if (toRemove.Any())
             {
                 _repositoryWrapper.HistoricalContextTimelineRepository.DeleteRange(toRemove);
+            }
+
+            return Result.Ok();
+        }
+
+        private void ClearExistingLinks(TimelineItem timelineItem)
+        {
+            if (timelineItem.HistoricalContextTimelines.Any())
+            {
+                _repositoryWrapper.HistoricalContextTimelineRepository.DeleteRange(timelineItem.HistoricalContextTimelines);
+                timelineItem.HistoricalContextTimelines.Clear();
+            }
+        }
+
+        private async Task<Result> CreateLinksForNewContextsAsync(
+            TimelineItem timelineItem,
+            IEnumerable<HistoricalContextRequestDto> contexts)
+        {
+            var seenIds = new HashSet<int>();
+            var seenNewTitles = new HashSet<string>();
+
+            foreach (var contextDto in contexts)
+            {
+                HistoricalContextEntity? historicalContext = null;
+
+                if (contextDto.Id.HasValue)
+                {
+                    if (!seenIds.Add(contextDto.Id.Value))
+                    {
+                        continue;
+                    }
+
+                    historicalContext = await _repositoryWrapper.HistoricalContextRepository
+                        .GetFirstOrDefaultAsync(hc => hc.Id == contextDto.Id.Value);
+
+                    if (historicalContext == null)
+                    {
+                        return Result.Fail($"Historical context with Id={contextDto.Id.Value} not found.");
+                    }
+                }
+                else
+                {
+                    if (!seenNewTitles.Add(contextDto.Title!))
+                    {
+                        continue;
+                    }
+
+                    historicalContext = new HistoricalContextEntity { Title = contextDto.Title! };
+                    await _repositoryWrapper.HistoricalContextRepository.CreateAsync(historicalContext);
+                }
+
+                timelineItem.HistoricalContextTimelines.Add(new HistoricalContextTimeline
+                {
+                    HistoricalContext = historicalContext,
+                    Timeline = timelineItem
+                });
             }
 
             return Result.Ok();
