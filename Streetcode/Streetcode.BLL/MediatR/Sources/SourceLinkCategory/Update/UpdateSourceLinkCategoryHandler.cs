@@ -29,14 +29,14 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update
         public async Task<Result<SourceLinkCategoryDTO>> Handle(UpdateSourceLinkCategoryCommand request, CancellationToken cancellationToken)
         {
             var categoryEntity = await _repositoryWrapper.SourceCategoryRepository
-            .GetFirstOrDefaultAsync(c => c.Id == request.sourceLinkCategoryUpdate.Id);
+            .GetFirstOrDefaultAsync(c => c.Id == request.SourceLinkCategoryUpdate.Id);
 
             if (categoryEntity == null)
             {
                 return Result.Fail("Category not found.");
             }
 
-            _mapper.Map(request.sourceLinkCategoryUpdate, categoryEntity);
+            _mapper.Map(request.SourceLinkCategoryUpdate, categoryEntity);
 
             var existing = await _repositoryWrapper.SourceCategoryRepository
             .GetFirstOrDefaultAsync(c => (c.Title == categoryEntity.Title || c.ImageId == categoryEntity.ImageId)
