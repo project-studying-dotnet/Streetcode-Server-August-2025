@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using Streetcode.BLL.DTO.Sources;
+﻿using FluentValidation;
+using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
 
 namespace Streetcode.BLL.Validators.Source.StreetcodeCategoryContent
 {
-    public class UpdateStreetcodeCategoryContentValidator : AbstractValidator<CategoryContentUpdateDTO>
+    public class UpdateStreetcodeCategoryContentValidator : AbstractValidator<UpdateStreetcodeCategoryContentCommand>
     {
+        public const int MaxTextLength = 4000;
+
         public UpdateStreetcodeCategoryContentValidator()
         {
-            RuleFor(dto => dto.Text)
-            .MaximumLength(4000).WithMessage("Text can`t be more than 4000 symbols.");
+            RuleFor(dto => dto.CategoryContentUpdateDTO.Text)
+            .MaximumLength(MaxTextLength).WithMessage("Text can`t be more than 4000 symbols.");
 
-            RuleFor(dto => dto.Id)
+            RuleFor(dto => dto.CategoryContentUpdateDTO.Id)
                 .NotEmpty().WithMessage("Id can`t be null.");
         }
     }

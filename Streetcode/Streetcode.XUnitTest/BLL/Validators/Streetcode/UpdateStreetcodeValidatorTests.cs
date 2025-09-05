@@ -5,9 +5,13 @@ using Moq;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Update;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
+using Streetcode.BLL.Validators.ArtGallery;
+using Streetcode.BLL.Validators.Media.Image.Art;
 using Streetcode.BLL.Validators.Streetcode;
 using Streetcode.BLL.Validators.Streetcode.Toponyms;
+using Streetcode.BLL.Validators.Streetcode.ImageDetails;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -29,6 +33,14 @@ public class UpdateStreetcodeValidatorTests
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
         _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(_streetcodeToponymValidatorMock.Object);
         _mockTagValidator = new Mock<TagValidator>();
+        var mockArtSlideValidator = new Mock<StreetcodeArtSlideValidator>();
+        var mockImageDetailsValidator = new Mock<ImageDetailsValidator>(_mockRepositoryWrapper.Object);
+        var mockArtValidator = new Mock<ArtCreateUpdateDTOValidator>();
+
+        _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(
+            mockArtSlideValidator.Object,
+            mockArtValidator.Object,
+            mockImageDetailsValidator.Object);
 
         _validator = new UpdateStreetcodeValidator(
             _mockRepositoryWrapper.Object,
@@ -40,11 +52,11 @@ public class UpdateStreetcodeValidatorTests
     public async Task ShouldReturnSuccessResult_WhenAllFieldsAreValid()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeUpdateDTO();
+        var command = GetValidUpdateStreetcodeCommand();
         SetupRepositoryWrapperForValidScenario();
 
         // Act
-        var result = await _validator.ValidateAsync(streetcode);
+        var result = await _validator.ValidateAsync(command);
 
         // Assert
         Assert.True(result.IsValid);
@@ -55,12 +67,12 @@ public class UpdateStreetcodeValidatorTests
     public async Task ShouldReturnError_WhenIndexIsNotUnique()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeUpdateDTO();
+        var command = GetValidUpdateStreetcodeCommand();
         SetupRepositoryWrapper(2);
         var expectedMessage = "Index must be unique.";
 
         // Act
-        var result = await _validator.ValidateAsync(streetcode);
+        var result = await _validator.ValidateAsync(command);
 
         // Assert
         Assert.False(result.IsValid);
@@ -71,11 +83,11 @@ public class UpdateStreetcodeValidatorTests
     public async Task ShouldCallBaseValidator()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeUpdateDTO();
+        var command = GetValidUpdateStreetcodeCommand();
         SetupRepositoryWrapperForValidScenario();
 
         // Act
-        await _validator.ValidateAsync(streetcode);
+        await _validator.ValidateAsync(command);
 
         // Assert
         _mockBaseStreetcodeValidator.Verify(v => v.ValidateAsync(It.IsAny<ValidationContext<StreetcodeCreateUpdateDTO>>(), default), Times.Once);
@@ -85,11 +97,11 @@ public class UpdateStreetcodeValidatorTests
     public async Task ShouldCallChildValidators()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeUpdateDTO();
+        var command = GetValidUpdateStreetcodeCommand();
         SetupRepositoryWrapperForValidScenario();
 
         // Act
-        await _validator.ValidateAsync(streetcode);
+        await _validator.ValidateAsync(command);
 
         // Assert
         _mockTagValidator.Verify(v => v.ValidateAsync(It.IsAny<ValidationContext<CreateTagDTO>>(), default), Times.AtLeast(1));
@@ -111,9 +123,9 @@ public class UpdateStreetcodeValidatorTests
             .ReturnsAsync(new StreetcodeContent { Id = id });
     }
 
-    private static StreetcodeUpdateDTO GetValidStreetcodeUpdateDTO()
+    private static UpdateStreetcodeCommand GetValidUpdateStreetcodeCommand()
     {
-        return new StreetcodeUpdateDTO
+        return new UpdateStreetcodeCommand(new StreetcodeUpdateDTO
         {
             Index = 1,
             FirstName = "Ivan",
@@ -139,6 +151,6 @@ public class UpdateStreetcodeValidatorTests
                     Alt = "1",
                 },
             ]
-        };
+        });
     }
 }

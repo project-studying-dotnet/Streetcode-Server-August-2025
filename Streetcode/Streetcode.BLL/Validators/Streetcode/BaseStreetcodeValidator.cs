@@ -2,6 +2,9 @@
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Validators.Streetcode.Toponyms;
+using Streetcode.BLL.Validators.ArtGallery;
+using Streetcode.BLL.Validators.Media.Image.Art;
+using Streetcode.BLL.Validators.Streetcode.ImageDetails;
 using Streetcode.DAL.Enums;
 
 namespace Streetcode.BLL.Validators.Streetcode;
@@ -19,7 +22,11 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
     public const int TeaserMaxLength = 520;
     public const int TeaserMaxLengthWithNewLine = 455;
 
-    public BaseStreetcodeValidator(StreetcodeToponymValidator streetcodeToponymValidator)
+    public BaseStreetcodeValidator(
+        StreetcodeArtSlideValidator streetcodeArtSlideValidator,
+        ArtCreateUpdateDTOValidator artCreateUpdateDTOValidator,
+        ImageDetailsValidator imageDetailsValidator,
+        StreetcodeToponymValidator streetcodeToponymValidator)
     {
         RuleFor(dto => dto.Index)
             .NotNull().WithMessage("Index is required.")
@@ -81,9 +88,18 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
 
         RuleForEach(dto => dto.Toponyms)
             .SetValidator(streetcodeToponymValidator);
+            
+        RuleForEach(dto => dto.ImagesDetails)
+            .SetValidator(imageDetailsValidator);
+
+        RuleForEach(dto => dto.StreetcodeArtSlides)
+            .SetValidator(streetcodeArtSlideValidator);
+
+        RuleForEach(dto => dto.Arts)
+            .SetValidator(artCreateUpdateDTOValidator);
     }
 
-    private bool BeValidTeaserLength(string? teaser)
+    private static bool BeValidTeaserLength(string? teaser)
     {
         if (string.IsNullOrEmpty(teaser))
         {
@@ -96,12 +112,12 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
         return teaser.Length <= maxLength;
     }
 
-    private bool HaveExactlyOneBlackAndWhite(IEnumerable<ImageDetailsDto> images)
+    private static bool HaveExactlyOneBlackAndWhite(IEnumerable<ImageDetailsDto> images)
         => images is not null && images.Count(i => i.Alt == $"{(int)ImageAssigment.Blackandwhite}") == 1;
 
-    private bool HaveAtMostOneAnimation(IEnumerable<ImageDetailsDto> images)
+    private static bool HaveAtMostOneAnimation(IEnumerable<ImageDetailsDto> images)
         => images is null || images.Count(i => i.Alt == $"{(int)ImageAssigment.Animation}") <= 1;
 
-    private bool HaveAtMostOneRelatedFigure(IEnumerable<ImageDetailsDto> images)
+    private static bool HaveAtMostOneRelatedFigure(IEnumerable<ImageDetailsDto> images)
         => images is null || images.Count(i => i.Alt == $"{(int)ImageAssigment.Relatedfigure}") <= 1;
 }
