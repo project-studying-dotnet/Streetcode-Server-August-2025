@@ -11,11 +11,6 @@ namespace Streetcode.DAL.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Description",
-                schema: "media",
-                table: "image_details");
-
             migrationBuilder.AddColumn<string>(
                 name: "RefreshToken",
                 table: "AspNetUsers",
@@ -39,14 +34,6 @@ namespace Streetcode.DAL.Persistence.Migrations
             migrationBuilder.DropColumn(
                 name: "RefreshTokenExpiryTime",
                 table: "AspNetUsers");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Description",
-                schema: "media",
-                table: "image_details",
-                type: "nvarchar(200)",
-                maxLength: 200,
-                nullable: true);
         }
     }
 }
