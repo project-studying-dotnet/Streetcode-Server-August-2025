@@ -16,6 +16,8 @@ namespace Streetcode.WebApi.Controllers.Newss;
 /// </summary>
 public class NewsController : BaseApiController
 {
+    /* Endpoints for testing, will be redone in future PR
+     
     [HttpPost]
     public async Task<IActionResult> CreateNews([FromBody] NewsDTO newsDto)
     {
@@ -62,5 +64,5 @@ public class NewsController : BaseApiController
         var command = new DeleteNewsCommand(id);
         var result = await Mediator.Send(command);
         return HandleResult(result);
-    }
+    }*/
 }
