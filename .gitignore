@@ -348,3 +348,4 @@ BlobStorageTestFolder/
 
 # Extract houses.zip files
 /Streetcode/Streetcode.DAL/data/
+/Streetcode/Streetcode.WebApi/secrets.json
