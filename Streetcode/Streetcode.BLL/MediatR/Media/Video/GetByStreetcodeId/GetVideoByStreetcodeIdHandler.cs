@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.Media.Audio;
 using Streetcode.BLL.DTO.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.ResultVariations;
-using Streetcode.DAL.Entities.Streetcode;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Specifications.Streetcode;
 using Streetcode.DAL.Specifications.Video;
@@ -38,7 +37,7 @@ public class GetVideoByStreetcodeIdHandler : IRequestHandler<GetVideoByStreetcod
 
             if (streetcode is null)
             {
-                string errorMsg = $"Streetcode with id: {request.StreetcodeId} doesn`t exist";
+                string errorMsg = Errors_Streetcode.DoesnotExist.FormatWith(request.StreetcodeId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
