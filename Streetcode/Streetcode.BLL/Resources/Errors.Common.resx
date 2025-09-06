@@ -120,6 +120,12 @@
   <data name="CannotConvertNull" xml:space="preserve">
     <value>Cannot convert null to {0}</value>
   </data>
+  <data name="CannotMap" xml:space="preserve">
+    <value>Cannot map {0}</value>
+  </data>
+  <data name="CannotSaveTheData" xml:space="preserve">
+    <value>Cannot save the data</value>
+  </data>
   <data name="FailedToCreate" xml:space="preserve">
     <value>Failed to create a {0}</value>
   </data>

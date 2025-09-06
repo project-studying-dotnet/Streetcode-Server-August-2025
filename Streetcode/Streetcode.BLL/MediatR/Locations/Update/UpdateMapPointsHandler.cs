@@ -1,6 +1,8 @@
 ﻿using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Locations.Update;
@@ -22,7 +24,7 @@ public class UpdateMapPointsHandler : IRequestHandler<UpdateMapPointCommand, Res
 
         if (mapPoint is null)
         {
-            string errorMsg = "CannotFindRecordWithQrId";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("MapPoint", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -34,7 +36,7 @@ public class UpdateMapPointsHandler : IRequestHandler<UpdateMapPointCommand, Res
 
         if (resultIsSuccess >= 0)
         {
-            string errorMsg = "CannotSaveTheData";
+            string errorMsg = Errors_Common.CannotSaveTheData;
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

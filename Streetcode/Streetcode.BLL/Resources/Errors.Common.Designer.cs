@@ -70,6 +70,24 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot map {0}.
+        /// </summary>
+        internal static string CannotMap {
+            get {
+                return ResourceManager.GetString("CannotMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot save the data.
+        /// </summary>
+        internal static string CannotSaveTheData {
+            get {
+                return ResourceManager.GetString("CannotSaveTheData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to create a {0}.
         /// </summary>
         internal static string FailedToCreate {

@@ -1,6 +1,8 @@
 ﻿using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Locations.Delete;
@@ -22,7 +24,7 @@ public class DeleteMapPointHandler : IRequestHandler<DeleteMapPointCommand, Resu
 
         if (mapPoint is null)
         {
-            string errorMsg = "CannotFindPointWithId";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("MapPoint", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -33,7 +35,7 @@ public class DeleteMapPointHandler : IRequestHandler<DeleteMapPointCommand, Resu
 
         if (resultIsSuccess >= 0)
         {
-            string errorMsg = "FailedToDeleteThePoint";
+            string errorMsg = Errors_Common.FailedToDelete.FormatWith("MapPoint");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
