@@ -138,4 +138,10 @@
   <data name="Coordinate_FailedToUpdate" xml:space="preserve">
     <value>Failed to update a streetcodeCoordinate</value>
   </data>
+  <data name="Subtitle_NotFoundAny" xml:space="preserve">
+    <value>Cannot find any subtitles</value>
+  </data>
+  <data name="Subtitle_NotFoundById" xml:space="preserve">
+    <value>Cannot find a subtitle with corresponding id: {0}</value>
+  </data>
 </root>

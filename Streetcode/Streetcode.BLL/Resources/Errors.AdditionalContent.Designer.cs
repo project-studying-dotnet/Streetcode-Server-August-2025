@@ -122,5 +122,23 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("Coordinate_NotFoundByStreetcode", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find any subtitles.
+        /// </summary>
+        internal static string Subtitle_NotFoundAny {
+            get {
+                return ResourceManager.GetString("Subtitle_NotFoundAny", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find a subtitle with corresponding id: {0}.
+        /// </summary>
+        internal static string Subtitle_NotFoundById {
+            get {
+                return ResourceManager.GetString("Subtitle_NotFoundById", resourceCulture);
+            }
+        }
     }
 }
