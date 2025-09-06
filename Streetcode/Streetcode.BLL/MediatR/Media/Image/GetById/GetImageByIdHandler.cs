@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.GetById;
@@ -28,17 +30,17 @@ public class GetImageByIdHandler : IRequestHandler<GetImageByIdQuery, Result<Ima
     {
         var image = await _repositoryWrapper.ImageRepository.GetFirstOrDefaultAsync(
             f => f.Id == request.Id,
-            include: q => q.Include(i => i.ImageDetails) !);
+            include: q => q.Include(i => i.ImageDetails)!);
 
         if (image is null)
         {
-            string errorMsg = $"Cannot find a image with corresponding id: {request.Id}";
+            string errorMsg = Errors_Common.NotFoundById_An.FormatWith("image", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
 
         var imageDto = _mapper.Map<ImageDTO>(image);
-        if(imageDto.BlobName != null)
+        if (imageDto.BlobName != null)
         {
             imageDto.Base64 = _blobService.FindFileInStorageAsBase64(image.BlobName);
         }
