@@ -22,14 +22,14 @@ namespace Streetcode.BLL.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Errors_AdditionalContent {
+    internal class Errors_Common {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Errors_AdditionalContent() {
+        internal Errors_Common() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Streetcode.BLL.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.AdditionalContent", typeof(Errors_AdditionalContent).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.Common", typeof(Errors_Common).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,29 +61,65 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find a coordinates by a streetcode id: {0}, because such streetcode doesn`t exist.
+        ///   Looks up a localized string similar to Cannot convert null to {0}.
         /// </summary>
-        internal static string Coordinate_NotFound_StreetcodeDoesNotExist {
+        internal static string CannotConvertNull {
             get {
-                return ResourceManager.GetString("Coordinate_NotFound_StreetcodeDoesNotExist", resourceCulture);
+                return ResourceManager.GetString("CannotConvertNull", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find a coordinate with corresponding categoryId: {0}.
+        ///   Looks up a localized string similar to Failed to create a {0}.
         /// </summary>
-        internal static string Coordinate_NotFoundByCategory {
+        internal static string FailedToCreate {
             get {
-                return ResourceManager.GetString("Coordinate_NotFoundByCategory", resourceCulture);
+                return ResourceManager.GetString("FailedToCreate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find any tag by the title: {0}.
+        ///   Looks up a localized string similar to Failed to delete a {0}.
         /// </summary>
-        internal static string Tag_NotFoundByTitle {
+        internal static string FailedToDelete {
             get {
-                return ResourceManager.GetString("Tag_NotFoundByTitle", resourceCulture);
+                return ResourceManager.GetString("FailedToDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update a {0}.
+        /// </summary>
+        internal static string FailedToUpdate {
+            get {
+                return ResourceManager.GetString("FailedToUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find any {0}.
+        /// </summary>
+        internal static string NotFoundAny {
+            get {
+                return ResourceManager.GetString("NotFoundAny", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find a {0} with corresponding id: {1}.
+        /// </summary>
+        internal static string NotFoundById {
+            get {
+                return ResourceManager.GetString("NotFoundById", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find any {0} by the streetcode id: {1}.
+        /// </summary>
+        internal static string NotFoundByStreetcode {
+            get {
+                return ResourceManager.GetString("NotFoundByStreetcode", resourceCulture);
             }
         }
     }

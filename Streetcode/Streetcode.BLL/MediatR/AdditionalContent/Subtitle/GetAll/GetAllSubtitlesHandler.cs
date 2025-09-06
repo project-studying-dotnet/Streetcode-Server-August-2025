@@ -4,6 +4,7 @@ using MediatR;
 using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Subtitle.GetAll;
@@ -27,7 +28,7 @@ public class GetAllSubtitlesHandler : IRequestHandler<GetAllSubtitlesQuery, Resu
 
         if (subtitles is null)
         {
-            string errorMsg = Errors_AdditionalContent.Subtitle_NotFoundAny;
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("subtitles");
 
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));

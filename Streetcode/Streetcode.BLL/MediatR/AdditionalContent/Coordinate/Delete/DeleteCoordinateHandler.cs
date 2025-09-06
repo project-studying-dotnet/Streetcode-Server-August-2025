@@ -27,6 +27,6 @@ public class DeleteCoordinateHandler : IRequestHandler<DeleteCoordinateCommand, 
         _repositoryWrapper.StreetcodeCoordinateRepository.Delete(streetcodeCoordinate);
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
-        return resultIsSuccess ? Result.Ok(Unit.Value) : Result.Fail(new Error(Errors_AdditionalContent.Coordinate_FailedToDelete));
+        return resultIsSuccess ? Result.Ok(Unit.Value) : Result.Fail(new Error(Errors_Common.FailedToDelete.FormatWith("streetcodeCoordinate")));
     }
 }

@@ -29,7 +29,7 @@ public class GetSubtitleByIdHandler : IRequestHandler<GetSubtitleByIdQuery, Resu
 
         if (subtitle is null)
         {
-            string errorMsg = Errors_AdditionalContent.Subtitle_NotFoundById.FormatWith(request.Id);
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("subtitle", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

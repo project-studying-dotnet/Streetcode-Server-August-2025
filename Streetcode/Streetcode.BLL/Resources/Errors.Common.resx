@@ -117,13 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Coordinate_NotFoundByCategory" xml:space="preserve">
-    <value>Cannot find a coordinate with corresponding categoryId: {0}</value>
+  <data name="CannotConvertNull" xml:space="preserve">
+    <value>Cannot convert null to {0}</value>
   </data>
-  <data name="Coordinate_NotFound_StreetcodeDoesNotExist" xml:space="preserve">
-    <value>Cannot find a coordinates by a streetcode id: {0}, because such streetcode doesn`t exist</value>
+  <data name="FailedToCreate" xml:space="preserve">
+    <value>Failed to create a {0}</value>
   </data>
-  <data name="Tag_NotFoundByTitle" xml:space="preserve">
-    <value>Cannot find any tag by the title: {0}</value>
+  <data name="FailedToDelete" xml:space="preserve">
+    <value>Failed to delete a {0}</value>
+  </data>
+  <data name="FailedToUpdate" xml:space="preserve">
+    <value>Failed to update a {0}</value>
+  </data>
+  <data name="NotFoundAny" xml:space="preserve">
+    <value>Cannot find any {0}</value>
+  </data>
+  <data name="NotFoundById" xml:space="preserve">
+    <value>Cannot find a {0} with corresponding id: {1}</value>
+  </data>
+  <data name="NotFoundByStreetcode" xml:space="preserve">
+    <value>Cannot find any {0} by the streetcode id: {1}</value>
   </data>
 </root>

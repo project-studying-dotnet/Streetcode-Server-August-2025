@@ -35,7 +35,7 @@ public class GetCoordinatesByStreetcodeIdHandler : IRequestHandler<GetCoordinate
 
         if (coordinates is null)
         {
-            string errorMsg = Errors_AdditionalContent.Coordinate_NotFoundByStreetcode.FormatWith(request.StreetcodeId);
+            string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("coordinates", request.StreetcodeId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

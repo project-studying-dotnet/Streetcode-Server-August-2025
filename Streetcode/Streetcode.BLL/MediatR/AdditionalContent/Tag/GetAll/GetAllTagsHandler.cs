@@ -2,9 +2,9 @@ using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.AdditionalContent;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.GetAll;
@@ -28,7 +28,7 @@ public class GetAllTagsHandler : IRequestHandler<GetAllTagsQuery, Result<IEnumer
 
         if (tags is null)
         {
-            const string errorMsg = $"Cannot find any tags";
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("tags");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
