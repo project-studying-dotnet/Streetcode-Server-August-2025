@@ -20,10 +20,14 @@ public class NewsController : BaseApiController
 {
     [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPost]
-    public async Task<IActionResult> CreateNews([FromBody] NewsDTO newsDto)
+    [ProducesResponseType(typeof(NewsDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> CreateNews([FromBody] NewsDTO newsDto, CancellationToken ct)
     {
         var command = new CreateNewsCommand(newsDto);
-        var result = await Mediator.Send(command);
+        var result = await Mediator.Send(command, ct);
         return HandleResult(result);
     }
 
