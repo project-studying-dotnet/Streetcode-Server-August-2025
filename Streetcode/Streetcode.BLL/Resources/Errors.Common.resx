@@ -129,8 +129,14 @@
   <data name="FailedToCreate" xml:space="preserve">
     <value>Failed to create a {0}</value>
   </data>
+  <data name="FailedToCreate_An" xml:space="preserve">
+    <value>Failed to create an {0}</value>
+  </data>
   <data name="FailedToDelete" xml:space="preserve">
     <value>Failed to delete a {0}</value>
+  </data>
+  <data name="FailedToDelete_An" xml:space="preserve">
+    <value>Failed to delete an {0}</value>
   </data>
   <data name="FailedToUpdate" xml:space="preserve">
     <value>Failed to update a {0}</value>
@@ -141,7 +147,10 @@
   <data name="NotFoundById" xml:space="preserve">
     <value>Cannot find a {0} with corresponding id: {1}</value>
   </data>
+  <data name="NotFoundById_An" xml:space="preserve">
+    <value>Cannot find an {0} with corresponding id: {1}</value>
+  </data>
   <data name="NotFoundByStreetcode" xml:space="preserve">
-    <value>Cannot find any {0} by the streetcode id: {1}</value>
+    <value>Cannot find any {0} with corresponding streetcode id: {1}</value>
   </data>
 </root>

@@ -97,11 +97,29 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to create an {0}.
+        /// </summary>
+        internal static string FailedToCreate_An {
+            get {
+                return ResourceManager.GetString("FailedToCreate_An", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to delete a {0}.
         /// </summary>
         internal static string FailedToDelete {
             get {
                 return ResourceManager.GetString("FailedToDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete an {0}.
+        /// </summary>
+        internal static string FailedToDelete_An {
+            get {
+                return ResourceManager.GetString("FailedToDelete_An", resourceCulture);
             }
         }
         
@@ -133,7 +151,16 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find any {0} by the streetcode id: {1}.
+        ///   Looks up a localized string similar to Cannot find an {0} with corresponding id: {1}.
+        /// </summary>
+        internal static string NotFoundById_An {
+            get {
+                return ResourceManager.GetString("NotFoundById_An", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find any {0} with corresponding streetcode id: {1}.
         /// </summary>
         internal static string NotFoundByStreetcode {
             get {
