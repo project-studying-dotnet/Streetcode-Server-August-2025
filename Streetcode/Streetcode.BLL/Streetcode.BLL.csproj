@@ -58,4 +58,19 @@
     <Folder Include="Validators\Team\Position\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\Errors.AdditionalContent.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.AdditionalContent.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Errors.AdditionalContent.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.AdditionalContent.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
