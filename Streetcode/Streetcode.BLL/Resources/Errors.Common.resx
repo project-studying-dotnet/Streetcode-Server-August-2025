@@ -153,4 +153,7 @@
   <data name="NotFoundByStreetcode" xml:space="preserve">
     <value>Cannot find any {0} with corresponding streetcode id: {1}</value>
   </data>
+  <data name="NotFoundByUrl" xml:space="preserve">
+    <value>No {0} by entered Url - {1}</value>
+  </data>
 </root>

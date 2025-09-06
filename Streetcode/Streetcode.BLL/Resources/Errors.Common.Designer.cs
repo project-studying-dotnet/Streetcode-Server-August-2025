@@ -167,5 +167,14 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("NotFoundByStreetcode", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No {0} by entered Url - {1}.
+        /// </summary>
+        internal static string NotFoundByUrl {
+            get {
+                return ResourceManager.GetString("NotFoundByUrl", resourceCulture);
+            }
+        }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.DAL.Entities.News;
-using Streetcode.DAL.Repositories.Interfaces.Base;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
 {
@@ -34,7 +35,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
 
             if (newsDTO is null)
             {
-                string errorMsg = $"No news by entered Url - {url}";
+                string errorMsg = Errors_Common.NotFoundByUrl.FormatWith("news", url);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
@@ -49,12 +50,12 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
             string prevNewsLink = null;
             string nextNewsLink = null;
 
-            if(newsIndex != 0)
+            if (newsIndex != 0)
             {
                 prevNewsLink = news[newsIndex - 1].URL;
             }
 
-            if(newsIndex != news.Count - 1)
+            if (newsIndex != news.Count - 1)
             {
                 nextNewsLink = news[newsIndex + 1].URL;
             }
