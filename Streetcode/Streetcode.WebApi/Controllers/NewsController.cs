@@ -41,6 +41,8 @@ public class NewsController : BaseApiController
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(NewsDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetNewsById([FromRoute] int id)
     {
         var query = new GetNewsByIdQuery(id);
