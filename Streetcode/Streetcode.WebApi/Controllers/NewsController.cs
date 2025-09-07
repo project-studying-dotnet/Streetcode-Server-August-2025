@@ -31,10 +31,12 @@ public class NewsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllNews()
+    [ProducesResponseType(typeof(IEnumerable<NewsDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAllNews(CancellationToken ct)
     {
         var query = new GetAllNewsQuery();
-        var result = await Mediator.Send(query);
+        var result = await Mediator.Send(query, ct);
         return HandleResult(result);
     }
 
