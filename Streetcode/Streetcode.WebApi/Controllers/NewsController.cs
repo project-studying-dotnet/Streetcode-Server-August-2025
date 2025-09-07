@@ -1,4 +1,3 @@
-using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.MediatR.Newss.Create;
@@ -66,10 +65,14 @@ public class NewsController : BaseApiController
 
     [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator)]
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteNews([FromRoute] int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DeleteNews([FromRoute] int id, CancellationToken ct)
     {
         var command = new DeleteNewsCommand(id);
-        var result = await Mediator.Send(command);
+        var result = await Mediator.Send(command, ct);
         return HandleResult(result);
     }
 }
