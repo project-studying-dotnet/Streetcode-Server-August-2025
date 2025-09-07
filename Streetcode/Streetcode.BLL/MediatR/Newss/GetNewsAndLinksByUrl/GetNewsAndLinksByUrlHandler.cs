@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Cryptography;
+using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.News;
@@ -63,8 +64,15 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
             var candidates = orderedNews.Where(n => n.Id != newsDTO.Id).ToList();
             if (candidates.Any())
             {
-                var rnd = new Random();
-                var pick = candidates[rnd.Next(candidates.Count)];
+                using (var rng = RandomNumberGenerator.Create())
+                {
+                    byte[] bytes = new byte[4];
+                    rng.GetBytes(bytes);
+                    int value = BitConverter.ToInt32(bytes, 0) & int.MaxValue;
+                    index = value % candidates.Count;
+                }
+
+                var pick = candidates[index];
                 randomNews.RandomNewsUrl = pick.URL;
                 randomNews.Title = pick.Title;
             }
