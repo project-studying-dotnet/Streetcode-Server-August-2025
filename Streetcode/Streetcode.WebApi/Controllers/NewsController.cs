@@ -5,16 +5,13 @@ using Streetcode.BLL.MediatR.Newss.Delete;
 using Streetcode.BLL.MediatR.Newss.GetAll;
 using Streetcode.BLL.MediatR.Newss.GetById;
 using Streetcode.BLL.MediatR.Newss.GetByUrl;
+using Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl;
 using Streetcode.BLL.MediatR.Newss.Update;
 using Streetcode.DAL.Enums;
 using Streetcode.WebApi.Attributes;
 
 namespace Streetcode.WebApi.Controllers;
 
-/// <summary>
-/// Not finished controller created for testing purposes
-/// in the future it will be worth refining and rechecking
-/// </summary>
 public class NewsController : BaseApiController
 {
     [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
@@ -43,14 +40,16 @@ public class NewsController : BaseApiController
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(NewsDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetNewsById([FromRoute] int id)
+    public async Task<IActionResult> GetNewsById([FromRoute] int id, CancellationToken ct)
     {
         var query = new GetNewsByIdQuery(id);
-        var result = await Mediator.Send(query);
+        var result = await Mediator.Send(query, ct);
         return HandleResult(result);
     }
 
-    [HttpGet("url/{url}")]
+    [HttpGet("{url}")]
+    [ProducesResponseType(typeof(NewsDTOWithURLs), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetNewsByUrl([FromRoute] string url)
     {
         var query = new GetNewsByUrlQuery(url);
@@ -77,6 +76,15 @@ public class NewsController : BaseApiController
     {
         var command = new DeleteNewsCommand(id);
         var result = await Mediator.Send(command, ct);
+        return HandleResult(result);
+    }
+
+    [HttpGet("{url}")]
+    [ProducesResponseType(typeof(NewsDTOWithURLs), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetNewsAndLinksByUrl([FromRoute] string url, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new GetNewsAndLinksByUrlQuery(url), ct);
         return HandleResult(result);
     }
 }
