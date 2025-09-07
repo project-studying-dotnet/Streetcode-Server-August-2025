@@ -51,19 +51,23 @@ public class NewsController : BaseApiController
     [HttpGet("{url}")]
     [ProducesResponseType(typeof(NewsDTOWithURLs), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetNewsByUrl([FromRoute] string url)
+    public async Task<IActionResult> GetNewsByUrl([FromRoute] string url, CancellationToken ct)
     {
         var query = new GetNewsByUrlQuery(url);
-        var result = await Mediator.Send(query);
+        var result = await Mediator.Send(query, ct);
         return HandleResult(result);
     }
 
     [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPut]
-    public async Task<IActionResult> UpdateNews([FromBody] NewsDTO newsDto)
+    [ProducesResponseType(typeof(NewsDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UpdateNews([FromBody] NewsDTO newsDto, CancellationToken ct)
     {
         var command = new UpdateNewsCommand(newsDto);
-        var result = await Mediator.Send(command);
+        var result = await Mediator.Send(command, ct);
         return HandleResult(result);
     }
 
@@ -89,7 +93,7 @@ public class NewsController : BaseApiController
         return HandleResult(result);
     }
 
-    [HttpGet()]
+    [HttpGet]
     [ProducesResponseType(typeof(List<NewsDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetNewsSortedByDate(CancellationToken ct)
