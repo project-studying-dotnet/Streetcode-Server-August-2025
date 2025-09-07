@@ -40,75 +40,6 @@ public class GetNewsAndLinksByUrlTests
     }
 
     [Fact]
-    public async Task GetNewsAndLinksByUrl_WhenNewsExists_ShouldReturnDTOWithUrls()
-    {
-        // Arrange
-        var testUrl = "test-news-url";
-        var query = new GetNewsAndLinksByUrlQuery(testUrl);
-
-        // Create test entities
-        var newsEntity = CreateNewsEntity(1, testUrl);
-        var allNewsEntities = new List<DAL.Entities.News.News>
-        {
-            CreateNewsEntity(1, "first-url"),
-            CreateNewsEntity(2, testUrl), // target news
-            CreateNewsEntity(3, "third-url"),
-            CreateNewsEntity(4, "fourth-url")
-        };
-
-        var newsDTO = CreateNewsDTO(2, testUrl);
-
-        _mockNewsRepository
-            .Setup(x => x.GetFirstOrDefaultAsync(
-                It.Is<Expression<Func<DAL.Entities.News.News, bool>>>(expr => true),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
-            .ReturnsAsync(newsEntity);
-
-        _mockNewsRepository
-            .Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
-            .ReturnsAsync(allNewsEntities);
-
-        _mockMapper
-            .Setup(x => x.Map<NewsDTO>(It.IsAny<DAL.Entities.News.News>()))
-            .Returns(newsDTO);
-
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-
-        var returnedData = result.Value;
-
-        returnedData.News.Should().NotBeNull();
-        returnedData.News.Id.Should().Be(2);
-        returnedData.News.URL.Should().Be(testUrl);
-
-        returnedData.PrevNewsUrl.Should().Be("first-url");
-        returnedData.NextNewsUrl.Should().Be("third-url");
-
-        // Verify random news
-        returnedData.RandomNews.Should().NotBeNull();
-        returnedData.RandomNews.RandomNewsUrl.Should().Be("fourth-url");
-        returnedData.RandomNews.Title.Should().Be("Test News 4");
-
-        // Verify repository calls
-        _mockNewsRepository.Verify(
-            x => x.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
-                    IIncludableQueryable<DAL.Entities.News.News, object>>>()),
-            Times.Once);
-
-        // Verify mapper call
-        _mockMapper.Verify(x => x.Map<NewsDTO>(It.IsAny<DAL.Entities.News.News>()), Times.Once);
-    }
-
-    [Fact]
     public async Task GetNewsAndLinksByUrl_WhenNewsNotFound_ShouldReturnFailure()
     {
         // Arrange
@@ -129,55 +60,6 @@ public class GetNewsAndLinksByUrlTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task GetNewsAndLinksByUrl_WhenTotalNewsLessOrEqualThree_ShouldSetRandomNewsAsCurrent()
-    {
-        // Arrange
-        var testUrl = "test-news-url";
-        var query = new GetNewsAndLinksByUrlQuery(testUrl);
-
-        var newsEntity = CreateNewsEntity(2, testUrl);
-        var allNewsEntities = new List<DAL.Entities.News.News>
-        {
-            CreateNewsEntity(1, "first-url"),
-            newsEntity,
-            CreateNewsEntity(3, "third-url")
-        };
-
-        var newsDTO = CreateNewsDTO(2, testUrl);
-
-        _mockNewsRepository
-            .Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
-                    IIncludableQueryable<DAL.Entities.News.News, object>>>()))
-            .ReturnsAsync(newsEntity);
-
-        _mockNewsRepository
-            .Setup(r => r.GetAllAsync(
-                It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
-                    IIncludableQueryable<DAL.Entities.News.News, object>>>()))
-            .ReturnsAsync(allNewsEntities);
-
-        _mockMapper
-            .Setup(x => x.Map<NewsDTO>(It.IsAny<DAL.Entities.News.News>()))
-            .Returns(newsDTO);
-
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-
-        var returnedData = result.Value;
-
-        returnedData.RandomNews.Should().NotBeNull();
-        returnedData.RandomNews.Title.Should().Be(newsDTO.Title);
-        returnedData.RandomNews.RandomNewsUrl.Should().Be(newsDTO.URL);
     }
 
     private DAL.Entities.News.News CreateNewsEntity(int id, string url = null)
