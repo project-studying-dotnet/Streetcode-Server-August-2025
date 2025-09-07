@@ -6,6 +6,7 @@ using Streetcode.BLL.MediatR.Newss.GetAll;
 using Streetcode.BLL.MediatR.Newss.GetById;
 using Streetcode.BLL.MediatR.Newss.GetByUrl;
 using Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl;
+using Streetcode.BLL.MediatR.Newss.SortedByDateTime;
 using Streetcode.BLL.MediatR.Newss.Update;
 using Streetcode.DAL.Enums;
 using Streetcode.WebApi.Attributes;
@@ -85,6 +86,16 @@ public class NewsController : BaseApiController
     public async Task<IActionResult> GetNewsAndLinksByUrl([FromRoute] string url, CancellationToken ct)
     {
         var result = await Mediator.Send(new GetNewsAndLinksByUrlQuery(url), ct);
+        return HandleResult(result);
+    }
+
+    [HttpGet()]
+    [ProducesResponseType(typeof(List<NewsDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetNewsSortedByDate(CancellationToken ct)
+    {
+        var query = new SortedByDateTimeQuery();
+        var result = await Mediator.Send(query, ct);
         return HandleResult(result);
     }
 }
