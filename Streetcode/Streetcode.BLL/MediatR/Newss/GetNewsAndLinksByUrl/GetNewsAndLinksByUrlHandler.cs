@@ -45,6 +45,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
             }
 
             var orderedNews = (await _repositoryWrapper.NewsRepository.GetAllAsync())
+                .OrderByDescending(n => n.CreationDate)
                 .Select(n => new { n.Id, n.URL, n.Title })
                 .ToList();
 
