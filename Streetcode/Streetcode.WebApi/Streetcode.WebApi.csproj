@@ -20,6 +20,7 @@
     <PackageReference Include="Hangfire" Version="1.7.33" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.19" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.19">
       <PrivateAssets>all</PrivateAssets>
@@ -65,6 +66,7 @@
   <ItemGroup>
     <Folder Include="Controllers\Analytics\" />
     <Folder Include="Controllers\Newss\" />
+    <Folder Include="Middlewares\" />
   </ItemGroup>
 
 </Project>

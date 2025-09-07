@@ -3,7 +3,7 @@
     [Flags]
     public enum UserRole
     {
-        None,
+        User,
         MainAdministrator,
         Administrator,
         Moderator

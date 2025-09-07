@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Streetcode.BLL.DTO.Locations;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
-using Streetcode.BLL.DTO.Locations.Update;
 using Streetcode.DAL.Entities.Analytics;
+using Streetcode.BLL.DTO.Locations;
+using Streetcode.BLL.DTO.Locations.Update;
 
 namespace Streetcode.BLL.Mapping.Locations;
 
@@ -11,6 +11,7 @@ public class MapPointProfile : Profile
     public MapPointProfile()
     {
         CreateMap<StatisticRecord, MapPointDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.Count))
             .ForMember(dest => dest.StreetcodeCoordinate, opt => opt.MapFrom(src => src.StreetcodeCoordinate))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))

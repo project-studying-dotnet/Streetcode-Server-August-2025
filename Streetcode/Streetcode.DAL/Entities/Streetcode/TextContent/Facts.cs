@@ -26,4 +26,6 @@ public class Facts
     public int StreetcodeId { get; set; }
 
     public StreetcodeContent? Streetcode { get; set; }
+
+    public int Order { get; set; }
 }

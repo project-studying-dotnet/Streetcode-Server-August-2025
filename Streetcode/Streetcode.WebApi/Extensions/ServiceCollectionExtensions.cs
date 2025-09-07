@@ -22,6 +22,9 @@ using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.MediatR;
 using Streetcode.BLL;
+using Streetcode.DAL.Repositories.Interfaces.Timeline;
+using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.Services.Timeline;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -52,6 +55,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped<IHistoricalContextService, HistoricalContextService>();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)

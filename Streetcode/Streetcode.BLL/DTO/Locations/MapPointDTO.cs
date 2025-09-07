@@ -4,6 +4,7 @@ namespace Streetcode.BLL.DTO.Locations;
 
 public class MapPointDTO
 {
+    public int Id { get; set; }
     public int PlateNumber { get; set; }
     public StreetcodeCoordinateDTO StreetcodeCoordinate { get; set; } = null!;
     public string Address { get; set; } = null!;
