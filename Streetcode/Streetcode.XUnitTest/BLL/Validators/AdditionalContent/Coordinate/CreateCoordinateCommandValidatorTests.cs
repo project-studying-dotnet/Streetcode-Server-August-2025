@@ -27,7 +27,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.AdditionalContent.Coordinate
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.StreetcodeCoordinate)
-                  .WithErrorMessage(Errors_Validation.IsRequired.FormatWith("StreetcodeCoordinate"));
+                  .WithErrorMessage(Errors_Validation.IsRequiredData.FormatWith("StreetcodeCoordinate"));
         }
 
         [Fact]

@@ -28,7 +28,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Media.Audio
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.Audio)
-                  .WithErrorMessage(Errors_Validation.IsRequired.FormatWith("Audio"));
+                  .WithErrorMessage(Errors_Validation.IsRequiredData.FormatWith("Audio"));
         }
 
         [Fact]

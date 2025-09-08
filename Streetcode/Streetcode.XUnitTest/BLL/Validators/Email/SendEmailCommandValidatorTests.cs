@@ -28,7 +28,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.Email)
-                  .WithErrorMessage(Errors_Validation.IsRequired.FormatWith("Email"));
+                  .WithErrorMessage(Errors_Validation.IsRequiredData.FormatWith("Email"));
         }
 
         [Fact]

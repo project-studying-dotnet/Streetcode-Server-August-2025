@@ -11,7 +11,7 @@ public class CreateCoordinateCommandValidator : AbstractValidator<CreateCoordina
     {
         RuleFor(x => x.StreetcodeCoordinate)
             .NotNull()
-            .WithMessage(Errors_Validation.IsRequired.FormatWith("StreetcodeCoordinate"));
+            .WithMessage(Errors_Validation.IsRequiredData.FormatWith("StreetcodeCoordinate"));
 
         When(x => x.StreetcodeCoordinate != null, () =>
         {

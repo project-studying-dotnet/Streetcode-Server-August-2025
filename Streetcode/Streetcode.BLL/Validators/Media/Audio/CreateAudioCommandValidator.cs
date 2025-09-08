@@ -11,7 +11,7 @@ public class CreateAudioCommandValidator : AbstractValidator<CreateAudioCommand>
     {
         RuleFor(x => x.Audio)
             .NotNull()
-            .WithMessage(Errors_Validation.IsRequired.FormatWith("Audio"));
+            .WithMessage(Errors_Validation.IsRequiredData.FormatWith("Audio"));
 
         When(x => x.Audio != null, () =>
         {

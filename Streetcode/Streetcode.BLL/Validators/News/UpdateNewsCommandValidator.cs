@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Newss.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.News;
 
@@ -9,7 +11,7 @@ public class UpdateNewsCommandValidator : AbstractValidator<UpdateNewsCommand>
     {
         RuleFor(x => x.news)
             .NotNull()
-            .WithMessage("News data is required.");
+            .WithMessage(Errors_Validation.IsRequiredData.FormatWith("News"));
 
         When(x => x.news != null, () =>
         {
@@ -18,7 +20,7 @@ public class UpdateNewsCommandValidator : AbstractValidator<UpdateNewsCommand>
 
             RuleFor(x => x.news.Id)
                 .GreaterThan(0)
-                .WithMessage("Id must be provided and greater than 0 when updating news.");
+                .WithMessage(Errors_Validation.Invalid.FormatWith("Id"));
         });
     }
 }

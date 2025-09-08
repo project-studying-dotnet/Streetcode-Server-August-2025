@@ -11,7 +11,7 @@ public class CreateImageCommandValidator : AbstractValidator<CreateImageCommand>
     {
         RuleFor(x => x.Image)
             .NotNull()
-            .WithMessage(Errors_Validation.IsRequired.FormatWith("Image"));
+            .WithMessage(Errors_Validation.IsRequiredData.FormatWith("Image"));
 
         When(x => x.Image != null, () =>
         {

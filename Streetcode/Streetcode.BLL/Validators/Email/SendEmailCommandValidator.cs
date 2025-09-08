@@ -11,7 +11,7 @@ public class SendEmailCommandValidator : AbstractValidator<SendEmailCommand>
     {
         RuleFor(x => x.Email)
             .NotNull()
-            .WithMessage(Errors_Validation.IsRequired.FormatWith("Email"));
+            .WithMessage(Errors_Validation.IsRequiredData.FormatWith("Email"));
 
         When(x => x.Email != null, () =>
         {

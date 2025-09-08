@@ -97,11 +97,29 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field &apos;Url&apos; accepts only small latin alphabet letters, hyphen and numbers.
+        /// </summary>
+        public static string InvalidNewsUrl {
+            get {
+                return ResourceManager.GetString("InvalidNewsUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field &apos;{0}&apos; is required.
         /// </summary>
         public static string IsRequired {
             get {
                 return ResourceManager.GetString("IsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} data is required.
+        /// </summary>
+        public static string IsRequiredData {
+            get {
+                return ResourceManager.GetString("IsRequiredData", resourceCulture);
             }
         }
         
