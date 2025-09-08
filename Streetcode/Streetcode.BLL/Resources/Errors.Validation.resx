@@ -144,4 +144,7 @@
   <data name="MustBeUnique" xml:space="preserve">
     <value>Field '{0}' must be unique</value>
   </data>
+  <data name="MustMatchPattern" xml:space="preserve">
+    <value>Field '{0}' accepts only values that matches: {1}</value>
+  </data>
 </root>

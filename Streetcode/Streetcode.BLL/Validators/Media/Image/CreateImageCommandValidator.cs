@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Media.Image.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Media.Image;
 
@@ -9,7 +11,7 @@ public class CreateImageCommandValidator : AbstractValidator<CreateImageCommand>
     {
         RuleFor(x => x.Image)
             .NotNull()
-            .WithMessage("Image data is required.");
+            .WithMessage(Errors_Validation.IsRequired.FormatWith("Image"));
 
         When(x => x.Image != null, () =>
         {

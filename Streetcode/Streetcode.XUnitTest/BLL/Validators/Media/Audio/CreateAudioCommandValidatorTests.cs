@@ -1,6 +1,8 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Media.Audio;
 using Streetcode.BLL.MediatR.Media.Audio.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Media.Audio;
 using Xunit;
 
@@ -26,7 +28,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Media.Audio
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.Audio)
-                  .WithErrorMessage("Audio data is required.");
+                  .WithErrorMessage(Errors_Validation.IsRequired.FormatWith("Audio"));
         }
 
         [Fact]
@@ -44,7 +46,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Media.Audio
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.Audio.Description)
-                  .WithErrorMessage("Description cannot exceed 500 characters.");
+                  .WithErrorMessage(Errors_Validation.MaxLength.FormatWith("Description", 500));
         }
     }
 }

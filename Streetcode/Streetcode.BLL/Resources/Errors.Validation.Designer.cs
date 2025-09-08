@@ -140,5 +140,14 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("MustBeUnique", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; accepts only values that matches: {1}.
+        /// </summary>
+        public static string MustMatchPattern {
+            get {
+                return ResourceManager.GetString("MustMatchPattern", resourceCulture);
+            }
+        }
     }
 }
