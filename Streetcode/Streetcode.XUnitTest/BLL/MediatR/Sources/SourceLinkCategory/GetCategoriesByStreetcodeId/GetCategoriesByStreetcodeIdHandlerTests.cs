@@ -76,7 +76,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
         {
             // Arrange
             int streetcodeId = 1;
-            string expectedErrorMessage = $"Cant find any source category with the streetcode id {streetcodeId}";
+            string expectedErrorMessage = $"Cannot find any source category with corresponding streetcode id: {streetcodeId}";
 
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetAllAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),

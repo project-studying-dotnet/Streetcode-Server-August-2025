@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ardalis.Specification;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
@@ -32,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
 
             if (streetcodeCategoryContent == null)
             {
-                const string errorMsg = $"SourceLinkCategory don`t exist.";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("SourceLinkCategory", request.id);
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -43,7 +39,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
 
             if (saveResult == 0)
             {
-                const string errorMsg = $"Failed to delete SourceLinkCategory.";
+                string errorMsg = Errors_Common.FailedToDelete.FormatWith("SourceLinkCategory");
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

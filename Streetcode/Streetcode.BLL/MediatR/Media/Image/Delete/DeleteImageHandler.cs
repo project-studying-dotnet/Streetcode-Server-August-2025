@@ -31,7 +31,7 @@ public class DeleteImageHandler : IRequestHandler<DeleteImageCommand, Result<Uni
 
         if (image is null)
         {
-            string errorMsg = Errors_Common.NotFoundById_An.FormatWith("image", request.Id);
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("image", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

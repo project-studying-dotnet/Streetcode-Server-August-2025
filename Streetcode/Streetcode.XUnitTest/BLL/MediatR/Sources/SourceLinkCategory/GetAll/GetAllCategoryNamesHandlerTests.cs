@@ -72,7 +72,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetAll
         public async Task Handle_WhenCategoriesIsNull_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = $"Categories is null";
+            const string errorMsg = $"Cannot find any category";
 
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetAllAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),

@@ -71,7 +71,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
         {
             // Arrange
             int categoryId = -1;
-            string errorMsg = $"Cannot find any srcCategory by the corresponding id: {categoryId}";
+            string errorMsg = $"Cannot find any source category with corresponding id: {categoryId}";
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<SourceLinkCategoryEntity>,

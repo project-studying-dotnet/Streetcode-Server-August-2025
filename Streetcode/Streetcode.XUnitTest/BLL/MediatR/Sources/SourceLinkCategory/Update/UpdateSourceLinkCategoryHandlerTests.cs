@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -109,7 +102,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Update
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "Category not found.");
+                e.Message == $"Cannot find any SourceLinkCategory with corresponding id: {updateDto.Id}");
 
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository
@@ -192,7 +185,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Update
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "Error while saving");
+                e.Message == $"Failed to update a SourceLinkCategory");
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository
                 .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.Sources.SourceLinkCategory, bool>>>(), null),

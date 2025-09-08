@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using FluentResults;
 using Moq;
 using Streetcode.BLL.DTO.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Video.GetById;
-using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Specifications.Video;
 using Xunit;
@@ -76,7 +74,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Media.Video
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find a video"));
+            Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find any video"));
 
             _loggerMock.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
         }

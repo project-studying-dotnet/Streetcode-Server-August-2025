@@ -31,7 +31,7 @@ public class GetAudioByIdHandler : IRequestHandler<GetAudioByIdQuery, Result<Aud
 
         if (audio is null)
         {
-            string errorMsg = Errors_Common.NotFoundById_An.FormatWith("audio", request.Id);
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("audio", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

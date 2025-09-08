@@ -142,20 +142,11 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find a {0} with corresponding id: {1}.
+        ///   Looks up a localized string similar to Cannot find any {0} with corresponding id: {1}.
         /// </summary>
         internal static string NotFoundById {
             get {
                 return ResourceManager.GetString("NotFoundById", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find an {0} with corresponding id: {1}.
-        /// </summary>
-        internal static string NotFoundById_An {
-            get {
-                return ResourceManager.GetString("NotFoundById_An", resourceCulture);
             }
         }
         

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
@@ -11,7 +6,6 @@ using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -98,7 +92,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Delete
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-            e.Message == "SourceLinkCategory don`t exist.");
+            e.Message == $"Cannot find any SourceLinkCategory with corresponding id: {entity.Id}");
             _mockRepositoryWrapper.Verify(r => r.SourceCategoryRepository.Delete(entity), Times.Never);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
             _mockMapper.Verify(m => m.Map<SourceLinkCategoryDTO>(entity), Times.Never);
@@ -136,7 +130,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Delete
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "Failed to delete SourceLinkCategory.");
+                e.Message == "Failed to delete a SourceLinkCategory");
             _mockRepositoryWrapper.Verify(r => r.SourceCategoryRepository.Delete(entity), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
             _mockMapper.Verify(m => m.Map<SourceLinkCategoryDTO>(entity), Times.Never);

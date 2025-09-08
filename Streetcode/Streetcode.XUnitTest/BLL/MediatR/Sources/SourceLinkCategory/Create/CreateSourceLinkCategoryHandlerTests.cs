@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
-using FluentResults;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -159,7 +152,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Create
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "Failed to create category");
+                e.Message == "Failed to create a SourceLinkCategory");
 
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository.GetFirstOrDefaultAsync(

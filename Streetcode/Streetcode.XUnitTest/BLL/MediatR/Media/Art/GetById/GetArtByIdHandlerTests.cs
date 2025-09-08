@@ -90,7 +90,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
                     arts.AsQueryable().FirstOrDefault(predicate.Compile()));
 
             var query = new GetArtByIdQuery(nonExistentArtId);
-            var expectedMessage = $"Cannot find an art with corresponding id: {nonExistentArtId}";
+            var expectedMessage = $"Cannot find any art with corresponding id: {nonExistentArtId}";
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -122,7 +122,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
-            var message = $"Cannot find an art with corresponding id: {query.Id}";
+            var message = $"Cannot find any art with corresponding id: {query.Id}";
 
             // Assert
             Assert.False(result.IsSuccess);

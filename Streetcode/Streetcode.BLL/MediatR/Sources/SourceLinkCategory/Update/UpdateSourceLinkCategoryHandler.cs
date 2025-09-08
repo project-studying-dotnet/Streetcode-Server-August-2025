@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Entities.Sources;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update
@@ -33,7 +29,9 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update
 
             if (categoryEntity == null)
             {
-                return Result.Fail("Category not found.");
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("SourceLinkCategory", request.SourceLinkCategoryUpdate.Id);
+                _loggerService.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
             }
 
             _mapper.Map(request.SourceLinkCategoryUpdate, categoryEntity);
@@ -43,7 +41,9 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update
                                          && c.Id != categoryEntity.Id);
             if (existing != null)
             {
-                return Result.Fail("Category with the same title or image already exists.");
+                string errorMsg = Errors_Sources.AlreadyExistByTitleOrImage;
+                _loggerService.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
             }
 
             _repositoryWrapper.SourceCategoryRepository.Update(categoryEntity);
@@ -52,7 +52,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update
 
             if (saveResult <= 0)
             {
-                const string errorMsg = $"Error while saving";
+                string errorMsg = Errors_Common.FailedToUpdate.FormatWith("SourceLinkCategory");
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
