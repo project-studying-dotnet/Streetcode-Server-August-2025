@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.DTO.Team;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Partners.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Specifications.Team;
 
@@ -32,7 +31,7 @@ namespace Streetcode.BLL.MediatR.Team.GetById
 
             if (team is null)
             {
-                string errorMsg = $"Cannot find any team with corresponding id: {request.Id}";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("team", request.Id);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
