@@ -1,5 +1,7 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Timeline.HistoricalContext;
 using Xunit;
 
@@ -70,7 +72,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [InlineData(-1)]
         public void Should_Have_Error_When_Id_Less_Than_One(int invalidId)
         {
-            const string errorMessage = "ID must be greater than zero.";
+            string errorMessage = Errors_Validation.GreaterThan.FormatWith("Id", 0);
 
             var context = new HistoricalContextRequestDto
             {
@@ -87,11 +89,11 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [Fact]
         public void Should_Have_Error_When_Title_Too_Long()
         {
-            const string errorMessage = "Title cannot exceed 50 characters.";
+            string errorMessage = Errors_Validation.MaxLength.FormatWith("Title", HistoricalContextRequestDtoValidator.MaxTitleLength);
             var context = new HistoricalContextRequestDto
             {
                 Id = null,
-                Title = new string('a', 51)
+                Title = new string('a', HistoricalContextRequestDtoValidator.MaxTitleLength + 1)
             };
 
             var result = _validator.TestValidate(context);
@@ -103,7 +105,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [Fact]
         public void Should_Have_Error_When_Title_Has_Invalid_Characters()
         {
-            const string errorMessage = "Title can only contain letters and spaces.";
+            string errorMessage = Errors_Validation.InvalidCharacters.FormatWith("Title");
 
             var context = new HistoricalContextRequestDto
             {

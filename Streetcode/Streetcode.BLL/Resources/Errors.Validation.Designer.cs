@@ -124,6 +124,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; has invalid characters..
+        /// </summary>
+        public static string InvalidCharacters {
+            get {
+                return ResourceManager.GetString("InvalidCharacters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field &apos;{0}&apos; is required.
         /// </summary>
         public static string IsRequired {
@@ -165,6 +174,15 @@ namespace Streetcode.BLL.Resources {
         public static string MustBeBetween {
             get {
                 return ResourceManager.GetString("MustBeBetween", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} must be in the past..
+        /// </summary>
+        public static string MustBeInPast {
+            get {
+                return ResourceManager.GetString("MustBeInPast", resourceCulture);
             }
         }
         

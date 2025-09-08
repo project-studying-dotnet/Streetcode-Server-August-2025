@@ -174,4 +174,10 @@
   <data name="MustContainAtMostOneRelatedFigureImage" xml:space="preserve">
     <value>Field '{0}' may contain at most one image for links.</value>
   </data>
+  <data name="InvalidCharacters" xml:space="preserve">
+    <value>Field '{0}' has invalid characters.</value>
+  </data>
+  <data name="MustBeInPast" xml:space="preserve">
+    <value>{0} must be in the past.</value>
+  </data>
 </root>
