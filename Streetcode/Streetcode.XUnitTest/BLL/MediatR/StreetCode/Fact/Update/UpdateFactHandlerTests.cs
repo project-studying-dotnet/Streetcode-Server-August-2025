@@ -10,9 +10,9 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Image.Create;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Update;
 using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
 {
@@ -44,7 +44,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
 
             FactUpdateCreateDto fact = new FactUpdateCreateDto { Id = 1 };
 
-            string errorMsg = $"Fact with Id {fact.Id} not found!";
+            string errorMsg = $"Cannot find any fact with corresponding id: {fact.Id}";
 
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
                 It.IsAny<Expression<Func<Facts, bool>>>(),

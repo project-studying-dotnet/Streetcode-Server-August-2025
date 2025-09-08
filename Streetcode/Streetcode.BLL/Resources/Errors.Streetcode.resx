@@ -120,4 +120,7 @@
   <data name="DoesnotExist" xml:space="preserve">
     <value>Streetcode with id: {0} doesn`t exist</value>
   </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Streetcode not found</value>
+  </data>
 </root>

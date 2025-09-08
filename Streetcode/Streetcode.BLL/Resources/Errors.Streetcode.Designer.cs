@@ -68,5 +68,14 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("DoesnotExist", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Streetcode not found.
+        /// </summary>
+        internal static string NotFound {
+            get {
+                return ResourceManager.GetString("NotFound", resourceCulture);
+            }
+        }
     }
 }
