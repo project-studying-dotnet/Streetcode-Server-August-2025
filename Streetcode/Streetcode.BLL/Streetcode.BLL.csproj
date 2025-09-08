@@ -79,6 +79,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Errors.Streetcode.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\MediatR.Payment.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MediatR.Payment.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +102,10 @@
     <EmbeddedResource Update="Resources\Errors.Streetcode.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.Streetcode.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\MediatR.Payment.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MediatR.Payment.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
