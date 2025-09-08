@@ -92,7 +92,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
                 PrevNewsUrl = prevNewsLink,
                 NextNewsUrl = nextNewsLink
             };
-            if (!string.IsNullOrEmpty(randomNews.RandomNewsUrl)) 
+            if (!string.IsNullOrEmpty(randomNews.RandomNewsUrl))
             {
                 result.RandomNews = randomNews;
             }
