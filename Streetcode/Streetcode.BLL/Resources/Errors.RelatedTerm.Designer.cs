@@ -22,14 +22,14 @@ namespace Streetcode.BLL.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Errors_Streetcode {
+    internal class Errors_RelatedTerm {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Errors_Streetcode() {
+        internal Errors_RelatedTerm() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Streetcode.BLL.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.Streetcode", typeof(Errors_Streetcode).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.RelatedTerm", typeof(Errors_RelatedTerm).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,38 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Streetcode with id: {0} doesn`t exist.
+        ///   Looks up a localized string similar to Слово з цим визначенням уже існує.
         /// </summary>
-        internal static string DoesnotExist {
+        internal static string AlreadyExist {
             get {
-                return ResourceManager.GetString("DoesnotExist", resourceCulture);
+                return ResourceManager.GetString("AlreadyExist", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Streetcode not found.
+        ///   Looks up a localized string similar to Cannot create DTOs for related words!.
         /// </summary>
-        internal static string NotFound {
+        internal static string FailedToMapDto {
             get {
-                return ResourceManager.GetString("NotFound", resourceCulture);
+                return ResourceManager.GetString("FailedToMapDto", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find any streetcode with corresponding tagid: {0}.
+        ///   Looks up a localized string similar to Cannot get words by term id: {0}.
         /// </summary>
-        internal static string NotFoundByTag {
+        internal static string NotFoundByTerm {
             get {
-                return ResourceManager.GetString("NotFoundByTag", resourceCulture);
+                return ResourceManager.GetString("NotFoundByTerm", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find a relation between streetcodes with corresponding ids: {0} &amp; {1}.
+        ///   Looks up a localized string similar to Cannot find a related term: {0} for termId {1}.
         /// </summary>
-        internal static string NotFoundRelation {
+        internal static string NotFoundRelatedTermForTerm {
             get {
-                return ResourceManager.GetString("NotFoundRelation", resourceCulture);
+                return ResourceManager.GetString("NotFoundRelatedTermForTerm", resourceCulture);
             }
         }
     }

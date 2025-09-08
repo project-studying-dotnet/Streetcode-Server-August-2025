@@ -1,14 +1,12 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using Xunit;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
+using Xunit;
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
@@ -62,8 +60,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(result.Errors.FirstOrDefault().Message, "Cannot get words by term id");
-            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot get words by term id"), Times.Once);
+            Assert.Equal(result.Errors.FirstOrDefault().Message, $"Cannot get words by term id: {1}");
+            _loggerServiceMock.Verify(l => l.LogError(request, $"Cannot get words by term id: {1}"), Times.Once);
         }
 
         [Fact]

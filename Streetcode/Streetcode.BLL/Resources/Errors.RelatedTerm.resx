@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DoesnotExist" xml:space="preserve">
-    <value>Streetcode with id: {0} doesn`t exist</value>
+  <data name="AlreadyExist" xml:space="preserve">
+    <value>Слово з цим визначенням уже існує</value>
   </data>
-  <data name="NotFound" xml:space="preserve">
-    <value>Streetcode not found</value>
+  <data name="FailedToMapDto" xml:space="preserve">
+    <value>Cannot create DTOs for related words!</value>
   </data>
-  <data name="NotFoundByTag" xml:space="preserve">
-    <value>Cannot find any streetcode with corresponding tagid: {0}</value>
+  <data name="NotFoundByTerm" xml:space="preserve">
+    <value>Cannot get words by term id: {0}</value>
   </data>
-  <data name="NotFoundRelation" xml:space="preserve">
-    <value>Cannot find a relation between streetcodes with corresponding ids: {0} &amp; {1}</value>
+  <data name="NotFoundRelatedTermForTerm" xml:space="preserve">
+    <value>Cannot find a related term: {0} for termId {1}</value>
   </data>
 </root>

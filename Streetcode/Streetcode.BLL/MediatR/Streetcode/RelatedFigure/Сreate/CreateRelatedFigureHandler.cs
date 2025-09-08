@@ -1,9 +1,8 @@
-﻿using AutoMapper;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
-using NLog.Targets;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Entities.Streetcode;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedFigure.Create;
@@ -26,14 +25,14 @@ public class CreateRelatedFigureHandler : IRequestHandler<CreateRelatedFigureCom
 
         if (observerEntity is null)
         {
-            string errorMsg = $"No existing streetcode with id: {request.ObserverId}";
+            string errorMsg = Errors_Streetcode.DoesnotExist.FormatWith(request.ObserverId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
 
         if (targetEntity is null)
         {
-            string errorMsg = $"No existing streetcode with id: {request.TargetId}";
+            string errorMsg = Errors_Streetcode.DoesnotExist.FormatWith(request.TargetId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -47,13 +46,13 @@ public class CreateRelatedFigureHandler : IRequestHandler<CreateRelatedFigureCom
         await _repositoryWrapper.RelatedFigureRepository.CreateAsync(relation);
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
-        if(resultIsSuccess)
+        if (resultIsSuccess)
         {
             return Result.Ok(Unit.Value);
         }
         else
         {
-            string errorMsg = "Failed to create a relation.";
+            string errorMsg = Errors_Common.FailedToCreate.FormatWith("relation");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

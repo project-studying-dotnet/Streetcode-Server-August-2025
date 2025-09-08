@@ -2,11 +2,11 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
 using Streetcode.BLL.DTO.Streetcode.RelatedFigure;
-using Streetcode.DAL.Entities.Streetcode;
-using Streetcode.DAL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedFigure.GetByStreetcodeId;
@@ -30,7 +30,7 @@ public class GetRelatedFiguresByStreetcodeIdHandler : IRequestHandler<GetRelated
 
         if (relatedFigureIds is null)
         {
-            string errorMsg = $"Cannot find any related figures by a streetcode id: {request.StreetcodeId}";
+            string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("related figures", request.StreetcodeId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -42,14 +42,14 @@ public class GetRelatedFiguresByStreetcodeIdHandler : IRequestHandler<GetRelated
 
         if (relatedFigures is null)
         {
-            string errorMsg = $"Cannot find any related figures by a streetcode id: {request.StreetcodeId}";
+            string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("related figures", request.StreetcodeId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
 
-        foreach(StreetcodeContent streetcode in relatedFigures)
+        foreach (StreetcodeContent streetcode in relatedFigures)
         {
-            if(streetcode.Images != null)
+            if (streetcode.Images != null)
             {
                 streetcode.Images = streetcode.Images.OrderBy(img => img.ImageDetails?.Alt).ToList();
             }

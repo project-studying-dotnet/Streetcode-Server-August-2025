@@ -74,6 +74,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Errors.Email.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Errors.RelatedTerm.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.RelatedTerm.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Errors.Sources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -103,6 +108,10 @@
     <EmbeddedResource Update="Resources\Errors.Email.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.Email.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.RelatedTerm.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.RelatedTerm.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Errors.Sources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -1,14 +1,13 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using Xunit;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
+using Xunit;
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
@@ -38,7 +37,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.First().Message.Should().Be("Cannot create new related word for a term!");
+            result.Errors.First().Message.Should().Be("Cannot convert null to related term");
 
             _loggerServiceMock.Verify(x => x.LogError(request, It.IsAny<string>()), Times.Once);
         }
@@ -84,8 +83,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot save changes in the database after related word creation!", result.Errors.First().Message);
-            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot save changes in the database after related word creation!"), Times.Once);
+            Assert.Equal("Failed to create a related word for a term", result.Errors.First().Message);
+            _loggerServiceMock.Verify(l => l.LogError(request, "Failed to create a related word for a term"), Times.Once);
         }
 
         [Fact]
