@@ -94,6 +94,13 @@ public class NewsControllerTests
                 new Func<NewsController, Task<IActionResult>>(async controller =>
                     await controller.GetNewsAndLinksByUrl("test-url", CancellationToken.None)),
                 typeof(GetNewsAndLinksByUrlQuery)
+            },
+            new object[]
+            {
+                "GetNewsSortedByDate",
+                new Func<NewsController, Task<IActionResult>>(async controller =>
+                    await controller.GetNewsSortedByDate(CancellationToken.None)),
+                typeof(SortedByDateTimeQuery)
             }
         };
     }
@@ -113,7 +120,7 @@ public class NewsControllerTests
 
         // Assert
         Assert.IsType<OkObjectResult>(result);
-        _mediatorMock.Verify(x => x.Send(It.IsAny<IRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mediatorMock.VerifyAll();
     }
 
     [Theory]
@@ -131,9 +138,9 @@ public class NewsControllerTests
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result);
-        _mediatorMock.Verify(x => x.Send(It.IsAny<IRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mediatorMock.VerifyAll();
     }
-    
+
     private void SetupMediatorMockForType(Type requestType, bool isSuccess)
     {
         switch (requestType)
@@ -187,7 +194,12 @@ public class NewsControllerTests
                         : Result.Fail<NewsDTOWithURLs>("Test error"));
                 break;
 
+            case not null when requestType == typeof(SortedByDateTimeQuery):
+                _mediatorMock.Setup(x => x.Send(It.IsAny<SortedByDateTimeQuery>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(isSuccess
+                        ? Result.Ok(new List<NewsDTO> { new() })
+                        : Result.Fail<List<NewsDTO>>("Test error"));
+                break;
         }
     }
-
 }

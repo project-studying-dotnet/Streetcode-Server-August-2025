@@ -91,7 +91,6 @@ public class GetNewsAndLinksByUrlTests
         // Verify random news
         returnedData.RandomNews.Should().NotBeNull();
 
-
         // Verify repository calls
         _mockNewsRepository.Verify(
             x => x.GetFirstOrDefaultAsync(

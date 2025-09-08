@@ -41,11 +41,11 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
 
             if (newsDTO.Image is not null)
             {
-                try 
+                try
                 {
                     newsDTO.Image.Base64 = _blobService.FindFileInStorageAsBase64(newsDTO.Image.BlobName);
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     _logger.LogError(request, $"Failed to load image '{newsDTO.Image.BlobName}': {ex.Message}");
                 }
