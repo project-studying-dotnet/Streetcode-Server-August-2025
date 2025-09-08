@@ -1,7 +1,4 @@
 ﻿using System.Linq.Expressions;
-using AutoMapper;
-using FluentResults;
-using MediatR;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
@@ -77,7 +74,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
         {
             // Arrange
             var command = new DeleteTimelineItemCommand(-1);
-            var expectedError = $"Cannot find a timeline item with an ID: {command.id}";
+            var expectedError = $"Cannot find any timeline item with corresponding id: {command.id}";
 
             _repositoryWrapperMock.Setup(r => r.TimelineRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
@@ -105,7 +102,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
             // Arrange
             var request = new DeleteTimelineItemCommand(1);
             var timelineItemEntity = new TimelineItemEntity { HistoricalContextTimelines = new List<HistoricalContextTimeline>() };
-            var expectedError = "Failed to delete the timeline item.";
+            var expectedError = "Failed to delete a timeline item";
 
             _repositoryWrapperMock.Setup(r => r.TimelineRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),

@@ -55,7 +55,7 @@ public class GetAllTimelineItemsHandlerTests
         // Arrange
         var request = new GetAllTimelineItemsQuery();
         var cancellationToken = CancellationToken.None;
-        const string errorMsg = "Cannot find any timelineItem";
+        const string errorMsg = "Cannot find any timeline items";
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetAllAsync(

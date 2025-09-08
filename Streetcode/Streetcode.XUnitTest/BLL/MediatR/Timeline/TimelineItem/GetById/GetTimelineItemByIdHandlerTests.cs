@@ -9,8 +9,8 @@ using Streetcode.BLL.MediatR.Timeline.TimelineItem.GetById;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
-using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 using HistoricalContextEntity = Streetcode.DAL.Entities.Timeline.HistoricalContext;
+using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.GetById;
 
@@ -62,7 +62,7 @@ public class GetTimelineItemByIdHandlerTests
         var requestId = 999;
         var request = new GetTimelineItemByIdQuery(requestId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find a timeline item with corresponding id: {requestId}";
+        var expectedErrorMessage = $"Cannot find any timeline item with corresponding id: {requestId}";
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetFirstOrDefaultAsync(
@@ -93,7 +93,7 @@ public class GetTimelineItemByIdHandlerTests
         // Arrange
         var request = new GetTimelineItemByIdQuery(requestId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find a timeline item with corresponding id: {requestId}";
+        var expectedErrorMessage = $"Cannot find any timeline item with corresponding id: {requestId}";
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetFirstOrDefaultAsync(

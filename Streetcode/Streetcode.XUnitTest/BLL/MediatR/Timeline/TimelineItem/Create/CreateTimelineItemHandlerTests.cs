@@ -8,10 +8,12 @@ using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Timeline;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
-using Streetcode.DAL.Entities.Streetcode;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
 {
@@ -122,7 +124,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
             };
             int nonExistentStreetcodeId = -1;
             var command = new CreateTimelineItemCommand(nonExistentStreetcodeId, createTimelineItem);
-            string errorMsg = $"Streetcode with Id={nonExistentStreetcodeId} not found";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("Streetcode", nonExistentStreetcodeId);
 
             _mapperMock.Setup(m => m.Map<TimelineItemEntity>(command.TimelineItem)).Returns(new TimelineItemEntity());
             SetupStreetcodeRepositoryGetFirstOrDefault(null!);

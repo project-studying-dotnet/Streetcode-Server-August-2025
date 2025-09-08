@@ -89,6 +89,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Errors.Streetcode.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Errors.Timeline.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Timeline.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Errors.Validation.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -125,6 +130,10 @@
     <EmbeddedResource Update="Resources\Errors.Streetcode.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.Streetcode.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Timeline.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Timeline.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Errors.Validation.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

@@ -118,7 +118,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Update
                 Description = "Updated Description",
                 HistoricalContexts = new List<HistoricalContextRequestDto>()
             });
-            string errorMsg = $"Cannot find timeline item with Id={command.TimelineItem.Id}";
+            string errorMsg = $"Cannot find any timeline item with corresponding id: {command.TimelineItem.Id}";
 
             SetupTimelineRepositoryGetFirstOrDefault((TimelineItemEntity)null!);
 
@@ -273,7 +273,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Update
         public async Task Handle_SaveChangesFails_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = "Failed to save changes to the database";
+            const string errorMsg = "Failed to update a timeline item";
             var command = new UpdateTimelineItemCommand(new TimelineItemUpdateDto
             {
                 Id = 1,

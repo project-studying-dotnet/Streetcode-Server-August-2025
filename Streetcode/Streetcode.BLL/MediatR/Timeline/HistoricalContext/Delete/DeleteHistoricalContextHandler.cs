@@ -4,8 +4,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using HistoricalContextEntity = Streetcode.DAL.Entities.Timeline.HistoricalContext;
 
 namespace Streetcode.BLL.MediatR.Timeline.HistoricalContext.Delete
 {
@@ -33,7 +34,7 @@ namespace Streetcode.BLL.MediatR.Timeline.HistoricalContext.Delete
 
                 if (historicalContext == null)
                 {
-                    string errorMsg = $"Cannot find historical context with an ID: {request.id}";
+                    string errorMsg = Errors_Common.NotFoundById.FormatWith("historical context", request.id);
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }
@@ -55,7 +56,7 @@ namespace Streetcode.BLL.MediatR.Timeline.HistoricalContext.Delete
                 }
                 else
                 {
-                    const string errorMsg = "Failed to delete the historical context.";
+                    string errorMsg = Errors_Common.FailedToDelete.FormatWith("historical context");
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }

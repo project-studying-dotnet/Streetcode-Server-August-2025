@@ -60,7 +60,7 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
         var streetcodeId = 999;
         var request = new GetTimelineItemsByStreetcodeIdQuery(streetcodeId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find any timeline item by the streetcode id: {streetcodeId}";
+        var expectedErrorMessage = $"Cannot find any timeline item with corresponding streetcode id: {streetcodeId}";
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetAllAsync(
@@ -118,7 +118,7 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
     {
         var request = new GetTimelineItemsByStreetcodeIdQuery(streetcodeId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find any timeline item by the streetcode id: {streetcodeId}";
+        var expectedErrorMessage = $"Cannot find any timeline item with corresponding streetcode id: {streetcodeId}";
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetAllAsync(
