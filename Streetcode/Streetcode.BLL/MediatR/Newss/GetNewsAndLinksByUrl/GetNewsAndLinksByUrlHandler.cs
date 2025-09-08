@@ -41,7 +41,14 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
 
             if (newsDTO.Image is not null)
             {
-                newsDTO.Image.Base64 = _blobService.FindFileInStorageAsBase64(newsDTO.Image.BlobName);
+                try 
+                {
+                    newsDTO.Image.Base64 = _blobService.FindFileInStorageAsBase64(newsDTO.Image.BlobName);
+                }
+                catch (Exception ex) 
+                {
+                    _logger.LogError(request, $"Failed to load image '{newsDTO.Image.BlobName}': {ex.Message}");
+                }
             }
 
             var orderedNews = (await _repositoryWrapper.NewsRepository.GetAllAsync())
