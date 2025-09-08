@@ -7,7 +7,12 @@ public sealed class CreateVideoCommandValidator : AbstractValidator<CreateVideoC
 {
     public CreateVideoCommandValidator()
     {
-        RuleFor(c => c.CreateVideoRequest.Title).ValidTitle().MaximumLength(100);
-        RuleFor(c => c.CreateVideoRequest.Url).ValidUrl();
+        RuleFor(c => c.CreateVideoRequest.Title)
+            .NotEmpty()
+            .MaximumLength(100);
+
+        RuleFor(c => c.CreateVideoRequest.Url)
+            .NotEmpty()
+            .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute));
     }
 }
