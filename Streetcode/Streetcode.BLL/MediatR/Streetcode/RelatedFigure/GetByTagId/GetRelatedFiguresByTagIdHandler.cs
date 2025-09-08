@@ -35,7 +35,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedFigure.GetByTagId
 
             if (streetcodes is null)
             {
-                string errorMsg = Errors_Streetcode.NotFoundByTag.FormatWith(request.tagId);
+                string errorMsg = Errors_Streetcode.NotFoundBy.FormatWith("tag", request.tagId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

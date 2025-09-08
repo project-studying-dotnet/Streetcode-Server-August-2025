@@ -53,7 +53,7 @@ public class DeleteStreetcodeHandlerTests
         int streetcodeId = 999;
         SetupRepositoryMocks(null, saveChanges: 0);
         var command = new DeleteStreetcodeCommand(streetcodeId);
-        string expectedErrorMessage = $"Cannot find any Streetcode with corresponding Id: {streetcodeId}";
+        string expectedErrorMessage = $"Cannot find any Streetcode with corresponding id: {streetcodeId}";
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -74,7 +74,7 @@ public class DeleteStreetcodeHandlerTests
         var streetcodeContent = new StreetcodeContent { Id = streetcodeId };
         SetupRepositoryMocks(streetcodeContent, saveChanges: -1);
         var command = new DeleteStreetcodeCommand(streetcodeId);
-        string expectedErrorMessage = "Failed to delete the Streetcode";
+        string expectedErrorMessage = "Failed to delete a Streetcode";
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

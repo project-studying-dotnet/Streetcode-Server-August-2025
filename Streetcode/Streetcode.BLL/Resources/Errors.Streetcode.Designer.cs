@@ -22,7 +22,7 @@ namespace Streetcode.BLL.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Errors_Streetcode {
+    public class Errors_Streetcode {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Streetcode.BLL.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.Streetcode", typeof(Errors_Streetcode).Assembly);
@@ -51,7 +51,7 @@ namespace Streetcode.BLL.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,36 +61,63 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot map streetcode to {0}.
+        /// </summary>
+        public static string CannotMap {
+            get {
+                return ResourceManager.GetString("CannotMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Streetcode with id: {0} doesn`t exist.
         /// </summary>
-        internal static string DoesnotExist {
+        public static string DoesnotExist {
             get {
                 return ResourceManager.GetString("DoesnotExist", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to change status of streetcode to deleted.
+        /// </summary>
+        public static string FailedToChangeStatusToDeleted {
+            get {
+                return ResourceManager.GetString("FailedToChangeStatusToDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No streetcodes exist now.
+        /// </summary>
+        public static string NotExistNow {
+            get {
+                return ResourceManager.GetString("NotExistNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Streetcode not found.
         /// </summary>
-        internal static string NotFound {
+        public static string NotFound {
             get {
                 return ResourceManager.GetString("NotFound", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find any streetcode with corresponding tagid: {0}.
+        ///   Looks up a localized string similar to Cannot find any streetcode with corresponding {0}: {1}.
         /// </summary>
-        internal static string NotFoundByTag {
+        public static string NotFoundBy {
             get {
-                return ResourceManager.GetString("NotFoundByTag", resourceCulture);
+                return ResourceManager.GetString("NotFoundBy", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Cannot find a relation between streetcodes with corresponding ids: {0} &amp; {1}.
         /// </summary>
-        internal static string NotFoundRelation {
+        public static string NotFoundRelation {
             get {
                 return ResourceManager.GetString("NotFoundRelation", resourceCulture);
             }

@@ -22,14 +22,14 @@ namespace Streetcode.BLL.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Errors_Sources {
+    public class Errors_Validation {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Errors_Sources() {
+        internal Errors_Validation() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Streetcode.BLL.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.Sources", typeof(Errors_Sources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.Validation", typeof(Errors_Validation).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,29 +61,20 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CategoryContent with the same Streetcode and SourceLinkCategory already exists.
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; cannot be empty.
         /// </summary>
-        public static string AlreadyExistByStreetcodeAndSourceLinkCategory {
+        public static string CannotBeEmpty {
             get {
-                return ResourceManager.GetString("AlreadyExistByStreetcodeAndSourceLinkCategory", resourceCulture);
+                return ResourceManager.GetString("CannotBeEmpty", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Category with the same title or image already exists..
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; must be unique.
         /// </summary>
-        public static string AlreadyExistByTitleOrImage {
+        public static string MustBeUnique {
             get {
-                return ResourceManager.GetString("AlreadyExistByTitleOrImage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Category with this name already exist..
-        /// </summary>
-        public static string AlreadyExistWithName {
-            get {
-                return ResourceManager.GetString("AlreadyExistWithName", resourceCulture);
+                return ResourceManager.GetString("MustBeUnique", resourceCulture);
             }
         }
     }

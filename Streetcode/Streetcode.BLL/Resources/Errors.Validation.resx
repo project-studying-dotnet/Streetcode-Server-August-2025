@@ -120,43 +120,7 @@
   <data name="CannotBeEmpty" xml:space="preserve">
     <value>Field '{0}' cannot be empty</value>
   </data>
-  <data name="CannotConvertNull" xml:space="preserve">
-    <value>Cannot convert null to {0}</value>
-  </data>
-  <data name="CannotMap" xml:space="preserve">
-    <value>Cannot map {0}</value>
-  </data>
-  <data name="CannotSaveTheData" xml:space="preserve">
-    <value>Cannot save the data</value>
-  </data>
-  <data name="FailedToCreate" xml:space="preserve">
-    <value>Failed to create a {0}</value>
-  </data>
-  <data name="FailedToCreate_An" xml:space="preserve">
-    <value>Failed to create an {0}</value>
-  </data>
-  <data name="FailedToDelete" xml:space="preserve">
-    <value>Failed to delete a {0}</value>
-  </data>
-  <data name="FailedToDelete_An" xml:space="preserve">
-    <value>Failed to delete an {0}</value>
-  </data>
-  <data name="FailedToUpdate" xml:space="preserve">
-    <value>Failed to update a {0}</value>
-  </data>
   <data name="MustBeUnique" xml:space="preserve">
     <value>Field '{0}' must be unique</value>
-  </data>
-  <data name="NotFoundAny" xml:space="preserve">
-    <value>Cannot find any {0}</value>
-  </data>
-  <data name="NotFoundById" xml:space="preserve">
-    <value>Cannot find any {0} with corresponding id: {1}</value>
-  </data>
-  <data name="NotFoundByStreetcode" xml:space="preserve">
-    <value>Cannot find any {0} with corresponding streetcode id: {1}</value>
-  </data>
-  <data name="NotFoundByUrl" xml:space="preserve">
-    <value>No {0} by entered Url - {1}</value>
   </data>
 </root>

@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Art.NotFoundInMappedArts" xml:space="preserve">
+    <value>Art ID '{0}' not found in the mapped arts.</value>
+  </data>
   <data name="Coordinate_NotFoundByCategory" xml:space="preserve">
     <value>Cannot find a coordinate with corresponding categoryId: {0}</value>
   </data>

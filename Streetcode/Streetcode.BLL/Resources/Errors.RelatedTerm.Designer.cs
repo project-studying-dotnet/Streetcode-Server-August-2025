@@ -22,7 +22,7 @@ namespace Streetcode.BLL.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Errors_RelatedTerm {
+    public class Errors_RelatedTerm {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Streetcode.BLL.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.RelatedTerm", typeof(Errors_RelatedTerm).Assembly);
@@ -51,7 +51,7 @@ namespace Streetcode.BLL.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Streetcode.BLL.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Слово з цим визначенням уже існує.
         /// </summary>
-        internal static string AlreadyExist {
+        public static string AlreadyExist {
             get {
                 return ResourceManager.GetString("AlreadyExist", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Streetcode.BLL.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Cannot create DTOs for related words!.
         /// </summary>
-        internal static string FailedToMapDto {
+        public static string FailedToMapDto {
             get {
                 return ResourceManager.GetString("FailedToMapDto", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Streetcode.BLL.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Cannot get words by term id: {0}.
         /// </summary>
-        internal static string NotFoundByTerm {
+        public static string NotFoundByTerm {
             get {
                 return ResourceManager.GetString("NotFoundByTerm", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Streetcode.BLL.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Cannot find a related term: {0} for termId {1}.
         /// </summary>
-        internal static string NotFoundRelatedTermForTerm {
+        public static string NotFoundRelatedTermForTerm {
             get {
                 return ResourceManager.GetString("NotFoundRelatedTermForTerm", resourceCulture);
             }

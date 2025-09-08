@@ -117,14 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CannotMap" xml:space="preserve">
+    <value>Cannot map streetcode to {0}</value>
+  </data>
   <data name="DoesnotExist" xml:space="preserve">
     <value>Streetcode with id: {0} doesn`t exist</value>
+  </data>
+  <data name="FailedToChangeStatusToDeleted" xml:space="preserve">
+    <value>Failed to change status of streetcode to deleted</value>
+  </data>
+  <data name="NotExistNow" xml:space="preserve">
+    <value>No streetcodes exist now</value>
   </data>
   <data name="NotFound" xml:space="preserve">
     <value>Streetcode not found</value>
   </data>
-  <data name="NotFoundByTag" xml:space="preserve">
-    <value>Cannot find any streetcode with corresponding tagid: {0}</value>
+  <data name="NotFoundBy" xml:space="preserve">
+    <value>Cannot find any streetcode with corresponding {0}: {1}</value>
   </data>
   <data name="NotFoundRelation" xml:space="preserve">
     <value>Cannot find a relation between streetcodes with corresponding ids: {0} &amp; {1}</value>

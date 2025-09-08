@@ -22,7 +22,7 @@ namespace Streetcode.BLL.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Errors_AdditionalContent {
+    public class Errors_AdditionalContent {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Streetcode.BLL.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Streetcode.BLL.Resources.Errors.AdditionalContent", typeof(Errors_AdditionalContent).Assembly);
@@ -51,7 +51,7 @@ namespace Streetcode.BLL.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,18 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Art ID &apos;{0}&apos; not found in the mapped arts..
+        /// </summary>
+        public static string Art_NotFoundInMappedArts {
+            get {
+                return ResourceManager.GetString("Art.NotFoundInMappedArts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot find a coordinates by a streetcode id: {0}, because such streetcode doesn`t exist.
         /// </summary>
-        internal static string Coordinate_NotFound_StreetcodeDoesNotExist {
+        public static string Coordinate_NotFound_StreetcodeDoesNotExist {
             get {
                 return ResourceManager.GetString("Coordinate_NotFound_StreetcodeDoesNotExist", resourceCulture);
             }
@@ -72,7 +81,7 @@ namespace Streetcode.BLL.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Cannot find a coordinate with corresponding categoryId: {0}.
         /// </summary>
-        internal static string Coordinate_NotFoundByCategory {
+        public static string Coordinate_NotFoundByCategory {
             get {
                 return ResourceManager.GetString("Coordinate_NotFoundByCategory", resourceCulture);
             }
@@ -81,7 +90,7 @@ namespace Streetcode.BLL.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Cannot find any tag by the title: {0}.
         /// </summary>
-        internal static string Tag_NotFoundByTitle {
+        public static string Tag_NotFoundByTitle {
             get {
                 return ResourceManager.GetString("Tag_NotFoundByTitle", resourceCulture);
             }
