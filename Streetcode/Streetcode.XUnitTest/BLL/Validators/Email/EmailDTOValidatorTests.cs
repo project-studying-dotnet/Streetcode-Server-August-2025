@@ -1,5 +1,7 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Email;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Email;
 using Xunit;
 
@@ -25,7 +27,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             var result = _validator.TestValidate(email);
             result.ShouldHaveValidationErrorFor(x => x.From)
-                  .WithErrorMessage("Sender must be a valid email address.");
+                  .WithErrorMessage(Errors_Validation.EmailAddressFormat);
         }
 
         [Fact]
@@ -39,7 +41,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             var result = _validator.TestValidate(email);
             result.ShouldHaveValidationErrorFor(x => x.From)
-                  .WithErrorMessage("Sender address cannot exceed 80 characters.");
+                  .WithErrorMessage(Errors_Validation.MaxLength.FormatWith("From", 80));
         }
 
         [Fact]
@@ -53,7 +55,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             var result = _validator.TestValidate(email);
             result.ShouldHaveValidationErrorFor(x => x.Content)
-                  .WithErrorMessage("Email content is required.");
+                  .WithErrorMessage(Errors_Validation.CannotBeEmpty.FormatWith("Content"));
         }
 
         [Fact]
@@ -67,7 +69,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             var result = _validator.TestValidate(email);
             result.ShouldHaveValidationErrorFor(x => x.Content)
-                  .WithErrorMessage("Email content cannot exceed 500 characters.");
+                  .WithErrorMessage(Errors_Validation.LengthMustBeInRange.FormatWith("Content", 1, 500));
         }
 
         [Fact]

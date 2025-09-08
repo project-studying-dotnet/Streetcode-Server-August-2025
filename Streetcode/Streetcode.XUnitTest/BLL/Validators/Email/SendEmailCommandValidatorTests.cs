@@ -1,6 +1,8 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Email;
 using Streetcode.BLL.MediatR.Email;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Email;
 using Xunit;
 
@@ -26,7 +28,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.Email)
-                  .WithErrorMessage("Email data is required.");
+                  .WithErrorMessage(Errors_Validation.IsRequired.FormatWith("Email"));
         }
 
         [Fact]
@@ -45,7 +47,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.Email.From)
-                  .WithErrorMessage("Sender must be a valid email address.");
+                  .WithErrorMessage(Errors_Validation.EmailAddressFormat);
         }
 
         [Fact]
@@ -64,7 +66,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Email
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.Email.Content)
-                  .WithErrorMessage("Email content is required.");
+                  .WithErrorMessage(Errors_Validation.CannotBeEmpty.FormatWith("Content"));
         }
 
         [Fact]
