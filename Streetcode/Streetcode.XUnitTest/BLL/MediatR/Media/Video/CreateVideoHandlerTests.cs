@@ -28,46 +28,40 @@ public class CreateVideoHandlerTests
         _handler = new CreateVideoHandler(
             _repositoryWrapperMock.Object,
             _mapperMock.Object,
-            _loggerMock.Object
-            );
+            _loggerMock.Object);
     }
 
     [Fact]
     public async Task Handle_OnVideoCreation_ReturnsSuccess()
     {
-        // Arrange
         var requestDto = new CreateVideoDTO
         {
             Title = "Title",
             Description = "Description",
             Url = "https://google.com",
-            StreetcodeId = 1,
+            StreetcodeId = 1
         };
+
         var mappedEntity = new Entity
         {
             Title = "Title",
             Description = "Description",
             Url = "https://google.com",
-            StreetcodeId = 1,
+            StreetcodeId = 1
         };
-        _mapperMock
-            .Setup(m => m.Map<Entity>(requestDto))
-            .Returns(mappedEntity);
+
+        _mapperMock.Setup(m => m.Map<Entity>(requestDto)).Returns(mappedEntity);
+
         _repositoryWrapperMock
             .Setup(r => r.VideoRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(), default))
             .ReturnsAsync((Entity)null);
-        _repositoryWrapperMock
-            .Setup(r => r.VideoRepository.CreateAsync(mappedEntity))
-            .ReturnsAsync(mappedEntity);
-        _repositoryWrapperMock
-            .Setup(r => r.SaveChangesAsync())
-            .ReturnsAsync(1);
 
-        // Act
+        _repositoryWrapperMock.Setup(r => r.VideoRepository.CreateAsync(mappedEntity)).ReturnsAsync(mappedEntity);
+        _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
         var result = await _handler.Handle(new CreateVideoCommand(requestDto), CancellationToken.None);
 
-        // Assert
         _repositoryWrapperMock.Verify(x => x.VideoRepository.CreateAsync(mappedEntity), Times.Once);
         _repositoryWrapperMock.Verify(x => x.SaveChangesAsync(), Times.Once);
         result.IsSuccess.Should().BeTrue();
@@ -78,24 +72,18 @@ public class CreateVideoHandlerTests
     {
         CreateVideoDTO requestDto = null;
         Entity mappedEntity = null;
-        _mapperMock
-            .Setup(m => m.Map<Entity>(null))
-            .Returns(mappedEntity);
-        _repositoryWrapperMock
-            .Setup(r => r.VideoRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<Entity, bool>>>(), default))
-            .ReturnsAsync((Entity)null);
-        _repositoryWrapperMock
-            .Setup(r => r.VideoRepository.CreateAsync(mappedEntity))
-            .ReturnsAsync(mappedEntity);
-        _repositoryWrapperMock
-            .Setup(r => r.SaveChangesAsync())
-            .ReturnsAsync(1);
 
-        // Act
+        _mapperMock.Setup(m => m.Map<Entity>(null)).Returns(mappedEntity);
+
+        _repositoryWrapperMock
+            .Setup(r => r.VideoRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Entity, bool>>>(), default))
+            .ReturnsAsync((Entity)null);
+
+        _repositoryWrapperMock.Setup(r => r.VideoRepository.CreateAsync(mappedEntity)).ReturnsAsync(mappedEntity);
+        _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
         var result = await _handler.Handle(new CreateVideoCommand(requestDto), CancellationToken.None);
 
-        // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Message.Should().Contain("Cannot convert null to Video.");
     }
@@ -108,33 +96,28 @@ public class CreateVideoHandlerTests
             Title = new string('*', 101),
             Description = "Description",
             Url = "https://google.com",
-            StreetcodeId = 1,
+            StreetcodeId = 1
         };
+
         var mappedEntity = new Entity
         {
             Title = new string('*', 101),
             Description = "Description",
             Url = "https://google.com",
-            StreetcodeId = 1,
+            StreetcodeId = 1
         };
-        _mapperMock
-            .Setup(m => m.Map<Entity>(requestDto))
-            .Returns(mappedEntity);
-        _repositoryWrapperMock
-            .Setup(r => r.VideoRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<Entity, bool>>>(), default))
-            .ReturnsAsync((Entity)null);
-        _repositoryWrapperMock
-            .Setup(r => r.VideoRepository.CreateAsync(mappedEntity))
-            .ReturnsAsync(mappedEntity);
-        _repositoryWrapperMock
-            .Setup(r => r.SaveChangesAsync())
-            .ReturnsAsync(1);
 
-        // Act
+        _mapperMock.Setup(m => m.Map<Entity>(requestDto)).Returns(mappedEntity);
+
+        _repositoryWrapperMock
+            .Setup(r => r.VideoRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Entity, bool>>>(), default))
+            .ReturnsAsync((Entity)null);
+
+        _repositoryWrapperMock.Setup(r => r.VideoRepository.CreateAsync(mappedEntity)).ReturnsAsync(mappedEntity);
+        _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
         var result = await _handler.Handle(new CreateVideoCommand(requestDto), CancellationToken.None);
 
-        // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Message.Should().Contain("Заголовок відео не може бути більше 100 символів.");
     }
@@ -146,32 +129,27 @@ public class CreateVideoHandlerTests
         {
             Title = "Title",
             Description = "Description",
-            StreetcodeId = 1,
+            StreetcodeId = 1
         };
+
         var mappedEntity = new Entity
         {
             Title = "Title",
             Description = "Description",
-            StreetcodeId = 1,
+            StreetcodeId = 1
         };
-        _mapperMock
-            .Setup(m => m.Map<Entity>(requestDto))
-            .Returns(mappedEntity);
-        _repositoryWrapperMock
-            .Setup(r => r.VideoRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<Entity, bool>>>(), default))
-            .ReturnsAsync((Entity)null);
-        _repositoryWrapperMock
-            .Setup(r => r.VideoRepository.CreateAsync(mappedEntity))
-            .ReturnsAsync(mappedEntity);
-        _repositoryWrapperMock
-            .Setup(r => r.SaveChangesAsync())
-            .ReturnsAsync(1);
 
-        // Act
+        _mapperMock.Setup(m => m.Map<Entity>(requestDto)).Returns(mappedEntity);
+
+        _repositoryWrapperMock
+            .Setup(r => r.VideoRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Entity, bool>>>(), default))
+            .ReturnsAsync((Entity)null);
+
+        _repositoryWrapperMock.Setup(r => r.VideoRepository.CreateAsync(mappedEntity)).ReturnsAsync(mappedEntity);
+        _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
         var result = await _handler.Handle(new CreateVideoCommand(requestDto), CancellationToken.None);
 
-        // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Message.Should().Contain("Посилання на відео є обов'язковим.");
     }

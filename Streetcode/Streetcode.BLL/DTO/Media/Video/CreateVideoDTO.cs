@@ -1,3 +1,6 @@
-namespace Streetcode.BLL.DTO.Media.Video;
-
-public class CreateVideoDTO : VideoDTO { }
+namespace Streetcode.BLL.DTO.Media.Video
+{
+    public class CreateVideoDTO : VideoDTO
+    {
+    }
+}
