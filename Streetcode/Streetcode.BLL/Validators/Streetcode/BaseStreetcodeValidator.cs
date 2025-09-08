@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.ArtGallery;
 using Streetcode.BLL.Validators.Media.Image.Art;
 using Streetcode.BLL.Validators.Streetcode.ImageDetails;
@@ -27,62 +29,79 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
         ImageDetailsValidator imageDetailsValidator)
     {
         RuleFor(dto => dto.Index)
-            .NotNull().WithMessage("Index is required.")
-            .InclusiveBetween(IndexMinValue, IndexMaxValue).WithMessage($"Index must be between {IndexMinValue} and {IndexMaxValue}.");
+            .NotNull()
+            .WithMessage(Errors_Validation.IsRequired.FormatWith("Index"))
+            .InclusiveBetween(IndexMinValue, IndexMaxValue)
+            .WithMessage(Errors_Validation.MustBeBetween.FormatWith("Index", IndexMinValue, IndexMaxValue));
 
         RuleFor(dto => dto.FirstName)
-            .MaximumLength(FirstNameMaxLength).WithMessage($"First name cannot exceed {FirstNameMaxLength} characters.");
+            .MaximumLength(FirstNameMaxLength)
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("FirstName", FirstNameMaxLength));
 
         RuleFor(dto => dto.LastName)
-            .MaximumLength(LastNameMaxLength).WithMessage($"Last name cannot exceed {LastNameMaxLength} characters.");
+            .MaximumLength(LastNameMaxLength)
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("LastName", LastNameMaxLength));
 
         RuleFor(dto => dto.Title)
-            .NotEmpty().WithMessage("Title is required.")
-            .MaximumLength(TitleMaxLength).WithMessage($"Title cannot exceed {TitleMaxLength} characters.");
+            .NotEmpty()
+            .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("Title"))
+            .MaximumLength(TitleMaxLength)
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("Title", TitleMaxLength));
 
         RuleFor(dto => dto.Alias)
-            .MaximumLength(AliasMaxLength).WithMessage($"Alias cannot exceed {AliasMaxLength} characters.");
+            .MaximumLength(AliasMaxLength)
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("Alias", AliasMaxLength));
 
         RuleFor(dto => dto.TransliterationUrl)
-            .NotEmpty().WithMessage("Transliteration URL is required.")
-            .MaximumLength(TransliterationUrlMaxLength).WithMessage($"Transliteration URL cannot exceed {TransliterationUrlMaxLength} characters.")
-            .Matches(@"^[a-z0-9-]*$").WithMessage("Transliteration URL can only contain lowercase letters, numbers, and hyphens.");
+            .NotEmpty()
+            .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("TransliterationUrl"))
+            .MaximumLength(TransliterationUrlMaxLength)
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("TransliterationUrl", TransliterationUrlMaxLength))
+            .Matches(@"^[a-z0-9-]*$")
+            .WithMessage(Errors_Validation.TransliterationUrlFormat);
 
         RuleFor(dto => dto.DateString)
-            .NotEmpty().WithMessage("Date string is required.")
-            .MaximumLength(DateStringMaxLength).WithMessage($"Date string cannot exceed {DateStringMaxLength} characters.")
+            .NotEmpty()
+            .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("DateString"))
+            .MaximumLength(DateStringMaxLength)
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("DateString", DateStringMaxLength))
             .Matches(@"^[0-9а-яА-ЯіїєґІЇЄҐ\s\(\)\-\–]+$")
-            .WithMessage("Date string can only contain numbers, Ukrainian letters, spaces, parentheses, and hyphens.");
+            .WithMessage(Errors_Validation.DateStringFormat);
 
         RuleFor(dto => dto.Teaser)
-            .NotEmpty().WithMessage("Teaser is required.")
+            .NotEmpty()
+            .WithMessage("Teaser is required.")
             .Must(BeValidTeaserLength)
             .WithMessage($"Teaser cannot exceed {TeaserMaxLength} characters, or {TeaserMaxLengthWithNewLine} characters if it contains a newline.");
 
         RuleFor(dto => dto.StreetcodeType)
-            .NotNull().WithMessage("Streetcode type is required.")
-            .IsInEnum().WithMessage("Invalid streetcode type.");
+            .NotNull()
+            .WithMessage(Errors_Validation.IsRequired.FormatWith("StreetcodeType"))
+            .IsInEnum()
+            .WithMessage(Errors_Validation.Invalid.FormatWith("StreetcodeType"));
 
         RuleFor(dto => dto.Status)
-            .NotNull().WithMessage("Streetcode status is required.")
-            .IsInEnum().WithMessage("Invalid streetcode status.");
+            .NotNull()
+            .WithMessage(Errors_Validation.IsRequired.FormatWith("StreetcodeStatus"))
+            .IsInEnum()
+            .WithMessage(Errors_Validation.Invalid.FormatWith("StreetcodeStatus"));
 
         RuleFor(dto => dto)
             .Must(dto => string.IsNullOrEmpty(dto.FirstName) && string.IsNullOrEmpty(dto.LastName))
             .When(dto => dto.StreetcodeType == StreetcodeType.Event)
-            .WithMessage("First name and Last name must be empty for Event streetcode type.");
+            .WithMessage(Errors_Validation.EventStreetcodeCannotHasFirstName);
 
         RuleFor(dto => dto.ImagesDetails)
             .Must(HaveExactlyOneBlackAndWhite)
-            .WithMessage("There must be exactly one black and white image.");
+            .WithMessage(Errors_Validation.MustContainExactlyOneBlackAndWhiteImage);
 
         RuleFor(dto => dto.ImagesDetails)
             .Must(HaveAtMostOneAnimation)
-            .WithMessage("There can be at most one animation image.");
+            .WithMessage(Errors_Validation.MustContainAtMostOneColoredImage);
 
         RuleFor(dto => dto.ImagesDetails)
             .Must(HaveAtMostOneRelatedFigure)
-            .WithMessage("There can be at most one related figure image.");
+            .WithMessage(Errors_Validation.MustContainAtMostOneRelatedFigureImage);
 
         RuleForEach(dto => dto.ImagesDetails)
             .SetValidator(imageDetailsValidator);

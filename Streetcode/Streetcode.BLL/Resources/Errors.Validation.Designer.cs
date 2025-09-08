@@ -70,6 +70,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field &apos;Date String&apos; accepts only cyrillic letters, numbers, dashes (–) and parentheses..
+        /// </summary>
+        public static string DateStringFormat {
+            get {
+                return ResourceManager.GetString("DateStringFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The email address must be in the correct format.
         /// </summary>
         public static string EmailAddressFormat {
@@ -79,11 +88,29 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The streetcode of type &apos;Event&apos; cannot has &apos;First name&apos; and &apos;Last name&apos;.
+        /// </summary>
+        public static string EventStreetcodeCannotHasFirstName {
+            get {
+                return ResourceManager.GetString("EventStreetcodeCannotHasFirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; must be greater than {1}.
         /// </summary>
         public static string GreaterThan {
             get {
                 return ResourceManager.GetString("GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image with id {0} doesnt exist.
+        /// </summary>
+        public static string ImageDoesntExist {
+            get {
+                return ResourceManager.GetString("ImageDoesntExist", resourceCulture);
             }
         }
         
@@ -151,11 +178,47 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; may contain at most one colored image..
+        /// </summary>
+        public static string MustContainAtMostOneColoredImage {
+            get {
+                return ResourceManager.GetString("MustContainAtMostOneColoredImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; may contain at most one image for links..
+        /// </summary>
+        public static string MustContainAtMostOneRelatedFigureImage {
+            get {
+                return ResourceManager.GetString("MustContainAtMostOneRelatedFigureImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; must contain exactly one black and white image..
+        /// </summary>
+        public static string MustContainExactlyOneBlackAndWhiteImage {
+            get {
+                return ResourceManager.GetString("MustContainExactlyOneBlackAndWhiteImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field &apos;{0}&apos; accepts only values that matches: {1}.
         /// </summary>
         public static string MustMatchPattern {
             get {
                 return ResourceManager.GetString("MustMatchPattern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transliteration url must consists of small latin characters, numbers and hyphen.
+        /// </summary>
+        public static string TransliterationUrlFormat {
+            get {
+                return ResourceManager.GetString("TransliterationUrlFormat", resourceCulture);
             }
         }
         

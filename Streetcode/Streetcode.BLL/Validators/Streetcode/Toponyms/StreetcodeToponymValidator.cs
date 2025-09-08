@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Toponyms;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Streetcode.Toponyms;
 
@@ -10,10 +12,13 @@ public class StreetcodeToponymValidator : AbstractValidator<StreetcodeToponymCre
     public StreetcodeToponymValidator()
     {
         RuleFor(dto => dto.StreetName)
-            .NotEmpty().WithMessage($"CannotBeEmpty")
-            .MaximumLength(StreetNameMaxLength).WithMessage("MaxLength");
+            .NotEmpty()
+                .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("StreetName"))
+            .MaximumLength(StreetNameMaxLength)
+                .WithMessage(Errors_Validation.MaxLength.FormatWith("StreetName", StreetNameMaxLength));
 
         RuleFor(dto => dto.ModelState)
-            .IsInEnum().WithMessage("Invalid");
+            .IsInEnum()
+                .WithMessage(Errors_Validation.Invalid.FormatWith("ModelState"));
     }
 }

@@ -6,6 +6,8 @@ using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.BLL.Validators.ArtGallery;
 using Streetcode.BLL.Validators.Media.Image.Art;
@@ -66,7 +68,7 @@ public class UpdateStreetcodeValidatorTests
         // Arrange
         var command = GetValidUpdateStreetcodeCommand();
         SetupRepositoryWrapper(2);
-        var expectedMessage = "Index must be unique.";
+        var expectedMessage = Errors_Validation.MustBeUnique.FormatWith("Index");
 
         // Act
         var result = await _validator.ValidateAsync(command);
