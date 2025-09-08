@@ -39,7 +39,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
 
             var newsDTO = _mapper.Map<NewsDTO>(newsEntity);
 
-            if (newsDTO.Image is not null)
+            if (newsDTO.Image is not null && !string.IsNullOrWhiteSpace(newsDTO.Image.BlobName))
             {
                 try
                 {
@@ -48,6 +48,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
                 catch (Exception ex)
                 {
                     _logger.LogError(request, $"Failed to load image '{newsDTO.Image.BlobName}': {ex.Message}");
+                    newsDTO.Image.Base64 = null;
                 }
             }
 
@@ -77,21 +78,24 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
                     byte[] bytes = new byte[4];
                     rng.GetBytes(bytes);
                     int value = BitConverter.ToInt32(bytes, 0) & int.MaxValue;
-                    index = value % candidates.Count;
-                }
+                    int randIndex = value % candidates.Count;
 
-                var pick = candidates[index];
-                randomNews.RandomNewsUrl = pick.URL;
-                randomNews.Title = pick.Title;
+                    var pick = candidates[randIndex];
+                    randomNews.RandomNewsUrl = pick.URL;
+                    randomNews.Title = pick.Title;
+                }
             }
 
             var result = new NewsDTOWithURLs
             {
                 News = newsDTO,
                 PrevNewsUrl = prevNewsLink,
-                NextNewsUrl = nextNewsLink,
-                RandomNews = randomNews
+                NextNewsUrl = nextNewsLink
             };
+            if (!string.IsNullOrEmpty(randomNews.RandomNewsUrl)) 
+            {
+                result.RandomNews = randomNews;
+            }
 
             return Result.Ok(result);
         }
