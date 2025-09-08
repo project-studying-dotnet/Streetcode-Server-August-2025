@@ -1,5 +1,7 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Xunit;
 
@@ -34,7 +36,7 @@ public class TagValidatorTests
         // Arrange
         var tag = GetValidTag();
         tag.Title = string.Empty;
-        var expectedMessage = "Title is required.";
+        var expectedMessage = Errors_Validation.CannotBeEmpty.FormatWith("Title");
 
         // Act
         var result = _validator.TestValidate(tag);
@@ -50,7 +52,7 @@ public class TagValidatorTests
         // Arrange
         var tag = GetValidTag();
         tag.Title = new string('A', TagValidator.TitleMaxLength + 1);
-        var expectedMessage = $"Title cannot exceed {TagValidator.TitleMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("Title", TagValidator.TitleMaxLength);
 
         // Act
         var result = _validator.TestValidate(tag);

@@ -1,6 +1,8 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.AdditionalContent.Coordinates.Types;
 using Streetcode.BLL.MediatR.AdditionalContent.Coordinate.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Coordinate;
 using Xunit;
 
@@ -22,7 +24,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.AdditionalContent.Coordinate
 
             var result = _validator.TestValidate(command);
             result.ShouldHaveValidationErrorFor(x => x.StreetcodeCoordinate)
-                  .WithErrorMessage("Coordinate data is required.");
+                  .WithErrorMessage(Errors_Validation.IsRequired.FormatWith("StreetcodeCoordinate"));
         }
 
         [Fact]
