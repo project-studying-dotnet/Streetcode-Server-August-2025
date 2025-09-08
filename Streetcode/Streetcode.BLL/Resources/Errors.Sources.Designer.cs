@@ -61,11 +61,29 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CategoryContent with the same Streetcode and SourceLinkCategory already exists.
+        /// </summary>
+        internal static string AlreadyExistByStreetcodeAndSourceLinkCategory {
+            get {
+                return ResourceManager.GetString("AlreadyExistByStreetcodeAndSourceLinkCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category with the same title or image already exists..
         /// </summary>
         internal static string AlreadyExistByTitleOrImage {
             get {
                 return ResourceManager.GetString("AlreadyExistByTitleOrImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category with this name already exist..
+        /// </summary>
+        internal static string AlreadyExistWithName {
+            get {
+                return ResourceManager.GetString("AlreadyExistWithName", resourceCulture);
             }
         }
     }

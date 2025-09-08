@@ -5,5 +5,8 @@ using Streetcode.BLL.DTO.Sources;
 namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
 {
     public record UpdateStreetcodeCategoryContentCommand(CategoryContentUpdateDTO CategoryContentUpdateDTO)
-        : IRequest<Result<StreetcodeCategoryContentDTO>>;
+        : IRequest<Result<StreetcodeCategoryContentDTO>>
+    {
+        internal object id;
+    }
 }
