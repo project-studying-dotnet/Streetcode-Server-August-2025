@@ -97,15 +97,6 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field &apos;Url&apos; accepts only small latin alphabet letters, hyphen and numbers.
-        /// </summary>
-        public static string InvalidNewsUrl {
-            get {
-                return ResourceManager.GetString("InvalidNewsUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Field &apos;{0}&apos; is required.
         /// </summary>
         public static string IsRequired {
@@ -165,6 +156,15 @@ namespace Streetcode.BLL.Resources {
         public static string MustMatchPattern {
             get {
                 return ResourceManager.GetString("MustMatchPattern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field &apos;{0}&apos; must be valid url.
+        /// </summary>
+        public static string ValidUrl {
+            get {
+                return ResourceManager.GetString("ValidUrl", resourceCulture);
             }
         }
     }

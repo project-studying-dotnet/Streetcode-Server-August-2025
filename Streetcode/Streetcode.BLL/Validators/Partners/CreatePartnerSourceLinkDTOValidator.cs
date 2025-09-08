@@ -1,27 +1,31 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Partners.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.Partners;
 
 public class CreatePartnerSourceLinkDTOValidator : AbstractValidator<CreatePartnerSourceLinkDTO>
 {
+    public const int MaxTargetUrlLength = 255;
+
     public CreatePartnerSourceLinkDTOValidator()
     {
         RuleFor(x => x.Id)
             .Equal(0)
-            .WithMessage("Source link Id must not be set when creating.");
+            .WithMessage(Errors_Validation.Invalid.FormatWith("Id"));
 
         RuleFor(x => x.LogoType)
             .IsInEnum()
-            .WithMessage("Invalid logo type.");
+            .WithMessage(Errors_Validation.Invalid.FormatWith("LogoType"));
 
         RuleFor(x => x.TargetUrl)
             .NotEmpty()
-            .WithMessage("TargetUrl is required.")
-            .MaximumLength(255)
-            .WithMessage("TargetUrl cannot exceed 255 characters.")
+            .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("TargetUrl"))
+            .MaximumLength(MaxTargetUrlLength)
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("TargetUrl", MaxTargetUrlLength))
             .Must(ValidationHelper.BeValidUrl)
-            .WithMessage("TargetUrl must be a valid URL.");
+            .WithMessage(Errors_Validation.ValidUrl.FormatWith("TargetUrl"));
     }
 }

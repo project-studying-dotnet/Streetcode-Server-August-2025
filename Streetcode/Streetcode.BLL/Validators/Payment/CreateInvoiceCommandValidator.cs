@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Payment;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.Payment;
@@ -10,17 +12,17 @@ public class CreateInvoiceCommandValidator : AbstractValidator<CreateInvoiceComm
     {
         RuleFor(x => x.Payment)
             .NotNull()
-            .WithMessage("Payment information is required.")
+            .WithMessage(Errors_Validation.IsRequiredData.FormatWith("Payment"))
             .DependentRules(() =>
             {
                 RuleFor(x => x.Payment!.Amount)
                     .GreaterThan(0)
-                    .WithMessage("Amount must be greater than zero.");
+                    .WithMessage(Errors_Validation.GreaterThan.FormatWith("Amount", 0));
 
                 RuleFor(x => x.Payment!.RedirectUrl)
                     .Must(ValidationHelper.BeValidUrl)
                     .When(x => !string.IsNullOrWhiteSpace(x.Payment!.RedirectUrl))
-                    .WithMessage("RedirectUrl must be a valid absolute URL.");
+                    .WithMessage(Errors_Validation.ValidUrl.FormatWith("RedirectUrl"));
             });
     }
 }

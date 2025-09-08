@@ -30,7 +30,7 @@ namespace Streetcode.BLL.Validators.News
                 .MaximumLength(MaxUrlLength)
                     .WithMessage(Errors_Validation.MaxLength.FormatWith("URL", MaxUrlLength))
                 .Must(ValidationHelper.BeValidUrl)
-                    .WithMessage(Errors_Validation.InvalidNewsUrl);
+                    .WithMessage(Errors_Validation.ValidUrl.FormatWith("URL"));
 
             RuleFor(x => x.CreationDate)
                 .NotEmpty()
