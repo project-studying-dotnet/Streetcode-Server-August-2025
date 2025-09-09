@@ -8,6 +8,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Streetcode.BLL\Streetcode.BLL.csproj" />
+		<ProjectReference Include="..\Streetcode.DAL\Streetcode.DAL.csproj" />
 		<PackageReference Include="AutoFixture" Version="4.18.1" />
 		<PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1" />
 		<PackageReference Include="AutoMapper" Version="12.0.0" />
