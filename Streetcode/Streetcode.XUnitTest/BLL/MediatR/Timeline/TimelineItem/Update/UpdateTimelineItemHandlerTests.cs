@@ -8,6 +8,8 @@ using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Timeline;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -118,7 +120,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Update
                 Description = "Updated Description",
                 HistoricalContexts = new List<HistoricalContextRequestDto>()
             });
-            string errorMsg = $"Cannot find any timeline item with corresponding id: {command.TimelineItem.Id}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("timeline item", command.TimelineItem.Id);
 
             SetupTimelineRepositoryGetFirstOrDefault((TimelineItemEntity)null!);
 
@@ -142,7 +144,6 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Update
         public async Task Handle_WhenDuplicateContextTitle_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = "A historical context with the title 'Existing Context' already exists.";
             var command = new UpdateTimelineItemCommand(new TimelineItemUpdateDto
             {
                 Id = 1,
@@ -153,6 +154,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Update
                     new HistoricalContextRequestDto { Id = null, Title = "Existing Context" }
                 }
             });
+            string errorMsg = Errors_Timeline.Context_TitleAlreadyExists.FormatWith("Existing Context");
 
             var timelineItem = new TimelineItemEntity { Id = 1 };
 
@@ -273,7 +275,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Update
         public async Task Handle_SaveChangesFails_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = "Failed to update a timeline item";
+            string errorMsg = Errors_Common.FailedToUpdate.FormatWith("timeline item");
             var command = new UpdateTimelineItemCommand(new TimelineItemUpdateDto
             {
                 Id = 1,

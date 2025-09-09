@@ -41,7 +41,7 @@ namespace Streetcode.BLL.MediatR.Timeline.HistoricalContext.Delete
 
                 if (historicalContext.HistoricalContextTimelines.Any())
                 {
-                    const string errorMsg = "Cannot delete a historical context that is in use by a timeline item.";
+                    string errorMsg = Errors_Timeline.CannotDeleteHistoricalContextInUse;
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }

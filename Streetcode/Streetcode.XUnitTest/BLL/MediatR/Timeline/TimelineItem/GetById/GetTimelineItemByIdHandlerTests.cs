@@ -6,6 +6,8 @@ using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -62,7 +64,7 @@ public class GetTimelineItemByIdHandlerTests
         var requestId = 999;
         var request = new GetTimelineItemByIdQuery(requestId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find any timeline item with corresponding id: {requestId}";
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("timeline item", request.Id);
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetFirstOrDefaultAsync(
@@ -76,10 +78,10 @@ public class GetTimelineItemByIdHandlerTests
         // Assert
         Assert.True(result.IsFailed);
         Assert.Single(result.Errors);
-        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
+        Assert.Equal(errorMsg, result.Errors.First().Message);
 
         _mockLogger.Verify(
-            logger => logger.LogError(request, expectedErrorMessage),
+            logger => logger.LogError(request, errorMsg),
             Times.Once);
     }
 
@@ -93,7 +95,7 @@ public class GetTimelineItemByIdHandlerTests
         // Arrange
         var request = new GetTimelineItemByIdQuery(requestId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find any timeline item with corresponding id: {requestId}";
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("timeline item", request.Id);
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetFirstOrDefaultAsync(
@@ -107,10 +109,10 @@ public class GetTimelineItemByIdHandlerTests
         // Assert
         Assert.True(result.IsFailed);
         Assert.Single(result.Errors);
-        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
+        Assert.Equal(errorMsg, result.Errors.First().Message);
 
         _mockLogger.Verify(
-            logger => logger.LogError(request, expectedErrorMessage),
+            logger => logger.LogError(request, errorMsg),
             Times.Once);
     }
 

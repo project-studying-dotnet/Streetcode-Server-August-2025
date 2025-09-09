@@ -81,7 +81,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.HistoricalContext
         {
             // Arrange
             int inUseId = 2;
-            string errorMsg = Errors_Timeline.CannotDeleteHistoricalContextInUse;
+            var errorMsg = Errors_Timeline.CannotDeleteHistoricalContextInUse;
             var command = new DeleteHistoricalContextCommand(inUseId);
             var historicalContext = new HistoricalContextEntity
             {
@@ -121,7 +121,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.HistoricalContext
         {
             // Arrange
             int nonExistentId = -1;
-            string errorMsg = Errors_Common.NotFoundById.FormatWith("historical context", nonExistentId);
+            var errorMsg = Errors_Common.NotFoundById.FormatWith("historical context", nonExistentId);
             var command = new DeleteHistoricalContextCommand(nonExistentId);
 
             _repositoryWrapperMock.Setup(x => x.HistoricalContextRepository.GetSingleOrDefaultAsync(
@@ -152,7 +152,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.HistoricalContext
         {
             // Arrange
             int validId = 3;
-            const string errorMsg = "Failed to delete a historical context";
+            var errorMsg = Errors_Common.FailedToDelete.FormatWith("historical context");
 
             var command = new DeleteHistoricalContextCommand(validId);
 

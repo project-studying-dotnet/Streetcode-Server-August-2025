@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
@@ -55,13 +57,13 @@ public class GetAllTimelineItemsHandlerTests
         // Arrange
         var request = new GetAllTimelineItemsQuery();
         var cancellationToken = CancellationToken.None;
-        const string errorMsg = "Cannot find any timeline items";
+        string errorMsg = Errors_Common.NotFoundAny.FormatWith("timeline items");
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetAllAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
-            .ReturnsAsync((IEnumerable<TimelineItemEntity>?)null);
+            .ReturnsAsync((IEnumerable<TimelineItemEntity>?)null!);
 
         // Act
         var result = await _handler.Handle(request, cancellationToken);

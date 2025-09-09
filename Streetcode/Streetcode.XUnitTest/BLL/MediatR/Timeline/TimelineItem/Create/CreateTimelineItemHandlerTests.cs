@@ -95,7 +95,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
             };
             int streetcodeId = 1;
             var command = new CreateTimelineItemCommand(streetcodeId, createTimelineItem);
-            const string expectedError = "Cannot convert null to timeline item";
+            string errorMsg = Errors_Common.CannotConvertNull.FormatWith("timeline item");
 
             _mapperMock.Setup(m => m.Map<TimelineItemEntity>(command.TimelineItem)).Returns((TimelineItemEntity)null!);
 
@@ -104,9 +104,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(expectedError, result.Errors[0].Message);
+            Assert.Contains(errorMsg, result.Errors[0].Message);
 
-            _loggerMock.Verify(l => l.LogError(command, expectedError), Times.Once);
+            _loggerMock.Verify(l => l.LogError(command, errorMsg), Times.Once);
             _mapperMock.Verify(m => m.Map<TimelineItemEntity>(command.TimelineItem), Times.Once);
             _repositoryWrapperMock.VerifyNoOtherCalls();
             _historicalContextServiceMock.VerifyNoOtherCalls();
@@ -157,7 +157,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
             int streetcodeId = 1;
             var command = new CreateTimelineItemCommand(streetcodeId, createTimelineItem);
             var timelineItemEntity = new TimelineItemEntity { Title = createTimelineItem.Title, Description = createTimelineItem.Description };
-            const string expectedError = "Duplicate historical context found.";
+            string expectedError = Errors_Timeline.Context_TitleAlreadyExists.FormatWith(createTimelineItem.Title);
 
             _mapperMock.Setup(m => m.Map<TimelineItemEntity>(command.TimelineItem)).Returns(timelineItemEntity);
 
@@ -229,7 +229,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Create
             int streetcodeId = 1;
             var command = new CreateTimelineItemCommand(streetcodeId, createTimelineItem);
             var timelineItemEntity = new TimelineItemEntity { Title = createTimelineItem.Title, Description = createTimelineItem.Description };
-            const string expectedError = "Failed to create a timeline item";
+            string expectedError = Errors_Common.FailedToCreate.FormatWith("timeline item");
 
             _mapperMock.Setup(m => m.Map<TimelineItemEntity>(command.TimelineItem)).Returns(timelineItemEntity);
 

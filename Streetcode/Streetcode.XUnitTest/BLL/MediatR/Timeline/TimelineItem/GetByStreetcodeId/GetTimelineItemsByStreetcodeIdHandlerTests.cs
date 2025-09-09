@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.GetByStreetcodeId;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
@@ -60,13 +62,13 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
         var streetcodeId = 999;
         var request = new GetTimelineItemsByStreetcodeIdQuery(streetcodeId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find any timeline item with corresponding streetcode id: {streetcodeId}";
+        var errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("timeline item", request.StreetcodeId);
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetAllAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
-            .ReturnsAsync((IEnumerable<TimelineItemEntity>?)null);
+            .ReturnsAsync((IEnumerable<TimelineItemEntity>?)null!);
 
         // Act
         var result = await _handler.Handle(request, cancellationToken);
@@ -74,10 +76,10 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
         // Assert
         Assert.True(result.IsFailed);
         Assert.Single(result.Errors);
-        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
+        Assert.Equal(errorMsg, result.Errors.First().Message);
 
         _mockLogger.Verify(
-            logger => logger.LogError(request, expectedErrorMessage),
+            logger => logger.LogError(request, errorMsg),
             Times.Once);
     }
 
@@ -118,13 +120,13 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
     {
         var request = new GetTimelineItemsByStreetcodeIdQuery(streetcodeId);
         var cancellationToken = CancellationToken.None;
-        var expectedErrorMessage = $"Cannot find any timeline item with corresponding streetcode id: {streetcodeId}";
+        var errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("timeline item", request.StreetcodeId);
 
         _mockRepositoryWrapper
             .Setup(repo => repo.TimelineRepository.GetAllAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
-            .ReturnsAsync((IEnumerable<TimelineItemEntity>?)null);
+            .ReturnsAsync((IEnumerable<TimelineItemEntity>?)null!);
 
         // Act
         var result = await _handler.Handle(request, cancellationToken);
@@ -132,10 +134,10 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
         // Assert
         Assert.True(result.IsFailed);
         Assert.Single(result.Errors);
-        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
+        Assert.Equal(errorMsg, result.Errors.First().Message);
 
         _mockLogger.Verify(
-            logger => logger.LogError(request, expectedErrorMessage),
+            logger => logger.LogError(request, errorMsg),
             Times.Once);
     }
 

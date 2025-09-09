@@ -4,6 +4,8 @@ using Moq;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -74,7 +76,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
         {
             // Arrange
             var command = new DeleteTimelineItemCommand(-1);
-            var expectedError = $"Cannot find any timeline item with corresponding id: {command.id}";
+            var expectedError = Errors_Common.NotFoundById.FormatWith("timeline item", command.id);
 
             _repositoryWrapperMock.Setup(r => r.TimelineRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
@@ -102,7 +104,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.TimelineItem.Delete
             // Arrange
             var request = new DeleteTimelineItemCommand(1);
             var timelineItemEntity = new TimelineItemEntity { HistoricalContextTimelines = new List<HistoricalContextTimeline>() };
-            var expectedError = "Failed to delete a timeline item";
+            var expectedError = Errors_Common.FailedToDelete.FormatWith("timeline item");
 
             _repositoryWrapperMock.Setup(r => r.TimelineRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
