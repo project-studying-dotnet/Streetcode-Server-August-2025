@@ -156,7 +156,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesByStreetcodeId
             _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Never);
         }
 
-        private List<StreetcodeArtSlide> PrepareSlidesWithImage(int streetcodeId, string blobName)
+        private static List<StreetcodeArtSlide> PrepareSlidesWithImage(int streetcodeId, string blobName)
         {
             return new List<StreetcodeArtSlide>
             {
@@ -187,7 +187,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesByStreetcodeId
             };
         }
 
-        private List<StreetcodeArtSlideDTO> PrepareSlideDtosWithImage(int streetcodeId, string blobName, string base64)
+        private static List<StreetcodeArtSlideDTO> PrepareSlideDtosWithImage(int streetcodeId, string blobName, string base64)
         {
             return new List<StreetcodeArtSlideDTO>
             {

@@ -121,7 +121,7 @@ public class ErrorHandlerMiddlewareTests
         yield return[new Exception(), HttpStatusCode.InternalServerError];
     }
 
-    private DefaultHttpContext CreateHttpContext()
+    private static DefaultHttpContext CreateHttpContext()
     {
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();

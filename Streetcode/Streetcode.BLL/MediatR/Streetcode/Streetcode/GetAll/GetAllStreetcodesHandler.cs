@@ -64,7 +64,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
         return Result.Ok(response);
     }
 
-    private void FindStreetcodesWithMatchTitle(
+    private static void FindStreetcodesWithMatchTitle(
         ref IQueryable<StreetcodeContent> streetcodes,
         string title)
     {
@@ -75,7 +75,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
             .ToString() == title);
     }
 
-    private void FindFilteredStreetcodes(
+    private static void FindFilteredStreetcodes(
         ref IQueryable<StreetcodeContent> streetcodes,
         string filter)
     {
@@ -89,7 +89,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
             .AsQueryable();
     }
 
-    private void FindSortedStreetcodes(
+    private static void FindSortedStreetcodes(
         ref IQueryable<StreetcodeContent> streetcodes,
         string sort)
     {
@@ -117,7 +117,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
         };
     }
 
-    private int ApplyPagination(
+    private static int ApplyPagination(
         ref IQueryable<StreetcodeContent> streetcodes,
         int amount,
         int page)

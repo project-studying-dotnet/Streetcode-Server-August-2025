@@ -103,7 +103,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
             _blobServiceMock.VerifyNoOtherCalls();
         }
 
-        private (List<SourceLinkCategoryEntity>, List<SourceLinkCategoryDTO>) CreateCategoriesAndDtos(int count)
+        private static (List<SourceLinkCategoryEntity>, List<SourceLinkCategoryDTO>) CreateCategoriesAndDtos(int count)
         {
             var categories = Enumerable.Range(1, count)
                 .Select(i => new SourceLinkCategoryEntity

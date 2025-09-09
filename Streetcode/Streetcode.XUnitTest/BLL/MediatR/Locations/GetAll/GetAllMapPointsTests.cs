@@ -88,7 +88,7 @@ public class GetAllMapPointsTests
         _loggerMock.Verify(logger => logger.LogError(request, "CannotMapPoints"), Times.Once);
     }
 
-    private List<StatisticRecord> GetMapPoints()
+    private static List<StatisticRecord> GetMapPoints()
     {
         return new List<StatisticRecord>
         {
@@ -98,7 +98,7 @@ public class GetAllMapPointsTests
         };
     }
 
-    private List<MapPointDTO> GetMapPointsDTOs()
+    private static List<MapPointDTO> GetMapPointsDTOs()
     {
         return new List<MapPointDTO>
         {

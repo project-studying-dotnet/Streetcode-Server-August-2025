@@ -235,7 +235,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
         }
 
-        private DAL.Entities.Streetcode.TextContent.Facts CreateValidFactEntity(int id = 1, int? imageId = 1)
+        private static DAL.Entities.Streetcode.TextContent.Facts CreateValidFactEntity(int id = 1, int? imageId = 1)
         {
             return new DAL.Entities.Streetcode.TextContent.Facts
             {
@@ -247,7 +247,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             };
         }
 
-        private FactCreateDto CreateValidFactDTO(int id = 0, int? imageId = 1)
+        private static FactCreateDto CreateValidFactDTO(int id = 0, int? imageId = 1)
         {
             return new FactCreateDto
             {
@@ -258,7 +258,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             };
         }
 
-        private StreetcodeContent CreateValidStreetcodeEntity()
+        private static StreetcodeContent CreateValidStreetcodeEntity()
         {
             return new StreetcodeContent
             {

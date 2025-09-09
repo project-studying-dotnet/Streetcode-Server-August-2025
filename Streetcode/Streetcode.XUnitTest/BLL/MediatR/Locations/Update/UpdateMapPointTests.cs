@@ -74,7 +74,7 @@ public class UpdateMapPointTests
         _loggerMock.Verify(logger => logger.LogError(request, "CannotSaveTheData"), Times.Once);
     }
 
-    private StatisticRecord GetValidMapPoint()
+    private static StatisticRecord GetValidMapPoint()
     {
         return new StatisticRecord
         {

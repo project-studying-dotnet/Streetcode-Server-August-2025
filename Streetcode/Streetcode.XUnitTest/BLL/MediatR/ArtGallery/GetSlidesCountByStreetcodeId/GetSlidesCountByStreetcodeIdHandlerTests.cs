@@ -77,7 +77,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.ArtGallery.GetSlidesCountByStreetcode
             result.Value.Should().Be(0);
         }
 
-        private List<StreetcodeArtSlide> PrepareSlides(int streetcodeId, int count)
+        private static List<StreetcodeArtSlide> PrepareSlides(int streetcodeId, int count)
         {
             var slides = new List<StreetcodeArtSlide>();
             for (int i = 0; i < count; i++)

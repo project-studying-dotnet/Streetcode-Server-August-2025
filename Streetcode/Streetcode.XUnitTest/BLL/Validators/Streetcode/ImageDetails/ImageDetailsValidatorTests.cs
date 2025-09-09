@@ -329,7 +329,7 @@ public class ImageDetailsValidatorTests
             Times.Once);
     }
 
-    private ImageDetailsDto GetValidImageDetailsDto()
+    private static ImageDetailsDto GetValidImageDetailsDto()
     {
         return new ImageDetailsDto
         {

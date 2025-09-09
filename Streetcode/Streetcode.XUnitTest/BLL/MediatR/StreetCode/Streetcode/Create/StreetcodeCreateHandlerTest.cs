@@ -358,7 +358,7 @@ public class StreetcodeCreateHandlerTest
             });
     }
 
-    private StreetcodeCreateCommand CreateValidRequest()
+    private static StreetcodeCreateCommand CreateValidRequest()
     {
         return new StreetcodeCreateCommand(new StreetcodeCreateDTO
         {
@@ -380,7 +380,7 @@ public class StreetcodeCreateHandlerTest
         });
     }
 
-    private StreetcodeCreateCommand CreateRequestWithArtGallery()
+    private static StreetcodeCreateCommand CreateRequestWithArtGallery()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.Arts = new List<ArtCreateUpdateDTO>
@@ -404,7 +404,7 @@ public class StreetcodeCreateHandlerTest
         return request;
     }
 
-    private StreetcodeCreateCommand CreateRequestWithUnusedArts()
+    private static StreetcodeCreateCommand CreateRequestWithUnusedArts()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.Arts = new List<ArtCreateUpdateDTO>
@@ -429,7 +429,7 @@ public class StreetcodeCreateHandlerTest
         return request;
     }
 
-    private StreetcodeCreateCommand CreateRequestWithMultipleSlides()
+    private static StreetcodeCreateCommand CreateRequestWithMultipleSlides()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.Arts = new List<ArtCreateUpdateDTO>
@@ -463,7 +463,7 @@ public class StreetcodeCreateHandlerTest
         return request;
     }
 
-    private StreetcodeCreateCommand CreateRequestWithInvalidImageIdInArt()
+    private static StreetcodeCreateCommand CreateRequestWithInvalidImageIdInArt()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.Arts = new List<ArtCreateUpdateDTO>
@@ -485,7 +485,7 @@ public class StreetcodeCreateHandlerTest
         return request;
     }
 
-    private StreetcodeCreateCommand CreateRequestWithInvalidArtIdInSlide()
+    private static StreetcodeCreateCommand CreateRequestWithInvalidArtIdInSlide()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.StreetcodeArtSlides = new List<StreetcodeArtSlideCreateUpdateDTO>
@@ -503,14 +503,14 @@ public class StreetcodeCreateHandlerTest
         return request;
     }
 
-    private StreetcodeCreateCommand CreateRequestWithEmptyImages()
+    private static StreetcodeCreateCommand CreateRequestWithEmptyImages()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.ImagesDetails = new List<ImageDetailsDto>();
         return request;
     }
 
-    private StreetcodeCreateCommand CreateRequestWithInvalidImageIds()
+    private static StreetcodeCreateCommand CreateRequestWithInvalidImageIds()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.ImagesDetails = new List<ImageDetailsDto>
@@ -521,14 +521,14 @@ public class StreetcodeCreateHandlerTest
         return request;
     }
 
-    private StreetcodeCreateCommand CreateRequestWithEmptyTags()
+    private static StreetcodeCreateCommand CreateRequestWithEmptyTags()
     {
         var request = CreateValidRequest();
         request.NewStreetcode.Tags = new List<StreetcodeTagDTO>();
         return request;
     }
 
-    private StreetcodeContent CreateStreetcodeEntity()
+    private static StreetcodeContent CreateStreetcodeEntity()
     {
         return new StreetcodeContent
         {
@@ -539,7 +539,7 @@ public class StreetcodeCreateHandlerTest
         };
     }
 
-    private StreetcodeDTO CreateStreetcodeDTO()
+    private static StreetcodeDTO CreateStreetcodeDTO()
     {
         return new StreetcodeDTO
         {
