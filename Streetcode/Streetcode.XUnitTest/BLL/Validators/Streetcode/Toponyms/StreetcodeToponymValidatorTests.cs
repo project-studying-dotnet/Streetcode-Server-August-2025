@@ -1,6 +1,8 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Enums;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Streetcode.Toponyms;
 using Xunit;
 
@@ -34,7 +36,7 @@ public class StreetcodeToponymValidatorTests
         // Arrange
         var toponym = GetValidToponym();
         toponym.StreetName = new string('e', StreetcodeToponymValidator.StreetNameMaxLength + 1);
-        var erorMessage = "MaxLength";
+        var erorMessage = Errors_Validation.MaxLength.FormatWith("StreetName", StreetcodeToponymValidator.StreetNameMaxLength);
 
         // Act
         var res = _streetcodeToponymValidator.TestValidate(toponym);
@@ -52,7 +54,7 @@ public class StreetcodeToponymValidatorTests
         // Arrange
         var toponym = GetValidToponym();
         toponym.StreetName = invalidTitle;
-        var erorMessage = "CannotBeEmpty";
+        var erorMessage = Errors_Validation.CannotBeEmpty.FormatWith("StreetName");
 
         // Act
         var res = _streetcodeToponymValidator.TestValidate(toponym);
@@ -67,7 +69,7 @@ public class StreetcodeToponymValidatorTests
         // Arrange
         var toponym = GetValidToponym();
         toponym.ModelState = (ModelState)12;
-        var erorMessage = "Invalid";
+        var erorMessage = Errors_Validation.Invalid.FormatWith("ModelState");
 
         // Act
         var res = _streetcodeToponymValidator.TestValidate(toponym);
