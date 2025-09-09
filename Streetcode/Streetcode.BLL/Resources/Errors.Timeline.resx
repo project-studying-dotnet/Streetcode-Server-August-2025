@@ -120,4 +120,13 @@
   <data name="CannotDeleteHistoricalContextInUse" xml:space="preserve">
     <value>Cannot delete a historical context that is in use by a timeline item.</value>
   </data>
+  <data name="Context_CannotHaveBothIdAndTitle" xml:space="preserve">
+    <value>Cannot provide both an ID and a title for one context.</value>
+  </data>
+  <data name="Context_MustHaveIdOrTitle" xml:space="preserve">
+    <value>Context must have either an ID or a title.</value>
+  </data>
+  <data name="Context_TitleAlreadyExists" xml:space="preserve">
+    <value>A historical context with the title '{0}' already exists.</value>
+  </data>
 </root>

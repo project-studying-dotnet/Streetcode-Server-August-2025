@@ -68,5 +68,32 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("CannotDeleteHistoricalContextInUse", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot provide both an ID and a title for one context..
+        /// </summary>
+        public static string Context_CannotHaveBothIdAndTitle {
+            get {
+                return ResourceManager.GetString("Context_CannotHaveBothIdAndTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Context must have either an ID or a title..
+        /// </summary>
+        public static string Context_MustHaveIdOrTitle {
+            get {
+                return ResourceManager.GetString("Context_MustHaveIdOrTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A historical context with the title &apos;{0}&apos; already exists..
+        /// </summary>
+        public static string Context_TitleAlreadyExists {
+            get {
+                return ResourceManager.GetString("Context_TitleAlreadyExists", resourceCulture);
+            }
+        }
     }
 }

@@ -70,6 +70,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} cannot be null..
+        /// </summary>
+        public static string CannotBeNull {
+            get {
+                return ResourceManager.GetString("CannotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot convert null to {0}.
         /// </summary>
         public static string CannotConvertNull {

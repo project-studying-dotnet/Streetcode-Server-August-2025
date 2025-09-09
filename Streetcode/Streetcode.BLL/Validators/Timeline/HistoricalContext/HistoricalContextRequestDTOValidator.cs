@@ -13,9 +13,9 @@ namespace Streetcode.BLL.Validators.Timeline.HistoricalContext
         {
             RuleFor(x => x)
                 .Must(x => x.Id.HasValue || !string.IsNullOrWhiteSpace(x.Title))
-                .WithMessage("Context must have either an ID or a title.")
+                .WithMessage(Errors_Timeline.Context_MustHaveIdOrTitle)
                 .Must(x => !(x.Id.HasValue && !string.IsNullOrEmpty(x.Title)))
-                .WithMessage("Cannot provide both an ID and a title for one context.");
+                .WithMessage(Errors_Timeline.Context_CannotHaveBothIdAndTitle);
 
             RuleFor(x => x.Id)
                 .GreaterThan(0)

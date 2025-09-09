@@ -120,6 +120,9 @@
   <data name="CannotBeEmpty" xml:space="preserve">
     <value>Field '{0}' cannot be empty</value>
   </data>
+  <data name="CannotBeNull" xml:space="preserve">
+    <value>{0} cannot be null.</value>
+  </data>
   <data name="CannotConvertNull" xml:space="preserve">
     <value>Cannot convert null to {0}</value>
   </data>

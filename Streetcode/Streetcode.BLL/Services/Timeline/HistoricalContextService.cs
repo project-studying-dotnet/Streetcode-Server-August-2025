@@ -1,7 +1,8 @@
 ﻿using FluentResults;
-using Org.BouncyCastle.Utilities;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using HistoricalContextEntity = Streetcode.DAL.Entities.Timeline.HistoricalContext;
@@ -21,7 +22,7 @@ namespace Streetcode.BLL.Services.Timeline
         {
             if (contexts is null)
             {
-                return Result.Fail("Input contexts cannot be null.");
+                return Result.Fail(Errors_Common.CannotBeNull.FormatWith("Input contexts"));
             }
 
             var newTitles = contexts
@@ -40,7 +41,7 @@ namespace Streetcode.BLL.Services.Timeline
             if (existingContexts.Any())
             {
                 var duplicateTitle = existingContexts.First().Title;
-                return Result.Fail($"A historical context with the title '{duplicateTitle}' already exists.");
+                return Result.Fail(Errors_Timeline.Context_TitleAlreadyExists.FormatWith(duplicateTitle!));
             }
 
             return Result.Ok();
@@ -52,12 +53,12 @@ namespace Streetcode.BLL.Services.Timeline
         {
             if (contexts is null)
             {
-                return Result.Fail("Input contexts cannot be null.");
+                return Result.Fail(Errors_Common.CannotBeNull.FormatWith("Input contexts"));
             }
 
             if (timelineItem is null)
             {
-                return Result.Fail("TimelineItem cannot be null.");
+                return Result.Fail(Errors_Common.CannotBeNull.FormatWith("TimelineItem"));
             }
 
             ClearExistingLinks(timelineItem);
@@ -69,12 +70,12 @@ namespace Streetcode.BLL.Services.Timeline
         {
             if (newContexts is null)
             {
-                return Result.Fail("Input contexts cannot be null.");
+                return Result.Fail(Errors_Common.CannotBeNull.FormatWith("Input contexts"));
             }
 
             if (timelineItem is null)
             {
-                return Result.Fail("TimelineItem cannot be null.");
+                return Result.Fail(Errors_Common.CannotBeNull.FormatWith("TimelineItem"));
             }
 
             var incomingContextIds = newContexts
@@ -126,7 +127,7 @@ namespace Streetcode.BLL.Services.Timeline
 
                     if (historicalContext == null)
                     {
-                        return Result.Fail($"Historical context with Id={contextDto.Id.Value} not found.");
+                        return Result.Fail(Errors_Common.NotFoundById.FormatWith("Historical context", contextDto.Id.Value));
                     }
                 }
                 else

@@ -19,7 +19,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [Fact]
         public void Should_Have_Error_When_Id_And_Title_Null()
         {
-            const string errorMessage = "Context must have either an ID or a title.";
+            string errorMessage = Errors_Timeline.Context_MustHaveIdOrTitle;
 
             var context = new HistoricalContextRequestDto
             {
@@ -36,7 +36,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [Fact]
         public void Should_Have_Error_When_Id_And_Title_Provided()
         {
-            const string errorMessage = "Cannot provide both an ID and a title for one context.";
+            string errorMessage = Errors_Timeline.Context_CannotHaveBothIdAndTitle;
 
             var context = new HistoricalContextRequestDto
             {
@@ -53,7 +53,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.HistoricalContext
         [Fact]
         public void Should_Have_Error_When_Id_Null_And_Title_Empty()
         {
-            const string errorMessage = "Context must have either an ID or a title.";
+            string errorMessage = Errors_Timeline.Context_MustHaveIdOrTitle;
 
             var context = new HistoricalContextRequestDto
             {
