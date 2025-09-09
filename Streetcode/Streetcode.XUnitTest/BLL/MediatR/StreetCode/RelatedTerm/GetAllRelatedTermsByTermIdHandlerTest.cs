@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
@@ -51,17 +53,18 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         public async Task Handle_ShouldFail_WhenRelatedTermIsNull()
         {
             var request = new GetAllRelatedTermsByTermIdQuery(1);
+            var errorMsg = Errors_RelatedTerm.NotFoundByTerm.FormatWith(request.id);
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
             It.IsAny<Expression<Func<Entity, bool>>>(),
             It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
-            .ReturnsAsync((IEnumerable<Entity>)null);
+            .ReturnsAsync((IEnumerable<Entity>)null!);
 
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(result.Errors.FirstOrDefault().Message, $"Cannot get words by term id: {1}");
-            _loggerServiceMock.Verify(l => l.LogError(request, $"Cannot get words by term id: {1}"), Times.Once);
+            Assert.Equal(result.Errors[0].Message, errorMsg);
+            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
         }
 
         [Fact]
@@ -69,6 +72,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         {
             var request = new GetAllRelatedTermsByTermIdQuery(1);
             var entities = new List<Entity> { new Entity { Id = 1, TermId = 1 } };
+            var errorMsg = Errors_RelatedTerm.FailedToMapDto;
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
             It.IsAny<Expression<Func<Entity, bool>>>(),
@@ -76,13 +80,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             .ReturnsAsync(entities);
 
             _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDTO>>(entities))
-            .Returns((IEnumerable<RelatedTermDTO>)null);
+            .Returns((IEnumerable<RelatedTermDTO>)null!);
 
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(result.Errors.FirstOrDefault().Message, "Cannot create DTOs for related words!");
-            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot create DTOs for related words!"), Times.Once);
+            Assert.Equal(result.Errors[0].Message, errorMsg);
+            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
         }
     }
 }

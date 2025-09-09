@@ -79,6 +79,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
         {
             // Arrange
             var request = new UpdateStreetcodeCommand(new StreetcodeUpdateDTO { Id = 1 });
+            var errorMsg = Errors_Common.NotFoundById.FormatWith("streetcode", request.Streetcode.Id);
 
             _repositoryWrapperMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
                It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
@@ -90,6 +91,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
 
             // Assert
             Assert.True(result.IsFailed);
+            Assert.Contains(errorMsg, result.Errors[0].Message);
             _loggerServiceMock.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
         }
 
@@ -99,6 +101,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
             // Arrange
             var entity = new StreetcodeContent { Id = 1 };
             var request = new UpdateStreetcodeCommand(new StreetcodeUpdateDTO { Id = 1 });
+            var errorMsg = Errors_Common.FailedToUpdate.FormatWith("streetcode");
 
             _repositoryWrapperMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
                It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
@@ -115,6 +118,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
 
             // Assert
             Assert.True(result.IsFailed);
+            Assert.Contains(errorMsg, result.Errors[0].Message);
             _loggerServiceMock.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
         }
 
@@ -327,6 +331,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
             var entity = new StreetcodeContent { Id = 1 };
             var requestDto = CreateRequestWithInvalidImageId();
             var request = new UpdateStreetcodeCommand(requestDto);
+            var errorMsg = Errors_Common.NotFoundById.FormatWith("image", 999);
 
             SetupSuccessfulUpdate(entity);
             SetupBasicMocks();
@@ -340,7 +345,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
             // Act & Assert
             var result = await _handler.Handle(request, CancellationToken.None);
             Assert.True(result.IsFailed);
-            Assert.Contains(Errors_Common.NotFoundById.FormatWith("image", 999), result.Errors[0].Message);
+            Assert.Contains(errorMsg, result.Errors[0].Message);
         }
 
         [Fact]
@@ -350,6 +355,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
             var entity = new StreetcodeContent { Id = 1 };
             var requestDto = CreateRequestWithInvalidArtId();
             var request = new UpdateStreetcodeCommand(requestDto);
+            var errorMsg = Errors_Common.NotFoundById.FormatWith("art", 999);
 
             SetupSuccessfulUpdate(entity);
             SetupArtGalleryMocks();
@@ -365,7 +371,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(Errors_Common.NotFoundById.FormatWith("art", 999), result.Errors[0].Message);
+            Assert.Contains(errorMsg, result.Errors[0].Message);
         }
 
         private void SetupBasicMocks()

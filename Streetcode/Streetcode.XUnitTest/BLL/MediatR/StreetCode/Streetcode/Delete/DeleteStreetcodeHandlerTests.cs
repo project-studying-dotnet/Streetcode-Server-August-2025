@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Delete;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -53,17 +55,17 @@ public class DeleteStreetcodeHandlerTests
         int streetcodeId = 999;
         SetupRepositoryMocks(null, saveChanges: 0);
         var command = new DeleteStreetcodeCommand(streetcodeId);
-        string expectedErrorMessage = $"Cannot find any Streetcode with corresponding id: {streetcodeId}";
+        string errorMsg = Errors_Common.NotFoundById.FormatWith("Streetcode", command.Id);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message == expectedErrorMessage);
+        result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
         _repositoryWrapperMock.Verify(r => r.StreetcodeRepository.Delete(It.IsAny<StreetcodeContent>()), Times.Never);
         _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Never);
-        _loggerMock.Verify(l => l.LogError(command, expectedErrorMessage), Times.Once);
+        _loggerMock.Verify(l => l.LogError(command, errorMsg), Times.Once);
     }
 
     [Fact]
@@ -74,17 +76,17 @@ public class DeleteStreetcodeHandlerTests
         var streetcodeContent = new StreetcodeContent { Id = streetcodeId };
         SetupRepositoryMocks(streetcodeContent, saveChanges: -1);
         var command = new DeleteStreetcodeCommand(streetcodeId);
-        string expectedErrorMessage = "Failed to delete a Streetcode";
+        string errorMsg = Errors_Common.FailedToDelete.FormatWith("Streetcode");
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message == expectedErrorMessage);
+        result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
         _repositoryWrapperMock.Verify(r => r.StreetcodeRepository.Delete(streetcodeContent), Times.Once);
         _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
-        _loggerMock.Verify(l => l.LogError(command, expectedErrorMessage), Times.Once);
+        _loggerMock.Verify(l => l.LogError(command, errorMsg), Times.Once);
     }
 
     private void SetupRepositoryMocks(StreetcodeContent? streetcodeContent, int saveChanges)

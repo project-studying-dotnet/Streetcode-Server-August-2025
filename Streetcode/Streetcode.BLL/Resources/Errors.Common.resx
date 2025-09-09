@@ -144,6 +144,9 @@
   <data name="FailedToDelete_An" xml:space="preserve">
     <value>Failed to delete an {0}</value>
   </data>
+  <data name="FailedToParseText" xml:space="preserve">
+    <value>text was not parsed successfully</value>
+  </data>
   <data name="FailedToUpdate" xml:space="preserve">
     <value>Failed to update a {0}</value>
   </data>

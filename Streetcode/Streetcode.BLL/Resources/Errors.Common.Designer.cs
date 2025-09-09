@@ -142,6 +142,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to text was not parsed successfully.
+        /// </summary>
+        public static string FailedToParseText {
+            get {
+                return ResourceManager.GetString("FailedToParseText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to update a {0}.
         /// </summary>
         public static string FailedToUpdate {

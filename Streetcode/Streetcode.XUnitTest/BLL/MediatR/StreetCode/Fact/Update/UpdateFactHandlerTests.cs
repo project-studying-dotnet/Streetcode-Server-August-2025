@@ -9,6 +9,8 @@ using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Image.Create;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -44,7 +46,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
 
             FactUpdateCreateDto fact = new FactUpdateCreateDto { Id = 1 };
 
-            string errorMsg = $"Cannot find any fact with corresponding id: {fact.Id}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("fact", fact.Id);
 
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
                 It.IsAny<Expression<Func<Facts, bool>>>(),
@@ -76,7 +78,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             // Arrange
             var fact = new Facts { Id = 2, Title = "Old Title" };
             var factDto = new FactUpdateCreateDto { Id = fact.Id, Title = fact.Title, NewImage = new ImageFileBaseCreateDTO() };
-            const string errorMsg = "Failed to create an image";
+            string errorMsg = Errors_Common.FailedToUpdate.FormatWith("fact");
 
             _repositoryWrapperMock.Setup(r => r.FactRepository.GetSingleOrDefaultAsync(
                It.IsAny<Expression<Func<Facts, bool>>>(),
@@ -190,7 +192,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
         public async Task Handle_SaveChangesReturnsZero_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = "Failed to update a fact";
+            string errorMsg = Errors_Common.FailedToUpdate.FormatWith("fact");
             var fact = new Facts { Id = 7 };
             var factDto = new FactUpdateCreateDto { Id = fact.Id };
 

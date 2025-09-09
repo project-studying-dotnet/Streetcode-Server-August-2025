@@ -65,6 +65,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateValidRequest();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Common.FailedToCreate.FormatWith("streetcode");
 
         _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.NewStreetcode))
             .Returns(streetcodeEntity);
@@ -79,7 +80,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains(Errors_Common.FailedToCreate.FormatWith("streetcode"), result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
         _mockLogger.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
     }
 
@@ -89,6 +90,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithEmptyImages();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Validation.CannotBeEmpty.FormatWith("ImagesDetails");
 
         SetupMocksForInitialSave(request, streetcodeEntity);
 
@@ -97,7 +99,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains(Errors_Validation.CannotBeEmpty.FormatWith("ImagesDetails"), result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -106,6 +108,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithInvalidImageIds();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Validation.CannotBeEmpty.FormatWith("Images");
 
         SetupMocksForInitialSave(request, streetcodeEntity);
 
@@ -114,7 +117,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains(Errors_Validation.CannotBeEmpty.FormatWith("Images"), result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -123,6 +126,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithEmptyTags();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Validation.CannotBeEmpty.FormatWith("Tags");
 
         SetupMocksForInitialSave(request, streetcodeEntity);
         SetupImagesForSuccess();
@@ -132,7 +136,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains(Errors_Validation.CannotBeEmpty.FormatWith("Tags"), result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -201,6 +205,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithInvalidImageIdInArt();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("image", 999);
 
         SetupMocksForInitialSave(request, streetcodeEntity);
         SetupImagesForSuccess();
@@ -219,7 +224,7 @@ public class StreetcodeCreateHandlerTest
         // Act & Assert
         var result = await _handler.Handle(request, CancellationToken.None);
         Assert.True(result.IsFailed);
-        Assert.Contains(Errors_Common.NotFoundById.FormatWith("image", 999), result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -228,6 +233,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithInvalidArtIdInSlide();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_AdditionalContent.Art_NotFoundInMappedArts.FormatWith(999);
 
         SetupMocksForInitialSave(request, streetcodeEntity);
         SetupImagesForSuccess();
@@ -268,7 +274,7 @@ public class StreetcodeCreateHandlerTest
         // Act & Assert
         var result = await _handler.Handle(request, CancellationToken.None);
         Assert.True(result.IsFailed);
-        Assert.Contains("Art ID '999' not found in the mapped arts.", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]

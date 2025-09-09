@@ -30,7 +30,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
 
             if (relatedTerm is null)
             {
-                // string errorMsg = "Cannot create new related word for a term!";
                 string errorMsg = Errors_Common.CannotConvertNull.FormatWith("related term");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));

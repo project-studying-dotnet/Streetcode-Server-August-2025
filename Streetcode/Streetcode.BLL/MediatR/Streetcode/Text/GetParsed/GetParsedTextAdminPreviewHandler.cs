@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Text;
-using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Text.GetParsed
 {
@@ -17,7 +17,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Text.GetParsed
         public async Task<Result<string>> Handle(GetParsedTextForAdminPreviewCommand request, CancellationToken cancellationToken)
         {
             string? parsedText = await _textService.AddTermsTag(request.textToParse);
-            return parsedText == null ? Result.Fail(new Error("text was not parsed successfully")) : Result.Ok(parsedText);
+            return parsedText == null ? Result.Fail(new Error(Errors_Common.FailedToParseText)) : Result.Ok(parsedText);
         }
     }
 }
