@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.Toponyms;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.ArtGallery;
@@ -26,7 +27,8 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
     public BaseStreetcodeValidator(
         StreetcodeArtSlideValidator streetcodeArtSlideValidator,
         ArtCreateUpdateDTOValidator artCreateUpdateDTOValidator,
-        ImageDetailsValidator imageDetailsValidator)
+        ImageDetailsValidator imageDetailsValidator,
+        StreetcodeToponymValidator streetcodeToponymValidator)
     {
         RuleFor(dto => dto.Index)
             .NotNull()
@@ -102,6 +104,9 @@ public class BaseStreetcodeValidator : AbstractValidator<StreetcodeCreateUpdateD
         RuleFor(dto => dto.ImagesDetails)
             .Must(HaveAtMostOneRelatedFigure)
             .WithMessage(Errors_Validation.MustContainAtMostOneRelatedFigureImage);
+
+        RuleForEach(dto => dto.Toponyms)
+            .SetValidator(streetcodeToponymValidator);
 
         RuleForEach(dto => dto.ImagesDetails)
             .SetValidator(imageDetailsValidator);

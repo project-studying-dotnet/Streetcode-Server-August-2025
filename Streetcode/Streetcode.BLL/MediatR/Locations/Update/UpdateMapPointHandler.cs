@@ -7,12 +7,12 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Locations.Update;
 
-public class UpdateMapPointsHandler : IRequestHandler<UpdateMapPointCommand, Result<Unit>>
+public class UpdateMapPointHandler : IRequestHandler<UpdateMapPointCommand, Result<Unit>>
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
 
-    public UpdateMapPointsHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+    public UpdateMapPointHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
     {
         _repositoryWrapper = repositoryWrapper;
         _logger = logger;
@@ -34,7 +34,7 @@ public class UpdateMapPointsHandler : IRequestHandler<UpdateMapPointCommand, Res
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync();
 
-        if (resultIsSuccess >= 0)
+        if (resultIsSuccess <= 0)
         {
             string errorMsg = Errors_Common.CannotSaveTheData;
             _logger.LogError(request, errorMsg);
