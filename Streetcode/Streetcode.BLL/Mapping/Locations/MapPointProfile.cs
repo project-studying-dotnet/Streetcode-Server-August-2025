@@ -11,6 +11,7 @@ public class MapPointProfile : Profile
     public MapPointProfile()
     {
         CreateMap<StatisticRecord, MapPointDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.Count))
             .ForMember(dest => dest.StreetcodeCoordinate, opt => opt.MapFrom(src => src.StreetcodeCoordinate))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))

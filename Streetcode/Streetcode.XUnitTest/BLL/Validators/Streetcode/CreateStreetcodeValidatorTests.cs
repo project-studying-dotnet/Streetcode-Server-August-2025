@@ -12,6 +12,7 @@ using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.BLL.Validators.ArtGallery;
 using Streetcode.BLL.Validators.Media.Image.Art;
 using Streetcode.BLL.Validators.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.Toponyms;
 using Streetcode.BLL.Validators.Streetcode.ImageDetails;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
@@ -32,14 +33,17 @@ public class CreateStreetcodeValidatorTests
     {
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
         _mockTagValidator = new Mock<TagValidator>();
+
         var mockArtSlideValidator = new Mock<StreetcodeArtSlideValidator>();
         var mockImageDetailsValidator = new Mock<ImageDetailsValidator>(_mockRepositoryWrapper.Object);
         var mockArtValidator = new Mock<ArtCreateUpdateDTOValidator>();
+        var mockToponymValidator = new Mock<StreetcodeToponymValidator>();
 
         _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(
             mockArtSlideValidator.Object,
             mockArtValidator.Object,
-            mockImageDetailsValidator.Object);
+            mockImageDetailsValidator.Object,
+            mockToponymValidator.Object);
 
         _validator = new CreateStreetcodeValidator(
             _mockRepositoryWrapper.Object,
