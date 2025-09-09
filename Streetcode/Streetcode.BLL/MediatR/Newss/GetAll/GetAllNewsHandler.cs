@@ -29,7 +29,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetAll
         {
             var news = await _repositoryWrapper.NewsRepository.GetAllAsync(
                 include: cat => cat.Include(img => img.Image));
-            if (news == null)
+            if (!news.Any())
             {
                 const string errorMsg = "There are no news in the database";
                 _logger.LogError(request, errorMsg);

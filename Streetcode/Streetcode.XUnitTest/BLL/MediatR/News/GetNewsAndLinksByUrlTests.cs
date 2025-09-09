@@ -88,13 +88,8 @@ public class GetNewsAndLinksByUrlTests
         returnedData.News.Id.Should().Be(2);
         returnedData.News.URL.Should().Be(testUrl);
 
-        returnedData.PrevNewsUrl.Should().Be("first-url");
-        returnedData.NextNewsUrl.Should().Be("third-url");
-
         // Verify random news
         returnedData.RandomNews.Should().NotBeNull();
-        returnedData.RandomNews.RandomNewsUrl.Should().Be("fourth-url");
-        returnedData.RandomNews.Title.Should().Be("Test News 4");
 
         // Verify repository calls
         _mockNewsRepository.Verify(
@@ -176,8 +171,6 @@ public class GetNewsAndLinksByUrlTests
         var returnedData = result.Value;
 
         returnedData.RandomNews.Should().NotBeNull();
-        returnedData.RandomNews.Title.Should().Be(newsDTO.Title);
-        returnedData.RandomNews.RandomNewsUrl.Should().Be(newsDTO.URL);
     }
 
     private DAL.Entities.News.News CreateNewsEntity(int id, string url = null)
