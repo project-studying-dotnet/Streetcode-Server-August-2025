@@ -6,6 +6,8 @@ using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoryById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using SourceLinkCategoryEntity = Streetcode.DAL.Entities.Sources.SourceLinkCategory;
@@ -71,7 +73,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
         {
             // Arrange
             int categoryId = -1;
-            string errorMsg = $"Cannot find any source category with corresponding id: {categoryId}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("source category", categoryId);
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<SourceLinkCategoryEntity>,

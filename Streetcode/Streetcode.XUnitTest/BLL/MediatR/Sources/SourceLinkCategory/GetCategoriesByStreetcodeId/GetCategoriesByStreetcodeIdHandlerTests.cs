@@ -7,6 +7,8 @@ using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoriesByStreetcodeId;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -76,7 +78,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
         {
             // Arrange
             int streetcodeId = 1;
-            string expectedErrorMessage = $"Cannot find any source category with corresponding streetcode id: {streetcodeId}";
+            string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("source category", streetcodeId);
 
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetAllAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),
@@ -90,7 +92,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message == expectedErrorMessage);
+            Assert.Contains(result.Errors, e => e.Message == errorMsg);
 
             _repositoryWrapperMock.Verify(
                 r => r.SourceCategoryRepository.GetAllAsync(
@@ -98,7 +100,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
                 It.IsAny<Func<IQueryable<SourceLinkCategoryEntity>,
                     IIncludableQueryable<SourceLinkCategoryEntity, object>>>()), Times.Once);
 
-            _loggerMock.Verify(l => l.LogError(It.IsAny<GetCategoriesByStreetcodeIdQuery>(), expectedErrorMessage), Times.Once);
+            _loggerMock.Verify(l => l.LogError(It.IsAny<GetCategoriesByStreetcodeIdQuery>(), errorMsg), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
             _blobServiceMock.VerifyNoOtherCalls();
         }

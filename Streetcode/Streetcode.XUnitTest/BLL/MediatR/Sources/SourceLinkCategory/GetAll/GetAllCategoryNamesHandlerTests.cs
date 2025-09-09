@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using SourceLinkCategoryEntity = Streetcode.DAL.Entities.Sources.SourceLinkCategory;
@@ -72,7 +74,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetAll
         public async Task Handle_WhenCategoriesIsNull_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = $"Cannot find any category";
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("category");
 
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetAllAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),

@@ -3,6 +3,8 @@ using Moq;
 using Streetcode.BLL.DTO.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Video.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Specifications.Video;
 using Xunit;
@@ -69,12 +71,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Media.Video
                 .Setup(r => r.VideoRepository.GetBySpecAsync(It.IsAny<VideoByIdSpecification>(), default))
                 .ReturnsAsync((VideoEntity?)null);
 
+            var errorMsg = Errors_Common.NotFoundById.FormatWith("video", request.Id);
+
             // Act
             var result = await _handler.Handle(request, default);
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find any video"));
+            Assert.Contains(result.Errors, e => e.Message.Contains(errorMsg));
 
             _loggerMock.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
         }

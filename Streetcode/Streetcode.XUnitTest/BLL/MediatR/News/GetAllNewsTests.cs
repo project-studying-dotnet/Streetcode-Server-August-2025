@@ -8,6 +8,8 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -138,6 +140,7 @@ public class GetAllNewsTests
             .ReturnsAsync((IEnumerable<DAL.Entities.News.News>)null);
 
         var query = new GetAllNewsQuery();
+        var errorMsg = Errors_Common.NotFoundAny.FormatWith("news");
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -145,6 +148,7 @@ public class GetAllNewsTests
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockNewsRepository.Verify(
             r => r.GetAllAsync(

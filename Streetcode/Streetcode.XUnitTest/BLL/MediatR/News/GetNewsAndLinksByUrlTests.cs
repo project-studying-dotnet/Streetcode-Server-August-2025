@@ -7,6 +7,8 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -114,6 +116,7 @@ public class GetNewsAndLinksByUrlTests
         // Arrange
         var testUrl = "test-news-url";
         var query = new GetNewsAndLinksByUrlQuery(testUrl);
+        var errorMsg = Errors_Common.NotFoundByUrl.FormatWith("news", testUrl);
 
         _mockNewsRepository
             .Setup(x => x.GetFirstOrDefaultAsync(
@@ -129,6 +132,7 @@ public class GetNewsAndLinksByUrlTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
     }
 
     [Fact]

@@ -7,6 +7,8 @@ using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -81,7 +83,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetAll
         public async Task Handle_WhenCategoriesIsNull_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = $"Cannot find any SourceLinkCategory";
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("SourceLinkCategory");
 
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetAllAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),

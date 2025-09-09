@@ -8,6 +8,8 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -78,6 +80,7 @@ public class GetNewsByIdTests
         // Arrange
         int newsId = 1;
         var newsEntity = CreateNewsEntity(newsId);
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("news", newsId);
 
         _mockNewsRepository
             .Setup(r => r.GetFirstOrDefaultAsync(
@@ -98,6 +101,7 @@ public class GetNewsByIdTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
     }

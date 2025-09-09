@@ -2,11 +2,12 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentResults;
 using Moq;
-using Streetcode.BLL.MediatR.Media.Audio.GetBaseAudio;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.MediatR.Media.Audio.GetBaseAudio;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -68,10 +69,11 @@ public class GetBaseAudioHandlerTests
             .ReturnsAsync((Audio)null);
 
         var query = new GetBaseAudioQuery(audioId);
+        var errorMessage = Errors_Common.NotFoundById.FormatWith("audio", audioId);
 
         var result = await _handler.Handle(query, CancellationToken.None);
 
         Assert.True(result.IsFailed);
-        _mockLogger.Verify(l => l.LogError(query, It.IsAny<string>()), Times.Once);
+        _mockLogger.Verify(l => l.LogError(query, errorMessage), Times.Once);
     }
 }
