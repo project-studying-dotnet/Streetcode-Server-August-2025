@@ -177,7 +177,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact.Update
             Assert.Equal(expectedResult, result.Value);
 
             _repositoryWrapperMock.Verify(
-                r => r.ImageDetailsRepository.Create(
+                r => r.ImageDetailsRepository.CreateAsync(
                     It.Is<ImageDetails>(i => i.ImageId == imageId && i.Alt == imageDescription)), Times.Once);
 
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);

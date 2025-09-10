@@ -64,8 +64,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
 
             _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
                 .Returns(factEntity);
-            _mockFactRepository.Setup(r => r.Create(factEntity))
-                .Returns(createdEntity);
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity))
+                .ReturnsAsync(createdEntity);
             _mockStreetcodeRepository
                 .Setup(r => r.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
@@ -84,7 +84,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(expectedResultDTO);
 
-            _mockFactRepository.Verify(r => r.Create(factEntity), Times.Once);
+            _mockFactRepository.Verify(r => r.CreateAsync(factEntity), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(1));
         }
 
@@ -147,9 +147,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
                 .Returns(factEntity);
 
-            _mockFactRepository.Setup(r => r.Create(factEntity))
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity))
                 .Callback<DAL.Entities.Streetcode.TextContent.Facts>(entity => factEntity = entity)
-                .Returns(createdEntity);
+                .ReturnsAsync(createdEntity);
 
             _mockStreetcodeRepository
                 .Setup(r => r.GetFirstOrDefaultAsync(
@@ -171,7 +171,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(expectedResultDTO);
 
-            _mockFactRepository.Verify(r => r.Create(It.IsAny<Facts>()), Times.AtLeast(1));
+            _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<Facts>()), Times.AtLeast(1));
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(1));
         }
 
@@ -186,7 +186,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
                 .Returns(factEntity);
 
-            _mockFactRepository.Setup(r => r.Create(factEntity)).Returns(factEntity);
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity)).ReturnsAsync(factEntity);
 
             _mockStreetcodeRepository
                 .Setup(r => r.GetFirstOrDefaultAsync(
@@ -204,7 +204,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             result.Should().NotBeNull();
             result.IsFailed.Should().BeTrue();
 
-            _mockFactRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.Streetcode.TextContent.Facts>()), Times.Once);
+            _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<DAL.Entities.Streetcode.TextContent.Facts>()), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
@@ -225,13 +225,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
                     It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
                 .ReturnsAsync(CreateValidStreetcodeEntity());
 
-            _mockFactRepository.Setup(r => r.Create(factEntity))
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity))
                 .Throws<InvalidOperationException>();
 
             // act an assert
             await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
 
-            _mockFactRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.Streetcode.TextContent.Facts>()), Times.Once);
+            _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<DAL.Entities.Streetcode.TextContent.Facts>()), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
         }
 
