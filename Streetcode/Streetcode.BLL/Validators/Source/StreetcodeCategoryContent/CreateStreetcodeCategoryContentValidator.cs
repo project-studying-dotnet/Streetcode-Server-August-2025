@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Source.StreetcodeCategoryContent
 {
@@ -10,7 +12,8 @@ namespace Streetcode.BLL.Validators.Source.StreetcodeCategoryContent
         public CreateStreetcodeCategoryContentValidator()
         {
             RuleFor(dto => dto.CreateCategoryContentDto.Text)
-            .MaximumLength(MaxTextLength).WithMessage("Text can`t be more than 4000 symbols.");
+                .MaximumLength(MaxTextLength)
+                .WithMessage(Errors_Validation.MaxLength.FormatWith("Text", MaxTextLength));
         }
     }
 }

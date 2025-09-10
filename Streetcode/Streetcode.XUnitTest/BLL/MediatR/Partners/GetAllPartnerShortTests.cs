@@ -6,6 +6,8 @@ using Moq;
 using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Partners.GetAllPartnerShort;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Partners;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Partners;
@@ -101,6 +103,7 @@ public class GetAllPartnerShortTests
             .ReturnsAsync((IEnumerable<Partner>?)null!);
 
         var query = new GetAllPartnersShortQuery();
+        string errorMsg = Errors_Common.NotFoundAny.FormatWith("partners");
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -108,6 +111,7 @@ public class GetAllPartnerShortTests
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockPartnersRepository.Verify(
             r => r.GetAllAsync(

@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Partners.Delete;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Partners;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Partners;
@@ -71,6 +73,7 @@ public class DeletePartnerTests
     {
         // Arrange
         var command = new DeletePartnerQuery(1);
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("partner", command.id);
 
         _mockPartnersRepository.Setup(r => r.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Partner, bool>>>(), null))
@@ -82,6 +85,7 @@ public class DeletePartnerTests
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockPartnersRepository.Verify(r => r.Delete(It.IsAny<Partner>()), Times.Never);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);

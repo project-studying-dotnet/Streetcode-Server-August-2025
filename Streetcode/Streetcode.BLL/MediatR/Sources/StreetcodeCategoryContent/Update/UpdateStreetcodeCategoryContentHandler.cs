@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
@@ -32,7 +29,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
 
             if (streetcodeCategoryContent == null)
             {
-                const string errorMsg = $"StreetcodeCategoryContent don`t exist.";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("StreetcodeCategoryContent", request.CategoryContentUpdateDTO.Id);
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -45,9 +42,9 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
                 x.SourceLinkCategoryId == request.CategoryContentUpdateDTO.SourceLinkCategoryId &&
                 x.StreetcodeId == request.CategoryContentUpdateDTO.StreetcodeId);
 
-            if(exists != null)
+            if (exists != null)
             {
-                const string errorMsg = $"Category with the same Streetcode and SourceLinkCategory already exists";
+                string errorMsg = Errors_Sources.AlreadyExistByStreetcodeAndSourceLinkCategory;
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -56,9 +53,9 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
 
             var saveResult = await _repositoryWrapper.SaveChangesAsync();
 
-            if(saveResult <= 0)
+            if (saveResult <= 0)
             {
-                const string errorMsg = $"Error while saving";
+                string errorMsg = Errors_Common.FailedToUpdate.FormatWith("StreetcodeCategoryContent", request.CategoryContentUpdateDTO.Id);
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetByStreetcodeId;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -111,11 +113,12 @@ public class GetTransactLinkByStreetcodeIdHandlerTests
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
+        var errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("transaction link", request.StreetcodeId);
 
         // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().NotBeEmpty();
-        result.Errors.First().Message.Should().Be($"Cannot find a transaction link by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist");
+        result.Errors.First().Message.Should().Be(errorMsg);
 
         _mockTransactLinksRepository.Verify(
             x => x.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<TransactionLink, bool>>>(), null),

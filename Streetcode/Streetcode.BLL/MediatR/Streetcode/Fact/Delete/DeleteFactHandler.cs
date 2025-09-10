@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
@@ -27,7 +24,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
             var fact = await _repositoryWrapper.FactRepository.GetFirstOrDefaultAsync(f => f.Id == id);
             if (fact == null)
             {
-                string errorMsg = $"No fact found by entered Id - {id}";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("fact", id);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
@@ -45,7 +42,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
             }
             else
             {
-                string errorMsg = "Failed to delete fact";
+                string errorMsg = Errors_Common.FailedToDelete.FormatWith("fact");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

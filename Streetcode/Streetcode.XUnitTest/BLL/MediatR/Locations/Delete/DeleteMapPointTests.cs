@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Locations.Delete;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Analytics;
-using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -50,13 +51,14 @@ public class DeleteMapPointTests
         var mapPoint = GetValidMapPoint(-1);
         SetupRepositoryMocks(null);
         var request = new DeleteMapPointCommand(mapPoint.Id);
+        string errorMsg = Errors_Common.NotFoundById.FormatWith("MapPoint", request.Id);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Contains("CannotFindPointWithId", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
         _repositoryWrapperMock.Verify(repo => repo.StatisticRecordRepository.Delete(It.IsAny<StatisticRecord>()), Times.Never);
         _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
     }
@@ -68,13 +70,14 @@ public class DeleteMapPointTests
         var mapPoint = GetValidMapPoint();
         SetupRepositoryMocks(mapPoint, 0);
         var request = new DeleteMapPointCommand(mapPoint.Id);
+        string errorMsg = Errors_Common.FailedToDelete.FormatWith("MapPoint");
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Contains("FailedToDeleteThePoint", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
         _repositoryWrapperMock.Verify(repo => repo.StatisticRecordRepository.Delete(It.IsAny<StatisticRecord>()), Times.Once);
         _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }

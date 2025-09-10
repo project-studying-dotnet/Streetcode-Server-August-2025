@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete
@@ -31,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete
 
             if (streetcodeCategoryContent == null)
             {
-                const string errorMsg = $"StreetcodeCategoryContent don`t exist.";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("StreetcodeCategoryContent", request.id);
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -41,7 +38,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete
 
             if (saveResult == 0)
             {
-                const string errorMsg = $"Failed to delete streetcodeCategoryContent.";
+                string errorMsg = Errors_Common.FailedToDelete.FormatWith("StreetcodeCategoryContent");
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

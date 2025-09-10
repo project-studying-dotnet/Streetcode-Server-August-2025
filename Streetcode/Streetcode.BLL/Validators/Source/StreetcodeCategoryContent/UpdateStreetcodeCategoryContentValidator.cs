@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Source.StreetcodeCategoryContent
 {
@@ -10,10 +12,11 @@ namespace Streetcode.BLL.Validators.Source.StreetcodeCategoryContent
         public UpdateStreetcodeCategoryContentValidator()
         {
             RuleFor(dto => dto.CategoryContentUpdateDTO.Text)
-            .MaximumLength(MaxTextLength).WithMessage("Text can`t be more than 4000 symbols.");
+                .MaximumLength(MaxTextLength)
+                .WithMessage(Errors_Validation.MaxLength.FormatWith("Text", MaxTextLength));
 
             RuleFor(dto => dto.CategoryContentUpdateDTO.Id)
-                .NotEmpty().WithMessage("Id can`t be null.");
+                .NotEmpty().WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("Id"));
         }
     }
 }

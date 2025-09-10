@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
@@ -39,7 +41,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
 
                 if (timelineItem == null)
                 {
-                    string errorMsg = $"Cannot find timeline item with Id={request.TimelineItem.Id}";
+                    string errorMsg = Errors_Common.NotFoundById.FormatWith("timeline item", request.TimelineItem.Id);
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }
@@ -61,7 +63,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
                 }
                 else
                 {
-                    const string errorMsg = "Failed to save changes to the database";
+                    string errorMsg = Errors_Common.FailedToUpdate.FormatWith("timeline item");
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }

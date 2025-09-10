@@ -1,14 +1,15 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using Xunit;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
+using Xunit;
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
@@ -32,13 +33,15 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         [Fact]
         public async Task Handle_ShouldReturnFail_WhenMappedEntityIsNull()
         {
+            var errorMsg = Errors_Common.CannotConvertNull.FormatWith("related term");
             var request = new CreateRelatedTermCommand(new RelatedTermDTO());
             _mapperMock.Setup(m => m.Map<RelatedTermDTO>(It.IsAny<RelatedTermDTO>())).Returns((RelatedTermDTO)null);
 
             var result = await _handler.Handle(request, CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.First().Message.Should().Be("Cannot create new related word for a term!");
+            result.Errors.Should().NotBeEmpty();
+            result.Errors[0].Message.Should().Be(errorMsg);
 
             _loggerServiceMock.Verify(x => x.LogError(request, It.IsAny<string>()), Times.Once);
         }
@@ -50,6 +53,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var relatedTerm = new RelatedTermDTO { Id = 0, Word = "test", TermId = 1 };
             var mappedEntity = new Entity { Id = 0, Word = "test", TermId = 1 };
             var request = new CreateRelatedTermCommand(relatedTerm);
+            var errorMsg = Errors_RelatedTerm.AlreadyExist;
 
             _mapperMock.Setup(m => m.Map<Entity>(request.RelatedTerm)).Returns(mappedEntity);
 
@@ -61,8 +65,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Слово з цим визначенням уже існує", result.Errors.First().Message);
-            _loggerServiceMock.Verify(l => l.LogError(request, "Слово з цим визначенням уже існує"), Times.Once);
+            Assert.Equal(errorMsg, result.Errors[0].Message);
+            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
         }
 
         [Fact]
@@ -71,6 +75,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var relatedTerm = new RelatedTermDTO() { Id = 0, TermId = 1 };
             var entity = new Entity();
             var request = new CreateRelatedTermCommand(relatedTerm);
+            var errorMsg = Errors_Common.FailedToCreate.FormatWith("related word for a term");
 
             _mapperMock.Setup(m => m.Map<Entity>(relatedTerm)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
@@ -84,8 +89,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot save changes in the database after related word creation!", result.Errors.First().Message);
-            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot save changes in the database after related word creation!"), Times.Once);
+            Assert.Equal(errorMsg, result.Errors[0].Message);
+            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
         }
 
         [Fact]
@@ -94,6 +99,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var relatedTerm = new RelatedTermDTO { Id = 1, TermId = 1 };
             var entity = new Entity();
             var request = new CreateRelatedTermCommand(relatedTerm);
+            var errorMsg = Errors_Common.CannotMap.FormatWith("entity!");
 
             _mapperMock.Setup(m => m.Map<Entity>(relatedTerm)).Returns(entity);
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
@@ -108,8 +114,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot map entity!", result.Errors.First().Message);
-            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot map entity!"), Times.Once);
+            Assert.Equal(errorMsg, result.Errors[0].Message);
+            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
         }
 
         [Fact]

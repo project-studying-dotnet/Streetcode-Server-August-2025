@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.DAL.Entities.News;
-using Streetcode.DAL.Repositories.Interfaces.Base;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Newss.GetById
 {
@@ -32,7 +33,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetById
 
             if (news is null)
             {
-                string errorMsg = $"No news by entered Id - {request.id}";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("news", request.id);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }

@@ -1,17 +1,23 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Source.SourceLinkCategory
 {
     public class UpdateSourceLinkCategoryValidator : AbstractValidator<UpdateSourceLinkCategoryCommand>
     {
+        public const int MaxTitleLength = 23;
+
         public UpdateSourceLinkCategoryValidator()
         {
             RuleFor(c => c.SourceLinkCategoryUpdate.Id)
-                .NotEmpty().WithMessage("Id can`t be null.");
+                .NotEmpty()
+                .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("Id"));
 
             RuleFor(c => c.SourceLinkCategoryUpdate.Title)
-            .MaximumLength(23).WithMessage("Category can`t be more than 23 symbols.");
+                .MaximumLength(MaxTitleLength)
+                .WithMessage(Errors_Validation.MaxLength.FormatWith("Title", MaxTitleLength));
         }
     }
 }

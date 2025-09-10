@@ -4,6 +4,8 @@ using Moq;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -72,6 +74,7 @@ public class CreateNewsTests
         // Arrange
         var newsDTO = CreateValidNewsDTO();
         var command = new CreateNewsCommand(newsDTO);
+        var errorMsg = Errors_Common.CannotConvertNull.FormatWith("news");
 
         _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
             .Returns((DAL.Entities.News.News)null!);
@@ -83,6 +86,8 @@ public class CreateNewsTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors.Should().ContainSingle()
+            .Which.Message.Should().Be(errorMsg);
 
         _mockNewsRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.News.News>()), Times.Never);
     }
@@ -136,6 +141,7 @@ public class CreateNewsTests
         var newsDTO = CreateValidNewsDTO();
         var newsEntity = CreateValidNewsEntity();
         var command = new CreateNewsCommand(newsDTO);
+        var errorMsg = Errors_Common.FailedToCreate.FormatWith("news");
 
         _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
             .Returns(newsEntity);
@@ -150,6 +156,9 @@ public class CreateNewsTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeEmpty();
+        result.Errors.Should().ContainSingle()
+            .Which.Message.Should().Be(errorMsg);
 
         _mockNewsRepository.Verify(r => r.CreateAsync(newsEntity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
