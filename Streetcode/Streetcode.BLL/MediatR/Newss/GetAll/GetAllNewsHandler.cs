@@ -30,7 +30,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetAll
         {
             var news = await _repositoryWrapper.NewsRepository.GetAllAsync(
                 include: cat => cat.Include(img => img.Image));
-            if (news == null)
+            if (!news.Any())
             {
                 string errorMsg = Errors_Common.NotFoundAny.FormatWith("news");
                 _logger.LogError(request, errorMsg);

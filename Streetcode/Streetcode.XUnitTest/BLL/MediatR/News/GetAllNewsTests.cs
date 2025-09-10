@@ -129,7 +129,7 @@ public class GetAllNewsTests
     }
 
     [Fact]
-    public async Task GetAllNews_WhenRepositoryReturnsNull_ShouldReturnFailure()
+    public async Task GetAllNews_WhenRepositoryReturnsEmptyCollection_ShouldReturnFailure()
     {
         // Arrange
         _mockNewsRepository
@@ -137,7 +137,7 @@ public class GetAllNewsTests
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>,
                     IIncludableQueryable<DAL.Entities.News.News, object>>>()))
-            .ReturnsAsync((IEnumerable<DAL.Entities.News.News>)null);
+            .ReturnsAsync(new List<DAL.Entities.News.News>());
 
         var query = new GetAllNewsQuery();
         var errorMsg = Errors_Common.NotFoundAny.FormatWith("news");

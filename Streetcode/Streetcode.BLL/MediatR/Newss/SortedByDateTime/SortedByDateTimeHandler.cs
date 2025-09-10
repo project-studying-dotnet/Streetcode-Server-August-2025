@@ -28,16 +28,19 @@ namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
 
         public async Task<Result<List<NewsDTO>>> Handle(SortedByDateTimeQuery request, CancellationToken cancellationToken)
         {
-            var news = await _repositoryWrapper.NewsRepository.GetAllAsync(
-                include: cat => cat.Include(img => img.Image));
-            if (news == null)
+            var news = (await _repositoryWrapper.NewsRepository.GetAllAsync(
+                    include: cat => cat.Include(img => img.Image)))
+                .OrderByDescending(n => n.CreationDate)
+                .ToList();
+
+            if (!news.Any())
             {
                 string errorMsg = Errors_Common.NotFoundAny.FormatWith("news");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
 
-            var newsDTOs = _mapper.Map<IEnumerable<NewsDTO>>(news).OrderByDescending(x => x.CreationDate).ToList();
+            var newsDTOs = _mapper.Map<List<NewsDTO>>(news);
 
             foreach (var dto in newsDTOs)
             {
