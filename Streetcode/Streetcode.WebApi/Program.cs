@@ -20,7 +20,6 @@ builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
-builder.Services.ConfigureJwt(builder);
 
 // Connect extension method Identity
 builder.Services.AddIdentityServices();

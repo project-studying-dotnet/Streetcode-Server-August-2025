@@ -14,7 +14,6 @@ using Streetcode.BLL.MediatR.Newss.Update;
 using Streetcode.WebApi.Controllers;
 using Xunit;
 using FluentResults;
-using Streetcode.WebApi.Controllers.Newss;
 
 namespace Streetcode.XUnitTest.WebApi.Controllers;
 

@@ -29,8 +29,7 @@ namespace Streetcode.WebApi.Extensions
         {
             services.AddIdentity<User, IdentityRole<int>>()
                 .AddEntityFrameworkStores<StreetcodeDbContext>()
-                .AddUserManager<UserManager<User>>()
-                .AddSignInManager<SignInManager<User>>();
+                .AddDefaultTokenProviders();
 
             return services;
         }

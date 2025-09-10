@@ -18,12 +18,12 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
         private readonly ILoggerService _logger;
         private readonly FactAutoOrder _autoOrder;
 
-        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger, FactAutoOrder autoOrder)
         {
             _mapper = mapper;
             _repositoryWrapper = repositoryWrapper;
             _logger = logger;
-            _autoOrder = new FactAutoOrder(repositoryWrapper);
+            _autoOrder = autoOrder;
         }
 
         public async Task<Result<FactCreateDto>> Handle(CreateFactCommand request, CancellationToken cancellationToken)

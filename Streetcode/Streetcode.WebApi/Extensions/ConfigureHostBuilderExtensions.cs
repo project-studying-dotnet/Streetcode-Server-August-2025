@@ -4,7 +4,6 @@ using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Services.Payment;
 using Serilog.Sinks.SystemConsole.Themes;
-using Streetcode.BLL.Services.JwtService;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -42,10 +41,5 @@ public static class ConfigureHostBuilderExtensions
             loggerConfiguration
                 .ReadFrom.Configuration(builder.Configuration);
         });
-    }
-
-    public static void ConfigureJwt(this IServiceCollection services, WebApplicationBuilder builder)
-    {
-        services.Configure<JwtEnvironmentVariables>(builder.Configuration.GetSection("JwtSettings"));
     }
 }
