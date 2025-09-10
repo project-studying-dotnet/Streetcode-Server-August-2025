@@ -1,13 +1,15 @@
-using FluentAssertions;
 using AutoMapper;
+using FluentAssertions;
 using Moq;
 using Streetcode.BLL.DTO.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Transactions;
 using Xunit;
-using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetById;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Transactions;
 public class GetTransactLinkByIdHandlerTests
@@ -69,6 +71,7 @@ public class GetTransactLinkByIdHandlerTests
             .ReturnsAsync((TransactionLink)null);
 
         var request = new GetTransactLinkByIdQuery(999);
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("transaction link", request.Id);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -76,7 +79,7 @@ public class GetTransactLinkByIdHandlerTests
         // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().NotBeEmpty();
-        result.Errors.First().Message.Should().Be($"Cannot find any transaction link with corresponding id: {request.Id}");
+        result.Errors.First().Message.Should().Be(errorMsg);
         _mockLogger.Verify(l => l.LogError(It.IsAny<GetTransactLinkByIdQuery>(), It.IsAny<string>()), Times.Once);
     }
 }

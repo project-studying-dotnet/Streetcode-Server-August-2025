@@ -1,9 +1,11 @@
-using FluentAssertions;
 using AutoMapper;
+using FluentAssertions;
 using Moq;
 using Streetcode.BLL.DTO.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Transactions;
@@ -81,6 +83,7 @@ public class GetAllTransactLinksHandlerTests
             .ReturnsAsync((IEnumerable<TransactionLink>)null);
 
         var query = new GetAllTransactLinksQuery();
+        var errorMsg = Errors_Common.NotFoundAny.FormatWith("transaction link");
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -88,7 +91,7 @@ public class GetAllTransactLinksHandlerTests
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
-        result.Errors.First().Message.Should().Be("Cannot find any transaction link");
+        result.Errors.First().Message.Should().Be(errorMsg);
 
         _mockTransactLinksRepository.Verify(r => r.GetAllAsync(null, null), Times.Once);
         _mockLogger.Verify(l => l.LogError(It.IsAny<GetAllTransactLinksQuery>(), It.IsAny<string>()), Times.Once);
