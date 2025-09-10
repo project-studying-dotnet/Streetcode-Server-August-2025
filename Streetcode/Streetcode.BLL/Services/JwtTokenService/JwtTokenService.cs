@@ -231,11 +231,6 @@ public class JwtTokenService : IJwtTokenService
             return Result.Fail("User not found");
         }
 
-        if (user.RefreshToken is null)
-        {
-            return Result.Fail("User does not have an active refresh token");
-        }
-
         user.RefreshToken = null;
         user.RefreshTokenExpiryTime = null;
 
