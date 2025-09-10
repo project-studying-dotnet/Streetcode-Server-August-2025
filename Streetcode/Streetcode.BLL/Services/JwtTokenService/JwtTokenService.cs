@@ -223,21 +223,28 @@ public class JwtTokenService : IJwtTokenService
 
     public async Task<Result> RevokeRefreshTokenAsync(int userId)
     {
-        var user = await _repositoryWrapper.UserRepository
-            .GetFirstOrDefaultAsync(u => u.Id == userId);
-
-        if (user is null)
+        try
         {
-            return Result.Fail("User not found");
+            var user = await _repositoryWrapper.UserRepository
+                .GetFirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user is null)
+            {
+                return Result.Fail("User not found");
+            }
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+
+            _repositoryWrapper.UserRepository.Update(user);
+            await _repositoryWrapper.SaveChangesAsync();
+
+            return Result.Ok();
         }
-
-        user.RefreshToken = null;
-        user.RefreshTokenExpiryTime = null;
-
-        _repositoryWrapper.UserRepository.Update(user);
-        await _repositoryWrapper.SaveChangesAsync();
-
-        return Result.Ok();
+        catch (Exception ex)
+        {
+            return Result.Fail(new ExceptionalError(ex));
+        }
     }
 
     private Result<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token)
