@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create
@@ -34,7 +31,9 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create
                               || c.ImageId == entity.ImageId);
             if (existing != null)
             {
-                return Result.Fail("Category with the same title or image already exists.");
+                string errorMsg = Errors_Sources.AlreadyExistByTitleOrImage;
+                _loggerService.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
             }
 
             await _repositoryWrapper.SourceCategoryRepository.CreateAsync(entity);
@@ -42,9 +41,9 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create
 
             if (!isSuccess)
             {
-                const string errorMsg = "Failed to create category";
+                string errorMsg = Errors_Common.FailedToCreate.FormatWith("SourceLinkCategory");
                 _loggerService.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
+                return Result.Fail(new Error(errorMsg));
             }
 
             _loggerService.LogInformation($"Success! SourceLinkCategory was created.");

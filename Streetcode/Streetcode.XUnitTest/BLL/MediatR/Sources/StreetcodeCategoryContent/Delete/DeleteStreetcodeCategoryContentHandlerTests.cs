@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -100,7 +92,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Del
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-            e.Message == "StreetcodeCategoryContent don`t exist.");
+            e.Message == $"Cannot find any StreetcodeCategoryContent with corresponding id: {entity.Id}");
             _mockRepositoryWrapper.Verify(r => r.StreetcodeCategoryContentRepository.Delete(entity), Times.Never);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
             _mockMapper.Verify(m => m.Map<StreetcodeCategoryContentDTO>(entity), Times.Never);
@@ -139,7 +131,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Del
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-            e.Message == "Failed to delete streetcodeCategoryContent.");
+            e.Message == "Failed to delete a StreetcodeCategoryContent");
             _mockRepositoryWrapper.Verify(r => r.StreetcodeCategoryContentRepository.Delete(entity), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
             _mockMapper.Verify(m => m.Map<StreetcodeCategoryContentDTO>(entity), Times.Never);

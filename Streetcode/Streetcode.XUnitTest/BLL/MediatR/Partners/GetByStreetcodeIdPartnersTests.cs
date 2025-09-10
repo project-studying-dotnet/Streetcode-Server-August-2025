@@ -6,6 +6,8 @@ using Moq;
 using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Partners.GetByStreetcodeId;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Partners;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -96,6 +98,7 @@ public class GetByStreetcodeIdPartnersTests
             .ReturnsAsync((StreetcodeContent?)null);
 
         var query = new GetPartnersByStreetcodeIdQuery(streetcodeId);
+        string errorMsg = Errors_Streetcode.DoesnotExist.FormatWith(query.StreetcodeId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -104,6 +107,7 @@ public class GetByStreetcodeIdPartnersTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockLogger.Verify(l => l.LogError(query, It.IsAny<string>()), Times.Once);
     }
@@ -126,6 +130,7 @@ public class GetByStreetcodeIdPartnersTests
             .ReturnsAsync((IEnumerable<Partner>?)null!);
 
         var query = new GetPartnersByStreetcodeIdQuery(streetcodeId);
+        string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("partners", query.StreetcodeId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -134,6 +139,7 @@ public class GetByStreetcodeIdPartnersTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockLogger.Verify(l => l.LogError(query, It.IsAny<string>()), Times.Once);
     }

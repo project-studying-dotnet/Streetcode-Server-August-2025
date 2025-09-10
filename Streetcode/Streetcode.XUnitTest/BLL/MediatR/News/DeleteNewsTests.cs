@@ -4,6 +4,8 @@ using Moq;
 using Repositories.Interfaces;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.Delete;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
@@ -96,6 +98,7 @@ public class DeleteNewsTests
     {
         // Arrange
         var command = CreateDeleteCommand(1);
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("news", command.id);
 
         _mockNewsRepository
             .Setup(r => r.GetFirstOrDefaultAsync(
@@ -108,6 +111,7 @@ public class DeleteNewsTests
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockNewsRepository.Verify(r => r.Delete(It.IsAny<DAL.Entities.News.News>()), Times.Never);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
@@ -119,6 +123,7 @@ public class DeleteNewsTests
         // Arrange
         var command = CreateDeleteCommand(1);
         var news = CreateNewsWithoutImage(1);
+        var errorMsg = Errors_Common.FailedToDelete.FormatWith("news");
 
         _mockNewsRepository
             .Setup(r => r.GetFirstOrDefaultAsync(
@@ -136,6 +141,7 @@ public class DeleteNewsTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockNewsRepository.Verify(r => r.Delete(news), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);

@@ -1,6 +1,8 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Timeline.TimelineItem;
 using Xunit;
 
@@ -20,7 +22,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [InlineData(0)]
         public void Should_Have_Error_When_Id_Is_Invalid(int invalidId)
         {
-            const string errorMessage = "ID must be greater than 0 for an update operation.";
+            string errorMessage = Errors_Validation.GreaterThan.FormatWith("Id", 0);
 
             var timelineItem = new TimelineItemUpdateDto
             {

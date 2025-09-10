@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Media.Art;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Media.Image.Art;
 
@@ -12,14 +14,14 @@ public class ArtCreateUpdateDTOValidator : AbstractValidator<ArtCreateUpdateDTO>
     {
         RuleFor(x => x.Title)
             .MaximumLength(MaxTitleLength)
-            .WithMessage($"Title cannot exceed {MaxTitleLength} characters.");
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("Title", MaxTitleLength));
 
         RuleFor(x => x.Description)
             .MaximumLength(MaxDescriptionLength)
-            .WithMessage($"Description cannot exceed {MaxDescriptionLength} characters.");
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("Description", MaxDescriptionLength));
 
         RuleFor(x => x.ModelState)
             .IsInEnum()
-            .WithMessage("Invalid ModelState value.");
+            .WithMessage(Errors_Validation.Invalid.FormatWith("ModelState"));
     }
 }

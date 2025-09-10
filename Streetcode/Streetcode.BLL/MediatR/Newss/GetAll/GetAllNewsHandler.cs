@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.DAL.Repositories.Interfaces.Base;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Newss.GetAll
 {
@@ -31,7 +32,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetAll
                 include: cat => cat.Include(img => img.Image));
             if (!news.Any())
             {
-                const string errorMsg = "There are no news in the database";
+                string errorMsg = Errors_Common.NotFoundAny.FormatWith("news");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
@@ -40,7 +41,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetAll
 
             foreach (var dto in newsDTOs)
             {
-                if(dto.Image is not null)
+                if (dto.Image is not null)
                 {
                     dto.Image.Base64 = _blobService.FindFileInStorageAsBase64(dto.Image.BlobName);
                 }

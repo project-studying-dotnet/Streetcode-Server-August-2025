@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
@@ -71,14 +68,15 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetAll
                 .ReturnsAsync((IEnumerable<TextEntity>)null);
 
             var query = new GetAllTextsQuery();
+            var errorMsg = Errors_Common.NotFoundAny.FormatWith("text");
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find any text"));
-            _loggerServiceMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains("Cannot find any text"))), Times.Once);
+            Assert.Contains(result.Errors, e => e.Message.Contains(errorMsg));
+            _loggerServiceMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains(errorMsg))), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
         }
     }

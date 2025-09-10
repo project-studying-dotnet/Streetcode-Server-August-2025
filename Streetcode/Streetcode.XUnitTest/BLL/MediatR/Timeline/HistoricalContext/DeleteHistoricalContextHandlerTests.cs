@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.HistoricalContext.Delete;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -79,7 +81,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.HistoricalContext
         {
             // Arrange
             int inUseId = 2;
-            const string errorMsg = "Cannot delete a historical context that is in use by a timeline item.";
+            var errorMsg = Errors_Timeline.CannotDeleteHistoricalContextInUse;
             var command = new DeleteHistoricalContextCommand(inUseId);
             var historicalContext = new HistoricalContextEntity
             {
@@ -119,7 +121,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.HistoricalContext
         {
             // Arrange
             int nonExistentId = -1;
-            string errorMsg = $"Cannot find historical context with an ID: {nonExistentId}";
+            var errorMsg = Errors_Common.NotFoundById.FormatWith("historical context", nonExistentId);
             var command = new DeleteHistoricalContextCommand(nonExistentId);
 
             _repositoryWrapperMock.Setup(x => x.HistoricalContextRepository.GetSingleOrDefaultAsync(
@@ -150,7 +152,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Timeline.HistoricalContext
         {
             // Arrange
             int validId = 3;
-            const string errorMsg = "Failed to delete the historical context.";
+            var errorMsg = Errors_Common.FailedToDelete.FormatWith("historical context");
 
             var command = new DeleteHistoricalContextCommand(validId);
 

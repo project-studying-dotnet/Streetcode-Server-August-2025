@@ -8,6 +8,8 @@ using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Create;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.BLL.Validators.ArtGallery;
 using Streetcode.BLL.Validators.Media.Image.Art;
@@ -72,7 +74,7 @@ public class CreateStreetcodeValidatorTests
         // Arrange
         var command = GetValidStreetcodeCommand();
         SetupRepositoryWrapper(1);
-        var expectedMessage = "Index must be unique.";
+        var expectedMessage = Errors_Validation.MustBeUnique.FormatWith("Index");
 
         // Act
         var result = await _validator.TestValidateAsync(command);
@@ -89,7 +91,7 @@ public class CreateStreetcodeValidatorTests
         var command = GetValidStreetcodeCommand();
         command.NewStreetcode.ImagesDetails = new List<ImageDetailsDto>();
         SetupRepositoryWrapperForValidScenario();
-        var expectedMessage = "At least one image detail is required.";
+        var expectedMessage = Errors_Validation.CannotBeEmpty.FormatWith("ImagesDetails");
 
         // Act
         var result = await _validator.TestValidateAsync(command);
@@ -112,7 +114,7 @@ public class CreateStreetcodeValidatorTests
                 It.IsAny<Func<IQueryable<Image>, IIncludableQueryable<Image, object>>>()))
             .ReturnsAsync(null as Image);
 
-        var expectedMessage = "One or more images do not exist.";
+        var expectedMessage = Errors_Validation.ImageDoesntExist.FormatWith(99);
 
         // Act
         var result = await _validator.TestValidateAsync(command);

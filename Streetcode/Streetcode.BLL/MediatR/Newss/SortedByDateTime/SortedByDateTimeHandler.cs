@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Microsoft.EntityFrameworkCore;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
 {
@@ -34,7 +35,7 @@ namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
 
             if (!news.Any())
             {
-                const string errorMsg = "There are no news in the database";
+                string errorMsg = Errors_Common.NotFoundAny.FormatWith("news");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }

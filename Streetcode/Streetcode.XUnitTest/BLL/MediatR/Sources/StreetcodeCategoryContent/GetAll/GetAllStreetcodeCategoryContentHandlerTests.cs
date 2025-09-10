@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -134,7 +128,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Get
 
             result.IsFailed.Should().BeTrue();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "Cannot find any streetcodeCategoryContent");
+                e.Message == "Cannot find any StreetcodeCategoryContent");
 
             _mockRepositoryWrapper.Verify(
                 r => r.StreetcodeCategoryContentRepository.GetAllAsync(

@@ -9,6 +9,8 @@ using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.SortedByDateTime;
 using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -110,6 +112,7 @@ public class SortedByDateTimeTests
             .ReturnsAsync(Enumerable.Empty<DAL.Entities.News.News>());
 
         var query = new SortedByDateTimeQuery();
+        string errorMsg = Errors_Common.NotFoundAny.FormatWith("news");
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -118,5 +121,6 @@ public class SortedByDateTimeTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
     }
 }

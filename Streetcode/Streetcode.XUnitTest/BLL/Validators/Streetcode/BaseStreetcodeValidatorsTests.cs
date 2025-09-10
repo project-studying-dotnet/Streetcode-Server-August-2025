@@ -4,6 +4,8 @@ using Streetcode.BLL.DTO.ArtGallery;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.ArtGallery;
 using Streetcode.BLL.Validators.Media.Image.Art;
 using Streetcode.BLL.Validators.Streetcode;
@@ -58,7 +60,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.Index = index;
-        var expectedMessage = $"Index must be between {BaseStreetcodeValidator.IndexMinValue} and {BaseStreetcodeValidator.IndexMaxValue}.";
+        var expectedMessage = Errors_Validation.MustBeBetween.FormatWith("Index", BaseStreetcodeValidator.IndexMinValue, BaseStreetcodeValidator.IndexMaxValue);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -74,7 +76,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.Index = 0; // This will be treated as null/invalid
-        var expectedMessage = $"Index must be between {BaseStreetcodeValidator.IndexMinValue} and {BaseStreetcodeValidator.IndexMaxValue}.";
+        var expectedMessage = Errors_Validation.MustBeBetween.FormatWith("Index", BaseStreetcodeValidator.IndexMinValue, BaseStreetcodeValidator.IndexMaxValue);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -90,7 +92,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.FirstName = new string('A', BaseStreetcodeValidator.FirstNameMaxLength + 1);
-        var expectedMessage = $"First name cannot exceed {BaseStreetcodeValidator.FirstNameMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("FirstName", BaseStreetcodeValidator.FirstNameMaxLength);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -106,7 +108,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.LastName = new string('A', BaseStreetcodeValidator.LastNameMaxLength + 1);
-        var expectedMessage = $"Last name cannot exceed {BaseStreetcodeValidator.LastNameMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("LastName", BaseStreetcodeValidator.LastNameMaxLength);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -122,7 +124,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.Title = string.Empty;
-        var expectedMessage = "Title is required.";
+        var expectedMessage = Errors_Validation.CannotBeEmpty.FormatWith("Title");
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -138,7 +140,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.Title = new string('A', BaseStreetcodeValidator.TitleMaxLength + 1);
-        var expectedMessage = $"Title cannot exceed {BaseStreetcodeValidator.TitleMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("Title", BaseStreetcodeValidator.TitleMaxLength);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -154,7 +156,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.Alias = new string('A', BaseStreetcodeValidator.AliasMaxLength + 1);
-        var expectedMessage = $"Alias cannot exceed {BaseStreetcodeValidator.AliasMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("Alias", BaseStreetcodeValidator.AliasMaxLength);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -170,7 +172,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.TransliterationUrl = string.Empty;
-        var expectedMessage = "Transliteration URL is required.";
+        var expectedMessage = Errors_Validation.CannotBeEmpty.FormatWith("TransliterationUrl");
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -186,7 +188,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.TransliterationUrl = new string('a', BaseStreetcodeValidator.TransliterationUrlMaxLength + 1);
-        var expectedMessage = $"Transliteration URL cannot exceed {BaseStreetcodeValidator.TransliterationUrlMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("TransliterationUrl", BaseStreetcodeValidator.TransliterationUrlMaxLength);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -208,7 +210,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.TransliterationUrl = url;
-        var expectedMessage = "Transliteration URL can only contain lowercase letters, numbers, and hyphens.";
+        var expectedMessage = Errors_Validation.TransliterationUrlFormat;
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -224,7 +226,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.DateString = string.Empty;
-        var expectedMessage = "Date string is required.";
+        var expectedMessage = Errors_Validation.CannotBeEmpty.FormatWith("DateString");
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -240,7 +242,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.DateString = new string('A', BaseStreetcodeValidator.DateStringMaxLength + 1);
-        var expectedMessage = $"Date string cannot exceed {BaseStreetcodeValidator.DateStringMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("DateString", BaseStreetcodeValidator.DateStringMaxLength);
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -261,7 +263,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.DateString = dateString;
-        var expectedMessage = "Date string can only contain numbers, Ukrainian letters, spaces, parentheses, and hyphens.";
+        var expectedMessage = Errors_Validation.DateStringFormat;
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -339,7 +341,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.StreetcodeType = (StreetcodeType)999;
-        var expectedMessage = "Invalid streetcode type.";
+        var expectedMessage = Errors_Validation.Invalid.FormatWith("StreetcodeType");
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -355,7 +357,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.Status = (StreetcodeStatus)999;
-        var expectedMessage = "Invalid streetcode status.";
+        var expectedMessage = Errors_Validation.Invalid.FormatWith("StreetcodeStatus");
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -371,7 +373,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.StreetcodeType = StreetcodeType.Event;
-        var expectedMessage = "First name and Last name must be empty for Event streetcode type.";
+        var expectedMessage = Errors_Validation.EventStreetcodeCannotHasFirstName;
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -403,7 +405,7 @@ public class BaseStreetcodeValidatorsTests
         // Arrange
         var streetcode = GetValidStreetcodeDto();
         streetcode.ImagesDetails = new List<ImageDetailsDto>();
-        var expectedMessage = "There must be exactly one black and white image.";
+        var expectedMessage = Errors_Validation.MustContainExactlyOneBlackAndWhiteImage;
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -434,7 +436,7 @@ public class BaseStreetcodeValidatorsTests
             },
         ];
 
-        var expectedMessage = "There can be at most one animation image.";
+        var expectedMessage = Errors_Validation.MustContainAtMostOneColoredImage;
 
         // Act
         var result = _validator.TestValidate(streetcode);
@@ -464,7 +466,7 @@ public class BaseStreetcodeValidatorsTests
                 Alt = "2", // Related figure (duplicate)
             },
         ];
-        var expectedMessage = "There can be at most one related figure image.";
+        var expectedMessage = Errors_Validation.MustContainAtMostOneRelatedFigureImage;
 
         // Act
         var result = _validator.TestValidate(streetcode);

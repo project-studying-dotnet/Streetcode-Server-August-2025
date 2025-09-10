@@ -3,6 +3,8 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Toponyms.GetById;
@@ -27,7 +29,7 @@ public class GetToponymByIdHandler : IRequestHandler<GetToponymByIdQuery, Result
 
         if (toponym is null)
         {
-            string errorMsg = $"Cannot find any toponym with corresponding id: {request.Id}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("toponym", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

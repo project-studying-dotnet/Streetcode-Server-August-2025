@@ -4,6 +4,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Team;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Team.GetAll
@@ -29,7 +31,7 @@ namespace Streetcode.BLL.MediatR.Team.GetAll
 
             if (team is null)
             {
-                const string errorMsg = $"Cannot find any team";
+                string errorMsg = Errors_Common.NotFoundAny.FormatWith("team");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

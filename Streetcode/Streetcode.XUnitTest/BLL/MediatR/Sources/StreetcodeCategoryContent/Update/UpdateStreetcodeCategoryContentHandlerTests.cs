@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -124,7 +116,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Upd
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "StreetcodeCategoryContent don`t exist.");
+                e.Message == $"Cannot find any StreetcodeCategoryContent with corresponding id: {updateDto.Id}");
             _mockRepositoryWrapper.Verify(
                 r => r.StreetcodeCategoryContentRepository
                 .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.Sources.StreetcodeCategoryContent, bool>>>(), null),
@@ -182,7 +174,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Upd
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "Category with the same Streetcode and SourceLinkCategory already exists");
+                e.Message == "CategoryContent with the same Streetcode and SourceLinkCategory already exists");
             _mockRepositoryWrapper.Verify(
                 r => r.StreetcodeCategoryContentRepository
                 .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.Sources.StreetcodeCategoryContent, bool>>>(), null),
@@ -227,7 +219,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Upd
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-                e.Message == "Error while saving");
+                e.Message == "Failed to update a StreetcodeCategoryContent");
             _mockRepositoryWrapper.Verify(
                r => r.StreetcodeCategoryContentRepository
                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.Sources.StreetcodeCategoryContent, bool>>>(), null),
