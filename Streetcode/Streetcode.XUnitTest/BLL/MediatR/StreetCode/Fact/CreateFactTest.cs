@@ -49,8 +49,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             _handler = new CreateFactHandler(
                 _mockMapper.Object,
                 _mockRepositoryWrapper.Object,
-                _mockLogger.Object,
-                factAutoOrder);
+                _mockLogger.Object);
         }
 
         [Fact]

@@ -11,7 +11,7 @@ using Streetcode.BLL.MediatR.Newss.Update;
 using Streetcode.DAL.Enums;
 using Streetcode.WebApi.Attributes;
 
-namespace Streetcode.WebApi.Controllers;
+namespace Streetcode.WebApi.Controllers.Newss;
 
 public class NewsController : BaseApiController
 {
