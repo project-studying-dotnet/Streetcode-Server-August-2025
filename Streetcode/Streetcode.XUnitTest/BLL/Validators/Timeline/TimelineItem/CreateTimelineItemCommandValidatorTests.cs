@@ -21,7 +21,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         {
             const string errorMessage = "Timeline item data is required.";
 
-            var command = new CreateTimelineItemCommand(null!);
+            var command = new CreateTimelineItemCommand(1, null!);
 
             var result = _validator.TestValidate(command);
 
@@ -42,7 +42,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
                 HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
 
-            var command = new CreateTimelineItemCommand(invalidTimelineItem);
+            var command = new CreateTimelineItemCommand(1, invalidTimelineItem);
 
             var result = _validator.TestValidate(command);
 
@@ -61,7 +61,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
                 HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
 
-            var command = new CreateTimelineItemCommand(validTimelineItem);
+            var command = new CreateTimelineItemCommand(1, validTimelineItem);
 
             var result = _validator.TestValidate(command);
 

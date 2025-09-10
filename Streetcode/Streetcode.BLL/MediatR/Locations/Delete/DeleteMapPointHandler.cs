@@ -31,7 +31,7 @@ public class DeleteMapPointHandler : IRequestHandler<DeleteMapPointCommand, Resu
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync();
 
-        if (resultIsSuccess >= 0)
+        if (resultIsSuccess <= 0)
         {
             string errorMsg = "FailedToDeleteThePoint";
             _logger.LogError(request, errorMsg);

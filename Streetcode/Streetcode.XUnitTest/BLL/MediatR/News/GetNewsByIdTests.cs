@@ -83,11 +83,7 @@ public class GetNewsByIdTests
             .Setup(r => r.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
-            .ReturnsAsync(newsEntity);
-
-        _mockMapper
-            .Setup(m => m.Map<NewsDTO>(newsEntity))
-            .Returns((NewsDTO)null);
+            .ReturnsAsync((DAL.Entities.News.News)null);
 
         var query = new GetNewsByIdQuery(newsId);
 
@@ -98,8 +94,6 @@ public class GetNewsByIdTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
-
-        _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
     }
 
     [Fact]

@@ -30,6 +30,9 @@ using Streetcode.BLL;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.BLL.Services.JwtService;
 using Streetcode.DAL.Entities.Users;
+using Streetcode.DAL.Repositories.Interfaces.Timeline;
+using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.Services.Timeline;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -61,6 +64,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IHistoricalContextService, HistoricalContextService>();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)

@@ -7,6 +7,7 @@ using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Validators.ArtGallery;
 using Streetcode.BLL.Validators.Media.Image.Art;
 using Streetcode.BLL.Validators.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.Toponyms;
 using Streetcode.BLL.Validators.Streetcode.ImageDetails;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -20,17 +21,20 @@ public class BaseStreetcodeValidatorsTests
     private readonly Mock<StreetcodeArtSlideValidator> _mockStreetcodeArtSlideValidator;
     private readonly Mock<ArtCreateUpdateDTOValidator> _mockArtCreateUpdateDTOValidator;
     private readonly Mock<ImageDetailsValidator> _mockImageDetailsValidator;
+    private readonly Mock<StreetcodeToponymValidator> _streetcodeToponymValidatorMock;
 
     public BaseStreetcodeValidatorsTests()
     {
         _mockStreetcodeArtSlideValidator = new Mock<StreetcodeArtSlideValidator>();
         _mockArtCreateUpdateDTOValidator = new Mock<ArtCreateUpdateDTOValidator>();
         _mockImageDetailsValidator = new Mock<ImageDetailsValidator>(Mock.Of<IRepositoryWrapper>());
+        _streetcodeToponymValidatorMock = new Mock<StreetcodeToponymValidator>();
 
         _validator = new BaseStreetcodeValidator(
             _mockStreetcodeArtSlideValidator.Object,
             _mockArtCreateUpdateDTOValidator.Object,
-            _mockImageDetailsValidator.Object);
+            _mockImageDetailsValidator.Object,
+            _streetcodeToponymValidatorMock.Object);
     }
 
     [Fact]
@@ -526,6 +530,15 @@ public class BaseStreetcodeValidatorsTests
                     ImageId = 5,
                     Title = "Franko_black&white",
                     Alt = "1", // Black and white image assignment
+                },
+            ],
+            Toponyms =
+            [
+                new ()
+                {
+                    StreetcodeId = 1,
+                    ToponymId = 5,
+                    StreetName = "Lesia Ukrainka",
                 },
             ],
             StreetcodeArtSlides = new List<StreetcodeArtSlideCreateUpdateDTO>(),
