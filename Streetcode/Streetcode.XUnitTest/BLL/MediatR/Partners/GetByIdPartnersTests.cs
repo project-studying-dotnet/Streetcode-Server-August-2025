@@ -6,6 +6,8 @@ using Moq;
 using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Partners.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Partners;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Partners;
@@ -82,6 +84,7 @@ public class GetByIdPartnersTests
             .ReturnsAsync((Partner?)null);
 
         var query = new GetPartnerByIdQuery(partnerId);
+        string errorMsg = Errors_Common.NotFoundById.FormatWith("partner", query.Id);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -90,6 +93,7 @@ public class GetByIdPartnersTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockLogger.Verify(l => l.LogError(query, It.IsAny<string>()), Times.Once);
     }
@@ -100,6 +104,7 @@ public class GetByIdPartnersTests
         // Arrange
         int partnerId = 1;
         var partnerEntity = CreatePartnerEntity(partnerId);
+        string errorMsg = Errors_Common.CannotMap.FormatWith("partner");
 
         _mockPartnersRepository
             .Setup(r => r.GetSingleOrDefaultAsync(
@@ -120,6 +125,7 @@ public class GetByIdPartnersTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockMapper.Verify(m => m.Map<PartnerDTO>(partnerEntity), Times.Once);
     }
