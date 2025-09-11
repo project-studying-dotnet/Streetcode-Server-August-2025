@@ -146,7 +146,7 @@ public class GetNewsByUrlTests
         _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
     }
 
-    private DAL.Entities.News.News CreateNewsEntity(int id, string url = null)
+    private static DAL.Entities.News.News CreateNewsEntity(int id, string url = null)
     {
         return new DAL.Entities.News.News
         {
@@ -160,7 +160,7 @@ public class GetNewsByUrlTests
         };
     }
 
-    private NewsDTO CreateNewsDTO(int id, string url = null)
+    private static NewsDTO CreateNewsDTO(int id, string url = null)
     {
         return new NewsDTO
         {
@@ -173,7 +173,7 @@ public class GetNewsByUrlTests
         };
     }
 
-    private NewsDTO CreateNewsDTOWithImage(int id, string blobName, string url = null)
+    private static NewsDTO CreateNewsDTOWithImage(int id, string blobName, string url = null)
     {
         return new NewsDTO
         {

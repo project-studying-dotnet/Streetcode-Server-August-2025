@@ -78,7 +78,7 @@ public class UpdateMapPointTests
         _loggerMock.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
-    private StatisticRecord GetValidMapPoint()
+    private static StatisticRecord GetValidMapPoint()
     {
         return new StatisticRecord
         {

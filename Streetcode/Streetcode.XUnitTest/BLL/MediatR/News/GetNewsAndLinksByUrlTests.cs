@@ -177,7 +177,7 @@ public class GetNewsAndLinksByUrlTests
         returnedData.RandomNews.Should().NotBeNull();
     }
 
-    private DAL.Entities.News.News CreateNewsEntity(int id, string url = null)
+    private static DAL.Entities.News.News CreateNewsEntity(int id, string url = null)
     {
         return new DAL.Entities.News.News
         {
@@ -191,7 +191,7 @@ public class GetNewsAndLinksByUrlTests
         };
     }
 
-    private NewsDTO CreateNewsDTO(int id, string url = null)
+    private static NewsDTO CreateNewsDTO(int id, string url = null)
     {
         return new NewsDTO
         {

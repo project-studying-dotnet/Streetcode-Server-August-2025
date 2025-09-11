@@ -12,7 +12,7 @@ namespace Streetcode.XUnitTest.Repositories.Realizations.Base
 {
     public class RepositoryBaseTests
     {
-        public RepositoryBase<Video> GetRepository()
+        public static RepositoryBase<Video> GetRepository()
         {
             var options = new DbContextOptionsBuilder<StreetcodeDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())

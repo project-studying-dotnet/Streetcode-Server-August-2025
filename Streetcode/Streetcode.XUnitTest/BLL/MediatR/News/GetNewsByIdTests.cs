@@ -138,7 +138,7 @@ public class GetNewsByIdTests
         _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
     }
 
-    private DAL.Entities.News.News CreateNewsEntity(int id)
+    private static DAL.Entities.News.News CreateNewsEntity(int id)
     {
         return new DAL.Entities.News.News
         {
@@ -152,7 +152,7 @@ public class GetNewsByIdTests
         };
     }
 
-    private NewsDTO CreateNewsDTO(int id)
+    private static NewsDTO CreateNewsDTO(int id)
     {
         return new NewsDTO
         {
@@ -165,7 +165,7 @@ public class GetNewsByIdTests
         };
     }
 
-    private NewsDTO CreateNewsDTOWithImage(int id, string blobName)
+    private static NewsDTO CreateNewsDTOWithImage(int id, string blobName)
     {
         return new NewsDTO
         {
