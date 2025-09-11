@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using System.Text;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
@@ -10,10 +14,6 @@ using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Users;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq.Expressions;
-using System.Security.Claims;
-using System.Text;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.Services;

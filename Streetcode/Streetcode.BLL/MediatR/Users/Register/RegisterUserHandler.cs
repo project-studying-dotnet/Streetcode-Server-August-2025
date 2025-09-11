@@ -2,9 +2,7 @@
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.DTO.Users;
-using Streetcode.BLL.MediatR.Newss.Update;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -16,7 +14,6 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<R
     private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-
 
     public RegisterUserHandler(UserManager<User> userManager, IMapper mapper, IRepositoryWrapper repositoryWrapper)
     {
@@ -60,7 +57,8 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<R
 
             var response = _mapper.Map<RegisterUserResponseDTO>(user);
             return Result.Ok(response);
-        }catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             return Result.Fail<RegisterUserResponseDTO>(new ExceptionalError(ex));
         }
@@ -69,11 +67,15 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<R
     public static Result<string> GetUserNameFromEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
+        {
             return Result.Fail<string>("Email cannot be null or empty.");
+        }
 
         var atIndex = email.IndexOf('@');
         if (atIndex <= 0)
+        {
             return Result.Fail<string>("Invalid email format.");
+        }
 
         return Result.Ok(email.Substring(0, atIndex));
     }

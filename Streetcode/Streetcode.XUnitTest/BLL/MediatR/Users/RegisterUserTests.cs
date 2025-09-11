@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
@@ -9,7 +10,6 @@ using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Users;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Users;
@@ -278,5 +278,4 @@ public class RegisterUserTests
         Assert.True(result.IsFailed);
         Assert.Equal("Invalid email format.", result.Errors.First().Message);
     }
-
 }
