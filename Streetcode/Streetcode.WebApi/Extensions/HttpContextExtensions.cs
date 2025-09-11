@@ -1,4 +1,6 @@
-﻿namespace Streetcode.WebApi.Extensions
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Streetcode.WebApi.Extensions
 {
     public static class HttpContextExtensions
     {
