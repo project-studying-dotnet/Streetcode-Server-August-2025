@@ -11,6 +11,7 @@ namespace Streetcode.BLL.Mapping.Users
             CreateMap<User, UserLoginDTO>().ReverseMap();
             CreateMap<UserDTO, UserLoginDTO>().ReverseMap();
             CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<User, RegisterUserDTO>().ReverseMap();
         }
     }
 }
