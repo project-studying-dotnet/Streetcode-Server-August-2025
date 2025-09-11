@@ -1,42 +1,46 @@
 using FluentValidation;
 using Streetcode.BLL.DTO.News;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Helpers;
 
 namespace Streetcode.BLL.Validators.News
 {
     public class NewsDTOValidator : AbstractValidator<NewsDTO>
     {
+        public const int MaxTitleLength = 150;
+        public const int MinTitleLength = 2;
+        public const int MaxUrlLength = 100;
+
         public NewsDTOValidator()
         {
             RuleFor(x => x.Title)
                 .NotEmpty()
-                    .WithMessage("Title is required.")
-                .MinimumLength(2)
-                    .WithMessage("Title must be at least 2 characters long.")
-                .MaximumLength(150)
-                    .WithMessage("Title cannot exceed 150 characters.");
+                    .WithMessage(Errors_Validation.IsRequired.FormatWith("Title"))
+                .Length(MinTitleLength, MaxTitleLength)
+                    .WithMessage(Errors_Validation.LengthMustBeInRange.FormatWith("Title", MinTitleLength, MaxTitleLength));
 
             RuleFor(x => x.Text)
                 .NotEmpty()
-                    .WithMessage("Text content is required.");
+                    .WithMessage(Errors_Validation.IsRequired.FormatWith("Text"));
 
             RuleFor(x => x.URL)
                 .NotEmpty()
-                    .WithMessage("URL is required.")
-                .MaximumLength(100)
-                    .WithMessage("URL cannot exceed 100 characters.")
+                    .WithMessage(Errors_Validation.IsRequired.FormatWith("URL"))
+                .MaximumLength(MaxUrlLength)
+                    .WithMessage(Errors_Validation.MaxLength.FormatWith("URL", MaxUrlLength))
                 .Must(ValidationHelper.BeValidUrl)
-                    .WithMessage("URL must be an valid");
+                    .WithMessage(Errors_Validation.ValidUrl.FormatWith("URL"));
 
             RuleFor(x => x.CreationDate)
                 .NotEmpty()
-                    .WithMessage("Creation date is required.");
+                    .WithMessage(Errors_Validation.IsRequired.FormatWith("CreationDate"));
 
             When(x => x.ImageId.HasValue, () =>
             {
                 RuleFor(x => x.ImageId)
                     .GreaterThan(0)
-                        .WithMessage("Image ID must be greater than 0.");
+                        .WithMessage(Errors_Validation.Invalid.FormatWith("ImageId"));
             });
         }
     }

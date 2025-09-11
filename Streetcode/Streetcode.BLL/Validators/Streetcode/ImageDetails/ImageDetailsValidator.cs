@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.Validators.Streetcode.ImageDetails;
@@ -17,20 +19,20 @@ public class ImageDetailsValidator : AbstractValidator<ImageDetailsDto>
 
         RuleFor(dto => dto)
             .MustAsync(BeUniqueImageIdWithImageDetails)
-            .WithMessage("An ImageDetails entry with the same ImageId already exists.")
+            .WithMessage(Errors_Validation.MustBeUnique.FormatWith("ImageId"))
             .When(dto => dto.ImageId != 0);
 
         RuleFor(dto => dto.Title)
             .MaximumLength(TitleMaxLength)
-            .WithMessage($"Title cannot exceed {TitleMaxLength} characters.");
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("Title", TitleMaxLength));
 
         RuleFor(dto => dto.Alt)
             .MaximumLength(AltMaxLength)
-            .WithMessage($"Alt text cannot exceed {AltMaxLength} characters.");
+            .WithMessage(Errors_Validation.MaxLength.FormatWith("Alt", AltMaxLength));
 
         RuleFor(dto => dto.ImageId)
             .MustAsync(HasExistingImage)
-            .WithMessage("The specified ImageId does not exist.");
+            .WithMessage(x => Errors_Validation.ImageDoesntExist.FormatWith(x.ImageId));
     }
 
     private async Task<bool> BeUniqueImageIdWithImageDetails(ImageDetailsDto imageDetails, CancellationToken cancellationToken)

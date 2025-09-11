@@ -2,6 +2,8 @@
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Timeline.TimelineItem;
 using Xunit;
 
@@ -19,7 +21,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_TimelineItem_Is_Null()
         {
-            const string errorMessage = "Timeline item data is required.";
+            string errorMessage = Errors_Validation.IsRequiredData.FormatWith("TimelineItem");
 
             var command = new UpdateTimelineItemCommand(null!);
 
@@ -32,7 +34,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_TimelineItem_Is_Invalid()
         {
-            const string errorMessage = "Title cannot exceed 28 characters.";
+            string errorMessage = Errors_Validation.MaxLength.FormatWith("Title", 28);
 
             var invalidTimelineItem = new TimelineItemUpdateDto
             {

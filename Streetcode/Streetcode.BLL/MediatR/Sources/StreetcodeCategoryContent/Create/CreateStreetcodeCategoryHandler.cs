@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.DAL.Entities.Sources;
 
 namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create
 {
@@ -36,7 +32,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create
 
             if (isDuplicate != null)
             {
-                const string errorMsg = $"Category with this name already exist.";
+                string errorMsg = Errors_Sources.AlreadyExistWithName;
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -47,7 +43,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create
 
             if (saveResult <= 0)
             {
-                const string errorMsg = "Failed to save category content in database";
+                string errorMsg = Errors_Common.FailedToCreate.FormatWith("category content");
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail<StreetcodeCategoryContentDTO>(errorMsg);
             }

@@ -2,13 +2,15 @@
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
-using Streetcode.BLL.DTO.Locations;
 using Streetcode.BLL.DTO.ArtGallery;
+using Streetcode.BLL.DTO.Locations;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Analytics;
 using Streetcode.DAL.Entities.Media.Images;
@@ -46,26 +48,26 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
                 var saveResult = await _repositoryWrapper.SaveChangesAsync();
                 if (saveResult == 0)
                 {
-                    return CreateErrorResult<StreetcodeDTO>(request, "Failed to save streetcode to database");
+                    return CreateErrorResult<StreetcodeDTO>(request, Errors_Common.FailedToCreate.FormatWith("streetcode"));
                 }
 
                 var imagesDetails = request.NewStreetcode.ImagesDetails;
                 if (imagesDetails is null || !imagesDetails.Any())
                 {
-                    return CreateErrorResult<StreetcodeDTO>(request, "ImagesDetails cannot be empty");
+                    return CreateErrorResult<StreetcodeDTO>(request, Errors_Validation.CannotBeEmpty.FormatWith("ImagesDetails"));
                 }
 
                 var imageIds = imagesDetails.Select(x => x.ImageId).Where(id => id > 0).Distinct().ToList();
                 if (imageIds.Count == 0)
                 {
-                    return CreateErrorResult<StreetcodeDTO>(request, "Image IDs cannot be empty");
+                    return CreateErrorResult<StreetcodeDTO>(request, Errors_Validation.CannotBeEmpty.FormatWith("Images"));
                 }
 
                 await AddImagesAsync(streetcodeEntity, imageIds);
 
                 if (request.NewStreetcode.Tags is null || !request.NewStreetcode.Tags.Any())
                 {
-                    return CreateErrorResult<StreetcodeDTO>(request, "Tags cannot be empty");
+                    return CreateErrorResult<StreetcodeDTO>(request, Errors_Validation.CannotBeEmpty.FormatWith("Tags"));
                 }
 
                 await AddTags(streetcodeEntity, request.NewStreetcode.Tags);
@@ -78,7 +80,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
 
                 if (saveResult == 0)
                 {
-                    return CreateErrorResult<StreetcodeDTO>(request, "Failed to save streetcode to database");
+                    return CreateErrorResult<StreetcodeDTO>(request, Errors_Common.FailedToCreate.FormatWith("streetcode"));
                 }
 
                 await AddArtGalleryAsync(streetcodeEntity, request.NewStreetcode.Arts, request.NewStreetcode.StreetcodeArtSlides);
@@ -145,7 +147,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
                 var exists = await _repositoryWrapper.TagRepository.GetFirstOrDefaultAsync(t => tagsList[i].Title == t.Title);
                 if (exists is not null)
                 {
-                    throw new InvalidOperationException("Tag with the same title already exists");
+                    throw new InvalidOperationException(Errors_Validation.MustBeUnique.FormatWith("tags"));
                 }
 
                 var newTag = _mapper.Map<Tag>(tagsList[i]);
@@ -185,7 +187,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
         {
             if (!existingImageIds.Contains(artDto.ImageId))
             {
-                throw new InvalidOperationException($"Image with ID {artDto.ImageId} does not exist");
+                throw new InvalidOperationException(Errors_Common.NotFoundById.FormatWith("image", artDto.ImageId));
             }
         }
 
@@ -220,7 +222,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
                 // Ensure that ArtId exists in the map
                 if (!artIdMap.TryGetValue(streetcodeArtDto.ArtId, out var newArtId))
                 {
-                    throw new KeyNotFoundException($"Art ID '{streetcodeArtDto.ArtId}' not found in the mapped arts.");
+                    throw new KeyNotFoundException(Errors_AdditionalContent.Art_NotFoundInMappedArts.FormatWith(streetcodeArtDto.ArtId));
                 }
 
                 var streetcodeArtEntity = _mapper.Map<StreetcodeArt>(streetcodeArtDto);

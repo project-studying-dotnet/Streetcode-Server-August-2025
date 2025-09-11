@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Timeline.TimelineItem
 {
@@ -9,7 +11,7 @@ namespace Streetcode.BLL.Validators.Timeline.TimelineItem
         {
             RuleFor(x => x.Id)
                 .GreaterThan(0)
-                .WithMessage("ID must be greater than 0 for an update operation.");
+                .WithMessage(Errors_Validation.GreaterThan.FormatWith("Id", 0));
         }
     }
 }

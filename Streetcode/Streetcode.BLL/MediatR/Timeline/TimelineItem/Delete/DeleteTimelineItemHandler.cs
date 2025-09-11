@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
 
 namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete
 {
@@ -32,7 +31,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete
 
                 if (timelineItem == null)
                 {
-                    var errorMsg = $"Cannot find a timeline item with an ID: {request.id}";
+                    string errorMsg = Errors_Common.NotFoundById.FormatWith("timeline item", request.id);
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }
@@ -49,7 +48,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete
                 }
                 else
                 {
-                    var errorMsg = "Failed to delete the timeline item.";
+                    string errorMsg = Errors_Common.FailedToDelete.FormatWith("timeline item");
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }

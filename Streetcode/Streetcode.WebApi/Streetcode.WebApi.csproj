@@ -59,14 +59,15 @@
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
-  <ItemGroup>
+    <ItemGroup>
     <ProjectReference Include="..\Streetcode.BLL\Streetcode.BLL.csproj" />
+    <ProjectReference Include="..\Streetcode.DAL\Streetcode.DAL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\Analytics\" />
-    <Folder Include="Controllers\Newss\" />
-    <Folder Include="Middlewares\" />
+    <Folder Include="Controllers\User\" />
   </ItemGroup>
 
 </Project>
+

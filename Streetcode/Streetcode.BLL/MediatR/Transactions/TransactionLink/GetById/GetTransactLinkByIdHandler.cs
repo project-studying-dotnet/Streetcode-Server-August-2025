@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
 using Streetcode.BLL.DTO.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Transactions.TransactionLink.GetById;
@@ -28,7 +29,7 @@ public class GetTransactLinkByIdHandler : IRequestHandler<GetTransactLinkByIdQue
 
         if (transactLink is null)
         {
-            string errorMsg = $"Cannot find any transaction link with corresponding id: {request.Id}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("transaction link", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

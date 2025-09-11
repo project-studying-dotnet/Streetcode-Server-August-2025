@@ -4,9 +4,11 @@ using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Image.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media.Images;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 {
@@ -38,7 +40,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 
                 if (existingFact == null)
                 {
-                    string errorMsg = $"Fact with Id {request.Fact.Id} not found!";
+                    string errorMsg = Errors_Common.NotFoundById.FormatWith("fact", request.Fact.Id);
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }
@@ -113,7 +115,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 
             if (!success)
             {
-                const string errorMsg = "Failed to update a fact";
+                string errorMsg = Errors_Common.FailedToUpdate.FormatWith("fact");
                 _logger.LogError(existingFact, errorMsg);
                 return Result.Fail(errorMsg);
             }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
@@ -144,7 +138,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.StreetcodeCategoryContent.Cre
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-            e.Message == "Failed to save category content in database");
+            e.Message == "Failed to create a category content");
             _mockMapper.Verify(m => m.Map<DAL.Entities.Sources.StreetcodeCategoryContent>(createDto), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.StreetcodeCategoryContentRepository.CreateAsync(entity), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);

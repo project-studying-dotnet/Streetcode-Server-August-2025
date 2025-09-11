@@ -4,6 +4,8 @@ using MediatR;
 using Streetcode.BLL.DTO.Media.Audio;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.Create;
@@ -44,13 +46,13 @@ public class CreateAudioHandler : IRequestHandler<CreateAudioCommand, Result<Aud
 
         var createdAudio = _mapper.Map<AudioDTO>(audio);
 
-        if(resultIsSuccess)
+        if (resultIsSuccess)
         {
             return Result.Ok(createdAudio);
         }
         else
         {
-            const string errorMsg = $"Failed to create an audio";
+            string errorMsg = Errors_Common.FailedToCreate_An.FormatWith("audio");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

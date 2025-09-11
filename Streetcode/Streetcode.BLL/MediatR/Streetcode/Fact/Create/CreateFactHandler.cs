@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources;
 using Streetcode.BLL.Services.Text.Fact;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
 {
@@ -22,12 +18,12 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
         private readonly ILoggerService _logger;
         private readonly FactAutoOrder _autoOrder;
 
-        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger, FactAutoOrder autoOrder)
+        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
         {
             _mapper = mapper;
             _repositoryWrapper = repositoryWrapper;
             _logger = logger;
-            _autoOrder = autoOrder;
+            _autoOrder = new FactAutoOrder(repositoryWrapper);
         }
 
         public async Task<Result<FactCreateDto>> Handle(CreateFactCommand request, CancellationToken cancellationToken)
@@ -35,7 +31,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
             var newFact = _mapper.Map<Facts>(request.newFact);
             if (newFact is null)
             {
-                const string errorMsg = "Cannot convert null to fact";
+                string errorMsg = Errors_Common.CannotConvertNull.FormatWith("fact");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
@@ -50,7 +46,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
 
             if (streetcodeExists is null)
             {
-                const string errorMsg = "Streetcode not found";
+                string errorMsg = Errors_Streetcode.NotFound;
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
@@ -71,7 +67,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
             }
             else
             {
-                const string errorMsg = "Failed to create a fact";
+                string errorMsg = Errors_Common.FailedToCreate.FormatWith("fact");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

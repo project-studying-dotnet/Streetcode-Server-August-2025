@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll
 {
     public class GetAllStreetcodeCategoryHandler : IRequestHandler<GetAllStreetcodeCategoryContentQuery, Result<IEnumerable<StreetcodeCategoryContentDTO>>>
     {
-        private ILoggerService _loggerService;
-        private IMapper _mapper;
-        private IRepositoryWrapper _repositoryWrapper;
+        private readonly ILoggerService _loggerService;
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
         public GetAllStreetcodeCategoryHandler(ILoggerService loggerService, IMapper mapper, IRepositoryWrapper repositoryWrapper)
         {
@@ -34,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll
 
             if (entities == null)
             {
-                const string errorMsg = $"Cannot find any streetcodeCategoryContent";
+                string errorMsg = Errors_Common.NotFoundAny.FormatWith("StreetcodeCategoryContent");
                 _loggerService.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

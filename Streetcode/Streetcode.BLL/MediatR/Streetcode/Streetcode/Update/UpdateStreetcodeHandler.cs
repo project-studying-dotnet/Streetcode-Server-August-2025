@@ -9,6 +9,8 @@ using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
@@ -18,9 +20,9 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 {
     public class UpdateStreetcodeHandler : IRequestHandler<UpdateStreetcodeCommand, Result<int>>
     {
-        private IRepositoryWrapper _repositoryWrapper;
-        private IMapper _mapper;
-        private ILoggerService _logger;
+        private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly IMapper _mapper;
+        private readonly ILoggerService _logger;
 
         public UpdateStreetcodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
         {
@@ -40,7 +42,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 
                     if (existingEntity is null)
                     {
-                        string errorMsg = $"Cannot find any streetcode with corresponding id: {request.Streetcode.Id}";
+                        string errorMsg = Errors_Common.NotFoundById.FormatWith("streetcode", request.Streetcode.Id);
                         _logger.LogError(request, errorMsg);
                         return Result.Fail(new Error(errorMsg));
                     }
@@ -62,7 +64,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 
                     if (saveResult < 0)
                     {
-                        const string errorMsg = "Failed to update streetcode in database";
+                        string errorMsg = Errors_Common.FailedToUpdate.FormatWith("streetcode");
                         _logger.LogError(request, errorMsg);
                         return Result.Fail<int>(errorMsg);
                     }
@@ -99,7 +101,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                 var existingTag = await _repositoryWrapper.TagRepository.GetFirstOrDefaultAsync(t => t.Title == newTag.Title);
                 if (existingTag is not null && existingTag.Id != newTag.Id)
                 {
-                    throw new InvalidOperationException("Tag titles must be unique.");
+                    throw new InvalidOperationException(Errors_Validation.MustBeUnique.FormatWith("Tag"));
                 }
             }
 
@@ -160,7 +162,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                 {
                     if (!existingImageIds.Contains(artDto.ImageId))
                     {
-                        throw new InvalidOperationException($"Image with ID {artDto.ImageId} does not exist");
+                        throw new InvalidOperationException(Errors_Common.NotFoundById.FormatWith("image", artDto.ImageId));
                     }
                 }
             }
@@ -273,7 +275,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 
                     if (artExists == null)
                     {
-                        throw new InvalidOperationException($"Art with ID {streetcodeArtDto.ArtId} does not exist");
+                        throw new InvalidOperationException(Errors_Common.NotFoundById.FormatWith("art", streetcodeArtDto.ArtId));
                     }
 
                     var streetcodeArt = new StreetcodeArt
