@@ -59,10 +59,10 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Email
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
-        Assert.True(result.IsFailed);
-        Assert.Contains(errorMessage, result.Errors[0].Message);
+            Assert.True(result.IsFailed);
+            Assert.Contains(errorMessage, result.Errors[0].Message);
 
-        _loggerMock.Verify(
+            _loggerMock.Verify(
             l => l.LogError(command, It.Is<string>(msg => msg.Contains(errorMessage))),
             Times.Once);
     }
