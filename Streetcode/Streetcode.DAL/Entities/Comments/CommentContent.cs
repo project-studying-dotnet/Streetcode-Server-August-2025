@@ -1,0 +1,31 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using Streetcode.DAL.Entities.Streetcode;
+using Streetcode.DAL.Entities.Users;
+
+namespace Streetcode.DAL.Entities.Comments;
+
+[Table("comments", Schema = "comment")]
+public class CommentContent
+{
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+
+    [MaxLength(1000)]
+    public string Text { get; set; } = string.Empty;
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+
+    public int UserId { get; set; }
+    public User? User { get; set; }
+
+    public int StreetcodeId { get; set; }
+    public StreetcodeContent? Streetcode { get; set; }
+
+    public int? ParentCommentId { get; set; }
+    public CommentContent? ParentComment { get; set; }
+
+    public ICollection<CommentContent> Replies { get; set; } = new List<CommentContent>();
+}
