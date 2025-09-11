@@ -2,9 +2,10 @@
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Media.Audio;
-using Streetcode.BLL.DTO.Media;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.GetAll;
@@ -30,7 +31,7 @@ public class GetAllAudiosHandler : IRequestHandler<GetAllAudiosQuery, Result<IEn
 
         if (audios is null)
         {
-            const string errorMsg = "Cannot find any audios";
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("audios");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

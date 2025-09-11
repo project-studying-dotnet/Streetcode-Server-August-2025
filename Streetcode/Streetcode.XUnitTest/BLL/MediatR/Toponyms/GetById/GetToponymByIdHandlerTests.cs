@@ -7,6 +7,8 @@ using Moq;
 using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Toponyms.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Toponyms;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -80,6 +82,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetById
         {
             // Arrange
             var query = _fixture.Create<GetToponymByIdQuery>();
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("toponym", query.Id);
 
             _repositoryWrapperMock
                 .Setup(r => r.ToponymRepository.GetFirstOrDefaultAsync(
@@ -92,7 +95,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Toponyms.GetById
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains(query.Id.ToString()));
+            Assert.Contains(result.Errors, e => e.Message.Contains(errorMsg));
 
             _loggerServiceMock.Verify(
                 l => l.LogError(

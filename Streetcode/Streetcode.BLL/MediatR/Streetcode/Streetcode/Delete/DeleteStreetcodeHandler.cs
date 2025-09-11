@@ -1,6 +1,8 @@
 ﻿using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Delete;
@@ -23,7 +25,7 @@ public class DeleteStreetcodeHandler : IRequestHandler<DeleteStreetcodeCommand, 
 
         if (streetcode is null)
         {
-            string errorMsg = $"Cannot find any Streetcode with corresponding Id: {request.Id}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("Streetcode", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -37,7 +39,7 @@ public class DeleteStreetcodeHandler : IRequestHandler<DeleteStreetcodeCommand, 
             return Result.Ok(Unit.Value);
         }
 
-        const string failMsg = "Failed to delete the Streetcode";
+        string failMsg = Errors_Common.FailedToDelete.FormatWith("Streetcode");
         _logger.LogError(request, failMsg);
         return Result.Fail(new Error(failMsg));
     }

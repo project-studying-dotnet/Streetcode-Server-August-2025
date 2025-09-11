@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Update;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -105,11 +100,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Update
             .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.Sources.SourceLinkCategory, bool>>>(), null))
                 .ReturnsAsync((DAL.Entities.Sources.SourceLinkCategory)null);
 
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("SourceLinkCategory", updateDto.Id);
+
             var result = await _handler.Handle(new UpdateSourceLinkCategoryCommand(updateDto), CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().ContainSingle(e =>
-                e.Message == "Category not found.");
+            result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
 
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository
@@ -145,11 +141,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Update
 
             _mockMapper.Setup(m => m.Map(updateDto, existingEntity));
 
+            string errorMsg = Errors_Sources.AlreadyExistByTitleOrImage;
+
             var result = await _handler.Handle(new UpdateSourceLinkCategoryCommand(updateDto), CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().ContainSingle(e =>
-                e.Message == "Category with the same title or image already exists.");
+            result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository
                 .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.Sources.SourceLinkCategory, bool>>>(), null),
@@ -188,11 +185,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Update
 
             _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
+            string errorMsg = Errors_Common.FailedToUpdate.FormatWith("SourceLinkCategory");
+
             var result = await _handler.Handle(new UpdateSourceLinkCategoryCommand(updateDto), CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().ContainSingle(e =>
-                e.Message == "Error while saving");
+            result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository
                 .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.Sources.SourceLinkCategory, bool>>>(), null),

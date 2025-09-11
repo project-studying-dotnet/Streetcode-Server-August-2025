@@ -1,5 +1,7 @@
 using FluentValidation;
 using Streetcode.BLL.MediatR.Newss.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.News
 {
@@ -9,7 +11,7 @@ namespace Streetcode.BLL.Validators.News
         {
             RuleFor(x => x.NewNews)
                 .NotNull()
-                    .WithMessage("News data is required.");
+                    .WithMessage(Errors_Validation.IsRequiredData.FormatWith("News"));
 
             When(x => x.NewNews != null, () =>
             {

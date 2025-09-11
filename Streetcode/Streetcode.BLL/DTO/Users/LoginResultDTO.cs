@@ -8,8 +8,8 @@ namespace Streetcode.BLL.DTO.Users
 {
     public class LoginResultDTO
     {
-        public UserDTO User { get; set; }
-        public string Token { get; set; }
-        public DateTime ExpireAt { get; set; }
+        public UserDTO? User { get; set; }
+        public TokenDTO? AccessToken { get; set; }
+        public TokenDTO? RefreshToken { get; set; }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
@@ -26,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
 
             if (relatedTerm is null)
             {
-                string errorMsg = $"Cannot find a related term: {request.word} for termId {request.TermId}";
+                string errorMsg = Errors_RelatedTerm.NotFoundRelatedTermForTerm.FormatWith(request.word, request.TermId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -35,13 +37,13 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
 
             var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
             var relatedTermDto = _mapper.Map<RelatedTermDTO>(relatedTerm);
-            if(resultIsSuccess && relatedTermDto != null)
+            if (resultIsSuccess && relatedTermDto != null)
             {
                 return Result.Ok(relatedTermDto);
             }
             else
             {
-                const string errorMsg = "Failed to delete a related term";
+                string errorMsg = Errors_Common.FailedToDelete.FormatWith("related term");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

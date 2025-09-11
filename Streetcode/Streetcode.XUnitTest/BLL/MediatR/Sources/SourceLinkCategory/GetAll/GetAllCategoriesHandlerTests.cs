@@ -1,15 +1,17 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll;
-using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
-using Streetcode.BLL.DTO.Sources;
-using Streetcode.BLL.DTO.Media.Images;
-using Microsoft.EntityFrameworkCore.Query;
 using SourceLinkCategoryEntity = Streetcode.DAL.Entities.Sources.SourceLinkCategory;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetAll
@@ -81,7 +83,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetAll
         public async Task Handle_WhenCategoriesIsNull_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string errorMsg = $"Categories is null";
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("SourceLinkCategory");
 
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetAllAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),

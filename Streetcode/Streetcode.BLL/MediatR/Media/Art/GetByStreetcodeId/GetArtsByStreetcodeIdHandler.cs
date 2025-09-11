@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.DTO.Media.Art;
+using Streetcode.BLL.Interfaces.BlobStorage;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId
 {
-  public class GetArtsByStreetcodeIdHandler : IRequestHandler<GetArtsByStreetcodeIdQuery, Result<IEnumerable<ArtDTO>>>
+    public class GetArtsByStreetcodeIdHandler : IRequestHandler<GetArtsByStreetcodeIdQuery, Result<IEnumerable<ArtDTO>>>
     {
         private readonly IBlobService _blobService;
         private readonly IMapper _mapper;
@@ -41,11 +43,11 @@ namespace Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId
                 .GetAllAsync(
                 predicate: sc => sc.StreetcodeArts.Any(s => s.StreetcodeId == request.StreetcodeId),
                 include: scl => scl
-                    .Include(sc => sc.Image) !);
+                    .Include(sc => sc.Image)!);
 
             if (arts is null)
             {
-                string errorMsg = $"Cannot find any art with corresponding streetcode id: {request.StreetcodeId}";
+                string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("art", request.StreetcodeId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

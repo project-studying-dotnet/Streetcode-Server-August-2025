@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using FluentResults;
 using Moq;
 using Streetcode.BLL.DTO.Team;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Team.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Team;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Team;
@@ -81,17 +82,18 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Team
         {
             // Arrange
             var request = new GetAllTeamQuery();
+            var errorMsg = Errors_Common.NotFoundAny.FormatWith("team");
 
             _teamRepositoryMock
                 .Setup(r => r.ListAsync(It.IsAny<AllTeamSpecification>(), default))
-                .ReturnsAsync((IEnumerable<TeamMember>?)null);
+                .ReturnsAsync((IEnumerable<TeamMember>?)null!);
 
             // Act
             var result = await _handler.Handle(request, default);
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find any team"));
+            Assert.Contains(result.Errors, e => e.Message.Contains(errorMsg));
             _loggerMock.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
         }
     }

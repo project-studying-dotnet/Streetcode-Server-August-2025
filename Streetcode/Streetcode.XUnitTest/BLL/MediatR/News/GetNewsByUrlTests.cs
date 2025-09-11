@@ -8,6 +8,8 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetByUrl;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -78,6 +80,7 @@ public class GetNewsByUrlTests
     {
         // Arrange
         string newsUrl = "non-existing-url";
+        string errorMsg = Errors_Common.NotFoundByUrl.FormatWith("news", newsUrl);
 
         _mockNewsRepository
             .Setup(r => r.GetFirstOrDefaultAsync(
@@ -98,6 +101,7 @@ public class GetNewsByUrlTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockMapper.Verify(m => m.Map<NewsDTO>(null), Times.Once);
     }

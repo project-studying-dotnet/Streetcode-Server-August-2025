@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
@@ -67,19 +63,20 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetById
             _repositoryWrapperMock.Setup(r => r.TextRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TextEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()))
-                .ReturnsAsync((TextEntity)null);
+                .ReturnsAsync((TextEntity)null!);
 
             var query = new GetTextByIdQuery(1);
+            var errorMsg = Errors_Common.NotFoundById.FormatWith("text", query.Id);
 
             var result = await _handler.Handle(query, CancellationToken.None);
 
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains("Cannot find any text with corresponding id: 1"));
+            Assert.Contains(result.Errors, e => e.Message.Contains(errorMsg));
 
             _loggerServiceMock.Verify(
                 l => l.LogError(
                     query,
-                    It.Is<string>(s => s.Contains("Cannot find any text with corresponding id: 1"))),
+                    It.Is<string>(s => s.Contains(errorMsg))),
                 Times.Once);
 
             _mapperMock.VerifyNoOtherCalls();

@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
 using Streetcode.BLL.DTO.Team;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.GetAll
@@ -29,7 +30,7 @@ namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.GetAll
 
             if (teamLinks is null)
             {
-                const string errorMsg = $"Cannot find any team links";
+                string errorMsg = Errors_Common.NotFoundAny.FormatWith("team links");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

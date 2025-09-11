@@ -1,9 +1,11 @@
 ﻿using System.Linq.Expressions;
 using Moq;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.MediatR.Locations.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Analytics;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Locations.Update;
@@ -47,14 +49,15 @@ public class UpdateMapPointTests
         var mapPoint = GetValidMapPoint();
         SetupRepositoryMocks(null);
         var request = new UpdateMapPointCommand(mapPoint.Id);
+        string errorMsg = Errors_Common.NotFoundById.FormatWith("MapPoint", request.Id);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Equal("CannotFindRecordWithQrId", result.Errors[0].Message);
-        _loggerMock.Verify(logger => logger.LogError(request, "CannotFindRecordWithQrId"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors[0].Message);
+        _loggerMock.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
     [Fact]
@@ -64,14 +67,15 @@ public class UpdateMapPointTests
         var mapPoint = GetValidMapPoint();
         SetupRepositoryMocks(mapPoint, 0);
         var request = new UpdateMapPointCommand(mapPoint.Id);
+        string errorMsg = Errors_Common.CannotSaveTheData;
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Equal("CannotSaveTheData", result.Errors[0].Message);
-        _loggerMock.Verify(logger => logger.LogError(request, "CannotSaveTheData"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors[0].Message);
+        _loggerMock.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
     private static StatisticRecord GetValidMapPoint()

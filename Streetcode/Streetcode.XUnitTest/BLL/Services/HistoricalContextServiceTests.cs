@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
+using Streetcode.BLL.Resources;
 using Streetcode.BLL.Services.Timeline;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -77,7 +79,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
         {
             // Arrange
             var newTitle = "Duplicate Title";
-            string errorMessage = $"A historical context with the title '{newTitle}' already exists.";
+            string errorMessage = Errors_Timeline.Context_TitleAlreadyExists.FormatWith(newTitle);
             var contexts = new List<HistoricalContextRequestDto>
             {
                 new HistoricalContextRequestDto { Id = null, Title = newTitle }
@@ -110,7 +112,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
         public async Task CheckForDuplicateTitlesAsync_NullContexts_ReturnsFail()
         {
             // Arrange
-            const string errorMsg = "Input contexts cannot be null.";
+            string errorMsg = Errors_Common.CannotBeNull.FormatWith("Input contexts");
             IEnumerable<HistoricalContextRequestDto> contexts = null!;
 
             // Act
@@ -231,7 +233,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
             // Arrange
             int timelineId = 1;
             int nonExistentId = -1;
-            string errorMsg = $"Historical context with Id={nonExistentId} not found";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("Historical context", nonExistentId);
             var timelineItem = new TimelineItem
             {
                 Id = timelineId,
@@ -269,7 +271,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
         {
             // Arrange
             int timelineId = 1;
-            const string errorMsg = "Input contexts cannot be null.";
+            string errorMsg = Errors_Common.CannotBeNull.FormatWith("Input contexts");
             var timelineItem = new TimelineItem { Id = timelineId };
 
             // Act
@@ -285,7 +287,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
         public async Task BuildHistoricalContextLinksAsync_NullTimelineItem_ReturnsFail()
         {
             // Arrange
-            const string errorMsg = "TimelineItem cannot be null.";
+            string errorMsg = Errors_Common.CannotBeNull.FormatWith("TimelineItem");
             IEnumerable<HistoricalContextRequestDto> contexts = new List<HistoricalContextRequestDto>();
 
             // Act
@@ -364,7 +366,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
         public void RemoveObsoleteLinks_WhenInputContextsAreNull_ReturnsFail()
         {
             // Arrange
-            const string errorMsg = "Input contexts cannot be null.";
+            string errorMsg = Errors_Common.CannotBeNull.FormatWith("Input contexts");
             var timelineItem = new TimelineItem();
 
             // Act
@@ -380,7 +382,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
         public void RemoveObsoleteLinks_WhenTimelineItemIsNull_ReturnsFail()
         {
             // Arrange
-            const string errorMsg = "TimelineItem cannot be null.";
+            string errorMsg = Errors_Common.CannotBeNull.FormatWith("TimelineItem");
             var newContexts = new List<HistoricalContextRequestDto>();
 
             // Act

@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Locations;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Locations.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Analytics;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -55,6 +57,7 @@ public class GetAllMapPointsTests
     public async Task Handle_RecordsAreNull_ShouldReturnFail()
     {
         // Arrange
+        string errorMsg = Errors_Common.NotFoundAny.FormatWith("map points");
         SetupRepositoryMocks(null);
 
         var request = new GetAllMapPointsQuery();
@@ -64,8 +67,8 @@ public class GetAllMapPointsTests
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Equal("CannotGetPoints", result.Errors[0].Message);
-        _loggerMock.Verify(logger => logger.LogError(request, "CannotGetPoints"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors[0].Message);
+        _loggerMock.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
     [Fact]
@@ -73,6 +76,7 @@ public class GetAllMapPointsTests
     {
         // Arrange
         var mapPoints = GetMapPoints();
+        string errorMsg = Errors_Common.CannotMap.FormatWith("map points");
 
         SetupRepositoryMocks(mapPoints);
         SetupLoggerMocks(null);
@@ -84,8 +88,8 @@ public class GetAllMapPointsTests
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Equal("CannotMapPoints", result.Errors[0].Message);
-        _loggerMock.Verify(logger => logger.LogError(request, "CannotMapPoints"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors[0].Message);
+        _loggerMock.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
     private static List<StatisticRecord> GetMapPoints()

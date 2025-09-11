@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentResults;
-using Moq;
+﻿using Moq;
 using Streetcode.BLL.Interfaces.Text;
-using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetParsed;
+using Streetcode.BLL.Resources;
 using Xunit;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetParsed
 {
@@ -54,13 +47,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetParsed
                 .ReturnsAsync((string?)null);
 
             var command = new GetParsedTextForAdminPreviewCommand(inputText);
+            var errorMsg = Errors_Common.FailedToParseText;
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains("not parsed successfully"));
+            Assert.Contains(result.Errors, e => e.Message.Contains(errorMsg));
             _textServiceMock.Verify(s => s.AddTermsTag(inputText), Times.Once);
         }
     }

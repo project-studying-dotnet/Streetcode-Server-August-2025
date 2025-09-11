@@ -4,6 +4,8 @@ using MediatR;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using TimelineItemEntity = Streetcode.DAL.Entities.Timeline.TimelineItem;
@@ -36,7 +38,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
                 var newTimelineItem = _mapper.Map<TimelineItemEntity>(request.TimelineItem);
                 if (newTimelineItem is null)
                 {
-                    const string errorMsg = "Cannot convert null to timeline item";
+                    string errorMsg = Errors_Common.CannotConvertNull.FormatWith("timeline item");
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }
@@ -46,7 +48,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
 
                 if (streetcodeExists is null)
                 {
-                    string errorMsg = $"Streetcode with Id={request.streetcodeId} not found";
+                    string errorMsg = Errors_Common.NotFoundById.FormatWith("Streetcode", request.streetcodeId);
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }
@@ -70,7 +72,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
                 }
                 else
                 {
-                    const string errorMsg = "Failed to create a timeline item";
+                    string errorMsg = Errors_Common.FailedToCreate.FormatWith("timeline item");
                     _logger.LogError(request, errorMsg);
                     return Result.Fail(errorMsg);
                 }

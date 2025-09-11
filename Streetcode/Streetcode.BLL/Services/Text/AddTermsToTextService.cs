@@ -10,7 +10,7 @@ namespace Streetcode.BLL.Services.Text
     public class AddTermsToTextService : ITextService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private List<int> _buffer;
+        private readonly List<int> _buffer;
 
         private readonly StringBuilder _text = new StringBuilder();
 

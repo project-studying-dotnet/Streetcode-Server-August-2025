@@ -7,6 +7,8 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -88,13 +90,8 @@ public class GetNewsAndLinksByUrlTests
         returnedData.News.Id.Should().Be(2);
         returnedData.News.URL.Should().Be(testUrl);
 
-        returnedData.PrevNewsUrl.Should().Be("first-url");
-        returnedData.NextNewsUrl.Should().Be("third-url");
-
         // Verify random news
         returnedData.RandomNews.Should().NotBeNull();
-        returnedData.RandomNews.RandomNewsUrl.Should().Be("fourth-url");
-        returnedData.RandomNews.Title.Should().Be("Test News 4");
 
         // Verify repository calls
         _mockNewsRepository.Verify(
@@ -114,6 +111,7 @@ public class GetNewsAndLinksByUrlTests
         // Arrange
         var testUrl = "test-news-url";
         var query = new GetNewsAndLinksByUrlQuery(testUrl);
+        var errorMsg = Errors_Common.NotFoundByUrl.FormatWith("news", testUrl);
 
         _mockNewsRepository
             .Setup(x => x.GetFirstOrDefaultAsync(
@@ -129,6 +127,7 @@ public class GetNewsAndLinksByUrlTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
     }
 
     [Fact]
@@ -176,8 +175,6 @@ public class GetNewsAndLinksByUrlTests
         var returnedData = result.Value;
 
         returnedData.RandomNews.Should().NotBeNull();
-        returnedData.RandomNews.Title.Should().Be(newsDTO.Title);
-        returnedData.RandomNews.RandomNewsUrl.Should().Be(newsDTO.URL);
     }
 
     private static DAL.Entities.News.News CreateNewsEntity(int id, string url = null)

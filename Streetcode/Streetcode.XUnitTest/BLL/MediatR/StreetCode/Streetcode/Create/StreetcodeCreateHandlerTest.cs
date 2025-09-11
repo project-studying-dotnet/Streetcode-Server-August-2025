@@ -11,6 +11,8 @@ using Streetcode.BLL.DTO.Streetcode.Create;
 using Streetcode.BLL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
@@ -63,6 +65,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateValidRequest();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Common.FailedToCreate.FormatWith("streetcode");
 
         _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.NewStreetcode))
             .Returns(streetcodeEntity);
@@ -77,7 +80,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("Failed to save streetcode to database", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
         _mockLogger.Verify(l => l.LogError(request, It.IsAny<string>()), Times.Once);
     }
 
@@ -87,6 +90,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithEmptyImages();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Validation.CannotBeEmpty.FormatWith("ImagesDetails");
 
         SetupMocksForInitialSave(request, streetcodeEntity);
 
@@ -95,7 +99,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("ImagesDetails cannot be empty", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -104,6 +108,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithInvalidImageIds();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Validation.CannotBeEmpty.FormatWith("Images");
 
         SetupMocksForInitialSave(request, streetcodeEntity);
 
@@ -112,7 +117,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("Image IDs cannot be empty", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -121,6 +126,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithEmptyTags();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Validation.CannotBeEmpty.FormatWith("Tags");
 
         SetupMocksForInitialSave(request, streetcodeEntity);
         SetupImagesForSuccess();
@@ -130,7 +136,7 @@ public class StreetcodeCreateHandlerTest
 
         // Assert
         Assert.True(result.IsFailed);
-        Assert.Contains("Tags cannot be empty", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -199,6 +205,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithInvalidImageIdInArt();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("image", 999);
 
         SetupMocksForInitialSave(request, streetcodeEntity);
         SetupImagesForSuccess();
@@ -217,7 +224,7 @@ public class StreetcodeCreateHandlerTest
         // Act & Assert
         var result = await _handler.Handle(request, CancellationToken.None);
         Assert.True(result.IsFailed);
-        Assert.Contains("Image with ID 999 does not exist", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]
@@ -226,6 +233,7 @@ public class StreetcodeCreateHandlerTest
         // Arrange
         var request = CreateRequestWithInvalidArtIdInSlide();
         var streetcodeEntity = CreateStreetcodeEntity();
+        var errorMsg = Errors_AdditionalContent.Art_NotFoundInMappedArts.FormatWith(999);
 
         SetupMocksForInitialSave(request, streetcodeEntity);
         SetupImagesForSuccess();
@@ -266,7 +274,7 @@ public class StreetcodeCreateHandlerTest
         // Act & Assert
         var result = await _handler.Handle(request, CancellationToken.None);
         Assert.True(result.IsFailed);
-        Assert.Contains("Art ID '999' not found in the mapped arts.", result.Errors[0].Message);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
     }
 
     [Fact]

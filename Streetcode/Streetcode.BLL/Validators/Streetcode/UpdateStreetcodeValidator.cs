@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -20,7 +22,8 @@ namespace Streetcode.BLL.Validators.Streetcode
             RuleFor(c => c.Streetcode).SetValidator(baseStreetcodeValidator);
 
             RuleFor(c => c.Streetcode)
-                .MustAsync(BeUniqueIndex).WithMessage("Index must be unique.");
+                .MustAsync(BeUniqueIndex)
+                .WithMessage(Errors_Validation.MustBeUnique.FormatWith("Index"));
 
             RuleForEach(c => c.Streetcode.Tags).SetValidator(tagValidator);
         }
