@@ -212,7 +212,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             result.Errors[0].Message.Should().Be(errorMsg);
 
             _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<Facts>()), Times.Once);
-          
+
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
@@ -238,9 +238,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
 
             // act an assert
             await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
-          
+
             _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<Facts>()), Times.Once);
-          
+
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
         }
 
