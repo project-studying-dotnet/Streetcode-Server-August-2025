@@ -100,7 +100,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             }
             else
             {
-                _repositoryWrapper.ImageDetailsRepository.Create(new ImageDetails
+                await _repositoryWrapper.ImageDetailsRepository.CreateAsync(new ImageDetails
                 {
                     ImageId = existingFact.ImageId.Value,
                     Alt = alt

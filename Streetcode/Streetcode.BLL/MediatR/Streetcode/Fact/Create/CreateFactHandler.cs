@@ -58,7 +58,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
                 newFact.Order = await _autoOrder.SetOrderForFacts(request.streetcodeId);
             }
 
-            var entity = _repositoryWrapper.FactRepository.Create(newFact);
+            var entity = await _repositoryWrapper.FactRepository.CreateAsync(newFact);
             var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
             if (resultIsSuccess)

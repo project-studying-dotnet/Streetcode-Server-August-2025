@@ -655,7 +655,7 @@ public class StreetcodeCreateHandlerTest
         _mockMapper.Setup(m => m.Map<StreetcodeContent>(request.NewStreetcode))
             .Returns(entity);
 
-        _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.Create(entity));
+        _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository.CreateAsync(entity));
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(1);
         _mockRepositoryWrapper.Setup(r => r.BeginTransaction())
@@ -751,7 +751,7 @@ public class StreetcodeCreateHandlerTest
     private void VerifySuccessCalls(StreetcodeCreateCommand request, StreetcodeContent entity)
     {
         _mockMapper.Verify(m => m.Map<StreetcodeContent>(request.NewStreetcode), Times.Once);
-        _mockRepositoryWrapper.Verify(r => r.StreetcodeRepository.Create(entity), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.StreetcodeRepository.CreateAsync(entity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(2));
         _mockMapper.Verify(m => m.Map<StreetcodeDTO>(entity), Times.Once);
         _mockLogger.Verify(l => l.LogInformation(It.IsAny<string>()), Times.Once);

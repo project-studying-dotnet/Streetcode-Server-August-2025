@@ -43,7 +43,7 @@ public class StreetcodeCreateHandler : IRequestHandler<StreetcodeCreateCommand, 
                 streetcodeEntity.CreatedAt = streetcodeEntity.UpdatedAt = DateTime.UtcNow;
                 streetcodeEntity.ViewCount = 0;
 
-                _repositoryWrapper.StreetcodeRepository.Create(streetcodeEntity);
+                await _repositoryWrapper.StreetcodeRepository.CreateAsync(streetcodeEntity);
 
                 var saveResult = await _repositoryWrapper.SaveChangesAsync();
                 if (saveResult == 0)
