@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
-using FluentResults;
 using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -108,12 +103,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Create
             .GetFirstOrDefaultAsync(
                It.IsAny<Expression<Func<DAL.Entities.Sources.SourceLinkCategory, bool>>>(), null))
                 .ReturnsAsync(entity);
+            var errorMsg = Errors_Sources.AlreadyExistByTitleOrImage;
 
             var result = await _handler.Handle(new CreateSourceLinkCategoryCommand(createDto), CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().ContainSingle(e =>
-            e.Message == "Category with the same title or image already exists.");
+            e.Message == errorMsg);
 
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository.GetFirstOrDefaultAsync(
@@ -155,11 +151,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Create
 
             _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
+            var errorMsg = Errors_Common.FailedToCreate.FormatWith("SourceLinkCategory");
+
             var result = await _handler.Handle(new CreateSourceLinkCategoryCommand(createDto), CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().ContainSingle(e =>
-                e.Message == "Failed to create category");
+            result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
 
             _mockRepositoryWrapper.Verify(
                 r => r.SourceCategoryRepository.GetFirstOrDefaultAsync(

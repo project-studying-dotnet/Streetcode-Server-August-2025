@@ -1,6 +1,8 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.MediatR.Newss.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.News;
 using Xunit;
 
@@ -26,7 +28,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.News
 
             // Assert
             result.ShouldHaveValidationErrorFor(c => c.NewNews)
-                  .WithErrorMessage("News data is required.");
+                  .WithErrorMessage(Errors_Validation.IsRequiredData.FormatWith("News"));
         }
 
         [Fact]

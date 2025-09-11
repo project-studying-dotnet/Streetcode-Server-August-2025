@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
@@ -27,7 +28,7 @@ public class GetAllFactsHandler : IRequestHandler<GetAllFactsQuery, Result<IEnum
 
         if (facts is null)
         {
-            const string errorMsg = $"Cannot find any fact";
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("fact");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

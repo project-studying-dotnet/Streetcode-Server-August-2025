@@ -52,8 +52,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="BLL\Services\" />
 	  <Folder Include="BLL\Validators\Other\" />
 	  <Folder Include="WebApi\Middlewares\" />
+	  <Folder Include="WebApi\Extensions\" />
 	</ItemGroup>
 
 </Project>

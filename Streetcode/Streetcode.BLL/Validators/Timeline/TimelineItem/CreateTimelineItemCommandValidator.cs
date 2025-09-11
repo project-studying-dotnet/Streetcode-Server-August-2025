@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 
 namespace Streetcode.BLL.Validators.Timeline.TimelineItem
 {
@@ -10,7 +12,7 @@ namespace Streetcode.BLL.Validators.Timeline.TimelineItem
         {
             RuleFor(command => command.TimelineItem)
                 .NotNull()
-                .WithMessage("Timeline item data is required.");
+                .WithMessage(Errors_Validation.IsRequiredData.FormatWith("TimelineItem"));
 
             When(command => command.TimelineItem != null, () =>
             {

@@ -1,6 +1,8 @@
 ﻿using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Timeline.HistoricalContext;
 using Streetcode.BLL.DTO.Timeline.TimelineItem;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Timeline.TimelineItem;
 using Streetcode.DAL.Enums;
 using Xunit;
@@ -19,11 +21,12 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_Title_Exceeds_Max_Length()
         {
-            const string errorMessage = "Title cannot exceed 28 characters.";
+            int maxTitleLength = TimelineItemBaseDtoValidator<TimelineItemBaseDto>.TitleMaxLength;
+            string errorMessage = Errors_Validation.MaxLength.FormatWith("Title", maxTitleLength);
 
             var timelineItem = new TimelineItemBaseDto
             {
-                Title = new string('A', 29),
+                Title = new string('A', maxTitleLength + 1),
                 Description = "Valid Description",
                 Date = DateTime.UtcNow,
                 HistoricalContexts = new List<HistoricalContextRequestDto>()
@@ -38,12 +41,13 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_Description_Exceeds_Max_Length()
         {
-            const string errorMessage = "Description cannot exceed 400 characters.";
+            int maxDescriptionLength = TimelineItemBaseDtoValidator<TimelineItemBaseDto>.DescriptionMaxLength;
+            string errorMessage = Errors_Validation.MaxLength.FormatWith("Description", maxDescriptionLength);
 
             var timelineItem = new TimelineItemBaseDto
             {
                 Title = "Valid Title",
-                Description = new string('A', 401),
+                Description = new string('A', maxDescriptionLength + 1),
                 Date = DateTime.UtcNow,
                 HistoricalContexts = new List<HistoricalContextRequestDto>()
             };
@@ -57,7 +61,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_Date_Is_In_The_Future()
         {
-            const string errorMessage = "Date cannot be in the future.";
+            string errorMessage = Errors_Validation.MustBeInPast.FormatWith("Date");
 
             var timelineItem = new TimelineItemBaseDto
             {
@@ -92,7 +96,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_Title_Is_Empty()
         {
-            const string errorMessage = "Title is required.";
+            string errorMessage = Errors_Validation.CannotBeEmpty.FormatWith("Title");
 
             var timelineItem = new TimelineItemBaseDto
             {
@@ -111,7 +115,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_Description_Is_Empty()
         {
-            const string errorMessage = "Description is required.";
+            string errorMessage = Errors_Validation.CannotBeEmpty.FormatWith("Description");
 
             var timelineItem = new TimelineItemBaseDto
             {
@@ -130,7 +134,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_Date_Is_Empty()
         {
-            const string errorMessage = "Date is required.";
+            string errorMessage = Errors_Validation.CannotBeEmpty.FormatWith("Date");
 
             var timelineItem = new TimelineItemBaseDto
             {
@@ -196,7 +200,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_HistoricalContexts_Contain_Null_Element()
         {
-            const string errorMessage = "Historical context cannot be null.";
+            string errorMessage = Errors_Validation.IsRequired.FormatWith("HistoricalContext");
 
             var timelineItem = new TimelineItemBaseDto
             {
@@ -235,7 +239,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Timeline.TimelineItem
         [Fact]
         public void Should_Have_Error_When_DateViewPattern_Is_Invalid()
         {
-            const string errorMessage = "Provided date view pattern is not a valid value.";
+            string errorMessage = Errors_Validation.Invalid.FormatWith("DateViewPattern");
 
             var timelineItem = new TimelineItemBaseDto
             {

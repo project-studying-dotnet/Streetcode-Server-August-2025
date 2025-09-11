@@ -4,6 +4,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Locations;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Locations.GetAll;
@@ -27,7 +29,7 @@ public class GetAllMapPointsHandler : IRequestHandler<GetAllMapPointsQuery, Resu
 
         if (mapPoints is null)
         {
-            string errorMsg = "CannotGetPoints";
+            string errorMsg = Errors_Common.NotFoundAny.FormatWith("map points");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -36,7 +38,7 @@ public class GetAllMapPointsHandler : IRequestHandler<GetAllMapPointsQuery, Resu
 
         if (mappedEntities is null)
         {
-            string errorMsg = "CannotMapPoints";
+            string errorMsg = Errors_Common.CannotMap.FormatWith("map points");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

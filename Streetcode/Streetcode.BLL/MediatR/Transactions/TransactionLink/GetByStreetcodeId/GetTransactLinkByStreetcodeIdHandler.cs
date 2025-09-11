@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.AspNetCore.Rewrite;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.DTO.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.ResultVariations;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Transactions.TransactionLink.GetByStreetcodeId;
@@ -33,7 +32,7 @@ public class GetTransactLinkByStreetcodeIdHandler : IRequestHandler<GetTransactL
             if (await _repositoryWrapper.StreetcodeRepository
                 .GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId) == null)
             {
-                string errorMsg = $"Cannot find a transaction link by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist";
+                string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("transaction link", request.StreetcodeId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

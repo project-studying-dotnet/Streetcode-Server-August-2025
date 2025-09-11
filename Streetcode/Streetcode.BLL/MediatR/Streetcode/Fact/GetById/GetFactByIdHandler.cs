@@ -3,6 +3,8 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
@@ -26,7 +28,7 @@ public class GetFactByIdHandler : IRequestHandler<GetFactByIdQuery, Result<FactD
 
         if (facts is null)
         {
-            string errorMsg = $"Cannot find any fact with corresponding id: {request.Id}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("fact", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

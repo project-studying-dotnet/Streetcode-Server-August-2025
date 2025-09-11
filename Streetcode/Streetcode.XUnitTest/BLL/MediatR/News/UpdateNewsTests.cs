@@ -7,6 +7,8 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
@@ -71,6 +73,7 @@ public class UpdateNewsTests
     {
         // Arrange
         var newsDTO = CreateNewsDTO();
+        var errorMsg = Errors_Common.CannotConvertNull.FormatWith("news");
 
         _mockMapper
             .Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
@@ -85,6 +88,7 @@ public class UpdateNewsTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockRepositoryWrapper.Verify(r => r.NewsRepository.Update(It.IsAny<DAL.Entities.News.News>()), Times.Never);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
@@ -96,6 +100,7 @@ public class UpdateNewsTests
         // Arrange
         var newsDTO = CreateNewsDTO();
         var newsEntity = CreateNewsEntity(newsDTO.Id);
+        string errorMsg = Errors_Common.FailedToUpdate.FormatWith("news");
 
         _mockMapper.Setup(m => m.Map<DAL.Entities.News.News>(newsDTO))
             .Returns(newsEntity);
@@ -115,6 +120,7 @@ public class UpdateNewsTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be(errorMsg);
 
         _mockRepositoryWrapper.Verify(r => r.NewsRepository.Update(newsEntity), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);

@@ -1,14 +1,14 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using Xunit;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
+using Xunit;
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
@@ -56,20 +56,20 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         [Fact]
         public async Task Handle_ShouldFail_WhenRelatedTermNotFound()
         {
-            var entity = new Entity { Id = 1, Word = "Test", TermId = 1 };
             var relatedTerm = new RelatedTermDTO { Id = 1, Word = "Test", TermId = 1 };
             var request = new DeleteRelatedTermCommand(relatedTerm.Word, relatedTerm.TermId);
+            var errorMsg = Errors_RelatedTerm.NotFoundRelatedTermForTerm.FormatWith(request.word, request.TermId);
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
                 It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
-                .ReturnsAsync((Entity)null);
+                .ReturnsAsync((Entity)null!);
 
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(result.Errors.FirstOrDefault().Message, "Cannot find a related term: Test for termId 1");
-            _loggerServiceMock.Verify(l => l.LogError(request, "Cannot find a related term: Test for termId 1"), Times.Once);
+            Assert.Equal(result.Errors[0].Message, errorMsg);
+            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
         }
 
         [Fact]
@@ -78,6 +78,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var entity = new Entity { Id = 1, Word = "Test", TermId = 1 };
             var relatedTerm = new RelatedTermDTO { Id = 1, Word = "Test", TermId = 1 };
             var request = new DeleteRelatedTermCommand(relatedTerm.Word, relatedTerm.TermId);
+            var errorMsg = Errors_Common.FailedToDelete.FormatWith("related term");
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
@@ -91,8 +92,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             var result = await _handler.Handle(request, CancellationToken.None);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(result.Errors.FirstOrDefault().Message, "Failed to delete a related term");
-            _loggerServiceMock.Verify(l => l.LogError(request, "Failed to delete a related term"), Times.Once);
+            Assert.Equal(result.Errors[0].Message, errorMsg);
+            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
         }
     }
 }

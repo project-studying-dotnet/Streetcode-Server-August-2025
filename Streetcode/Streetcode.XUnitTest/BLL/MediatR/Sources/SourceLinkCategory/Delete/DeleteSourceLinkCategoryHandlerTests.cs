@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
@@ -11,7 +6,8 @@ using Moq;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete;
-using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -94,11 +90,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Delete
                 It.IsAny<Func<IQueryable<DAL.Entities.Sources.SourceLinkCategory>, IIncludableQueryable<DAL.Entities.Sources.SourceLinkCategory, object>>>()))
                 .ReturnsAsync((DAL.Entities.Sources.SourceLinkCategory)null);
 
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("SourceLinkCategory", entity.Id);
+
             var result = await _handler.Handle(new DeleteSourceLinkCategoryCommand(entity.Id), CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().ContainSingle(e =>
-            e.Message == "SourceLinkCategory don`t exist.");
+            result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
             _mockRepositoryWrapper.Verify(r => r.SourceCategoryRepository.Delete(entity), Times.Never);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
             _mockMapper.Verify(m => m.Map<SourceLinkCategoryDTO>(entity), Times.Never);
@@ -132,11 +129,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.Delete
 
             _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
+            string errorMsg = Errors_Common.FailedToDelete.FormatWith("SourceLinkCategory");
+
             var result = await _handler.Handle(new DeleteSourceLinkCategoryCommand(entity.Id), CancellationToken.None);
 
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().ContainSingle(e =>
-                e.Message == "Failed to delete SourceLinkCategory.");
+            result.Errors.Should().ContainSingle(e => e.Message == errorMsg);
             _mockRepositoryWrapper.Verify(r => r.SourceCategoryRepository.Delete(entity), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
             _mockMapper.Verify(m => m.Map<SourceLinkCategoryDTO>(entity), Times.Never);

@@ -1,16 +1,12 @@
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq.Expressions;
-using FluentResults;
 using MediatR;
 using Moq;
-using FluentAssertions;
-using Xunit;
-using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Interfaces.Email;
-using Streetcode.BLL.MediatR.Email;
 using Streetcode.BLL.DTO.Email;
+using Streetcode.BLL.Interfaces.Email;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.MediatR.Email;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
+using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.Email
 {
@@ -55,6 +51,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Email
                 From = "fail@domain.com",
                 Content = "Failure test"
             });
+            string errorMessage = Errors_Email.FailedToSend;
 
             _emailServiceMock
                 .Setup(s => s.SendEmailAsync(It.IsAny<Message>()))
@@ -62,13 +59,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Email
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            Assert.True(result.IsFailed);
-            Assert.Contains("Failed to send email message", result.Errors[0].Message);
+        Assert.True(result.IsFailed);
+        Assert.Contains(errorMessage, result.Errors[0].Message);
 
-            _loggerMock.Verify(
-                l => l.LogError(command, It.Is<string>(msg => msg.Contains("Failed to send email message"))),
-                Times.Once);
-        }
+        _loggerMock.Verify(
+            l => l.LogError(command, It.Is<string>(msg => msg.Contains(errorMessage))),
+            Times.Once);
+    }
 
         [Fact]
         public async Task Handle_ShouldPassCorrectMessage_ToEmailService()

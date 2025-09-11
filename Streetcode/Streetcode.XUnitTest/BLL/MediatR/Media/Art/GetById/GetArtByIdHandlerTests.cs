@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
@@ -90,7 +92,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
                     arts.AsQueryable().FirstOrDefault(predicate.Compile()));
 
             var query = new GetArtByIdQuery(nonExistentArtId);
-            var expectedMessage = $"Cannot find an art with corresponding id: {nonExistentArtId}";
+            var expectedMessage = Errors_Common.NotFoundById.FormatWith("art", nonExistentArtId);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -122,7 +124,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetById
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
-            var message = $"Cannot find an art with corresponding id: {query.Id}";
+            var message = Errors_Common.NotFoundById.FormatWith("art", query.Id);
 
             // Assert
             Assert.False(result.IsSuccess);

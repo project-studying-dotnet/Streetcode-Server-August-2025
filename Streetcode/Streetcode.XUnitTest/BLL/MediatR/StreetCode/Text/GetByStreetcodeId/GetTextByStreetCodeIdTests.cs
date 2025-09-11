@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Text;
-using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -72,7 +68,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
             _repositoryWrapperMock.Setup(r => r.TextRepository.GetFirstOrDefaultAsync(
                It.IsAny<Expression<Func<TextEntity, bool>>>(),
                It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()))
-               .ReturnsAsync((TextEntity)null);
+               .ReturnsAsync((TextEntity)null!);
 
             _repositoryWrapperMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
            It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
@@ -80,12 +76,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Text.GetByStreetcodeId
            .ReturnsAsync((StreetcodeContent?)null);
 
             var query = new GetTextByStreetcodeIdQuery(streetcodeId);
+            var errorMsg = Errors_Streetcode.DoesnotExist.FormatWith(query.StreetcodeId);
 
             var result = await _handler.Handle(query, CancellationToken.None);
 
             Assert.True(result.IsFailed);
             Assert.Contains(result.Errors, e => e.Message.Contains(streetcodeId.ToString()));
-            _loggerServiceMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains("doesn`t exist"))), Times.Once);
+            _loggerServiceMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains(errorMsg))), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
         }
 

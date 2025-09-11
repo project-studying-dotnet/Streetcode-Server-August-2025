@@ -1,6 +1,8 @@
 using FluentValidation.TestHelper;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.Enums;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Media.Image.Art;
 using Xunit;
 
@@ -26,7 +28,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Media.Image.Art
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.Title)
-                  .WithErrorMessage($"Title cannot exceed {ArtCreateUpdateDTOValidator.MaxTitleLength} characters.");
+                  .WithErrorMessage(Errors_Validation.MaxLength.FormatWith("Title", ArtCreateUpdateDTOValidator.MaxTitleLength));
         }
 
         [Fact]
@@ -53,7 +55,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Media.Image.Art
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.Description)
-                  .WithErrorMessage($"Description cannot exceed {ArtCreateUpdateDTOValidator.MaxDescriptionLength} characters.");
+                  .WithErrorMessage(Errors_Validation.MaxLength.FormatWith("Description", ArtCreateUpdateDTOValidator.MaxDescriptionLength));
         }
 
         [Fact]
@@ -80,7 +82,7 @@ namespace Streetcode.XUnitTest.BLL.Validators.Media.Image.Art
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.ModelState)
-                  .WithErrorMessage("Invalid ModelState value.");
+                  .WithErrorMessage(Errors_Validation.Invalid.FormatWith("ModelState"));
         }
 
         [Fact]

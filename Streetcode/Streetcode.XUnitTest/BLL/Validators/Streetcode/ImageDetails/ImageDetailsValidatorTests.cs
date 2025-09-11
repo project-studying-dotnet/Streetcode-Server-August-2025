@@ -3,6 +3,8 @@ using FluentValidation.TestHelper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.Streetcode.ImageDetails;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -42,7 +44,7 @@ public class ImageDetailsValidatorTests
         var imageDetails = GetValidImageDetailsDto();
         imageDetails.Title = new string('A', ImageDetailsValidator.TitleMaxLength + 1);
         SetupRepositoryForValidScenario();
-        var expectedMessage = $"Title cannot exceed {ImageDetailsValidator.TitleMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("Title", ImageDetailsValidator.TitleMaxLength);
 
         // Act
         var result = await _validator.TestValidateAsync(imageDetails);
@@ -104,7 +106,7 @@ public class ImageDetailsValidatorTests
         var imageDetails = GetValidImageDetailsDto();
         imageDetails.Alt = new string('B', ImageDetailsValidator.AltMaxLength + 1);
         SetupRepositoryForValidScenario();
-        var expectedMessage = $"Alt text cannot exceed {ImageDetailsValidator.AltMaxLength} characters.";
+        var expectedMessage = Errors_Validation.MaxLength.FormatWith("Alt", ImageDetailsValidator.AltMaxLength);
 
         // Act
         var result = await _validator.TestValidateAsync(imageDetails);
@@ -166,7 +168,7 @@ public class ImageDetailsValidatorTests
         var imageDetails = GetValidImageDetailsDto();
         SetupRepositoryForNonExistentImage();
         SetupRepositoryForNoExistingImageDetails();
-        var expectedMessage = "The specified ImageId does not exist.";
+        var expectedMessage = Errors_Validation.ImageDoesntExist.FormatWith(imageDetails.ImageId);
 
         // Act
         var result = await _validator.TestValidateAsync(imageDetails);
@@ -199,7 +201,7 @@ public class ImageDetailsValidatorTests
         imageDetails.ImageId = 5;
         SetupRepositoryForExistingImage(imageDetails.ImageId);
         SetupRepositoryForExistingImageDetails(imageDetails.ImageId, differentId: 999);
-        var expectedMessage = "An ImageDetails entry with the same ImageId already exists.";
+        var expectedMessage = Errors_Validation.MustBeUnique.FormatWith("ImageId");
 
         // Act
         var result = await _validator.TestValidateAsync(imageDetails);
@@ -255,7 +257,7 @@ public class ImageDetailsValidatorTests
         // Assert
         // Should have error for non-existent image but not for uniqueness
         result.ShouldHaveValidationErrorFor(x => x.ImageId)
-            .WithErrorMessage("The specified ImageId does not exist.");
+            .WithErrorMessage(Errors_Validation.ImageDoesntExist.FormatWith(imageDetails.ImageId));
 
         // Verify that ImageDetails repository was not called for uniqueness check
         _mockRepositoryWrapper.Verify(
@@ -281,7 +283,7 @@ public class ImageDetailsValidatorTests
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.ImageId)
-            .WithErrorMessage("The specified ImageId does not exist.");
+            .WithErrorMessage(Errors_Validation.ImageDoesntExist.FormatWith(imageDetails.ImageId));
     }
 
     [Fact]
