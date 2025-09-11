@@ -27,43 +27,55 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<R
 
     public async Task<Result<RegisterUserResponseDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var user = _mapper.Map<User>(request.registeredUserDto);
-
-        if (string.IsNullOrWhiteSpace(user.UserName))
+        try
         {
-            user.UserName = GetUserNameFromEmail(user.Email);
-        }
+            var user = _mapper.Map<User>(request.registeredUserDto);
 
-        var uniquenessResult = await EnsureUserDoesNotExistAsync(user, cancellationToken);
-        if (uniquenessResult.IsFailed)
+            if (string.IsNullOrWhiteSpace(user.UserName))
+            {
+                var userNameResult = GetUserNameFromEmail(user.Email);
+                if (userNameResult.IsFailed)
+                {
+                    return Result.Fail<RegisterUserResponseDTO>(userNameResult.Errors.First().Message);
+                }
+
+                user.UserName = userNameResult.Value;
+            }
+
+            var uniquenessResult = await EnsureUserDoesNotExistAsync(user, cancellationToken);
+            if (uniquenessResult.IsFailed)
+            {
+                return Result.Fail<RegisterUserResponseDTO>(uniquenessResult.Errors.First().Message);
+            }
+
+            user.Role = UserRole.User;
+            user.EmailConfirmed = false;
+
+            var createResult = await _userManager.CreateAsync(user, request.registeredUserDto.Password);
+            if (!createResult.Succeeded)
+            {
+                var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
+                return Result.Fail<RegisterUserResponseDTO>(errors);
+            }
+
+            var response = _mapper.Map<RegisterUserResponseDTO>(user);
+            return Result.Ok(response);
+        }catch (Exception ex)
         {
-            return Result.Fail<RegisterUserResponseDTO>(uniquenessResult.Errors.First().Message);
+            return Result.Fail<RegisterUserResponseDTO>(new ExceptionalError(ex));
         }
-
-        user.Role = UserRole.User;
-        user.EmailConfirmed = false;
-
-        var createResult = await _userManager.CreateAsync(user, request.registeredUserDto.Password);
-        if (!createResult.Succeeded)
-        {
-            var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
-            return Result.Fail<RegisterUserResponseDTO>(errors);
-        }
-
-        var response = _mapper.Map<RegisterUserResponseDTO>(user);
-        return Result.Ok(response);
     }
 
-    public static string GetUserNameFromEmail(string email)
+    public static Result<string> GetUserNameFromEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email cannot be null or empty.", nameof(email));
+            return Result.Fail<string>("Email cannot be null or empty.");
 
         var atIndex = email.IndexOf('@');
         if (atIndex <= 0)
-            throw new ArgumentException("Invalid email format.", nameof(email));
+            return Result.Fail<string>("Invalid email format.");
 
-        return email.Substring(0, atIndex);
+        return Result.Ok(email.Substring(0, atIndex));
     }
 
     private async Task<Result> EnsureUserDoesNotExistAsync(User user, CancellationToken cancellationToken)
