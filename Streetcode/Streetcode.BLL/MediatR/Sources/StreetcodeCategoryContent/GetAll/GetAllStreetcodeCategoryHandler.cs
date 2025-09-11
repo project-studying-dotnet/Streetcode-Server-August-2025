@@ -11,9 +11,9 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.GetAll
 {
     public class GetAllStreetcodeCategoryHandler : IRequestHandler<GetAllStreetcodeCategoryContentQuery, Result<IEnumerable<StreetcodeCategoryContentDTO>>>
     {
-        private ILoggerService _loggerService;
-        private IMapper _mapper;
-        private IRepositoryWrapper _repositoryWrapper;
+        private readonly ILoggerService _loggerService;
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
         public GetAllStreetcodeCategoryHandler(ILoggerService loggerService, IMapper mapper, IRepositoryWrapper repositoryWrapper)
         {

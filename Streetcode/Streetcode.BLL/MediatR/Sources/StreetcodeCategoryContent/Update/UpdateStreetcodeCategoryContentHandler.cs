@@ -11,9 +11,9 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
 {
     public class UpdateStreetcodeCategoryContentHandler : IRequestHandler<UpdateStreetcodeCategoryContentCommand, Result<StreetcodeCategoryContentDTO>>
     {
-        private IMapper _mapper;
-        private ILoggerService _loggerService;
-        private IRepositoryWrapper _repositoryWrapper;
+        private readonly IMapper _mapper;
+        private readonly ILoggerService _loggerService;
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
         public UpdateStreetcodeCategoryContentHandler(IMapper mapper, ILoggerService loggerService, IRepositoryWrapper repositoryWrapper)
         {

@@ -11,9 +11,9 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
 {
     public class DeleteSourceLinkCategoryHandler : IRequestHandler<DeleteSourceLinkCategoryCommand, Result<SourceLinkCategoryDTO>>
     {
-        private ILoggerService _loggerService;
-        private IMapper _mapper;
-        private IRepositoryWrapper _repositoryWrapper;
+        private readonly ILoggerService _loggerService;
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
         public DeleteSourceLinkCategoryHandler(ILoggerService loggerService, IMapper mapper, IRepositoryWrapper repositoryWrapper)
         {

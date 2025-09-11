@@ -20,9 +20,9 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 {
     public class UpdateStreetcodeHandler : IRequestHandler<UpdateStreetcodeCommand, Result<int>>
     {
-        private IRepositoryWrapper _repositoryWrapper;
-        private IMapper _mapper;
-        private ILoggerService _logger;
+        private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly IMapper _mapper;
+        private readonly ILoggerService _logger;
 
         public UpdateStreetcodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
         {

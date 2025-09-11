@@ -11,9 +11,9 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create
 {
     public class CreateSourceLinkCategoryHandler : IRequestHandler<CreateSourceLinkCategoryCommand, Result<SourceLinkCategoryDTO>>
     {
-        private IMapper _mapper;
-        private ILoggerService _loggerService;
-        private IRepositoryWrapper _repositoryWrapper;
+        private readonly IMapper _mapper;
+        private readonly ILoggerService _loggerService;
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
         public CreateSourceLinkCategoryHandler(IMapper mapper, ILoggerService loggerService, IRepositoryWrapper repositoryWrapper)
         {
