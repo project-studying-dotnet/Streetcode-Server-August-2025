@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using FluentResults;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.DTO.Users;
+using Streetcode.BLL.MediatR.Newss.Update;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Users.Register;
 
-public class RegisterUserHandler
+public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<RegisterUserResponseDTO>>
 {
     private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;
@@ -40,7 +43,7 @@ public class RegisterUserHandler
         user.Role = UserRole.User;
         user.EmailConfirmed = false;
 
-        var createResult = await _userManager.CreateAsync(user);
+        var createResult = await _userManager.CreateAsync(user, request.registeredUserDto.Password);
         if (!createResult.Succeeded)
         {
             var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
