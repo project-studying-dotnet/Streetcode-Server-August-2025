@@ -4,4 +4,4 @@ using Streetcode.BLL.DTO.Users;
 
 namespace Streetcode.BLL.MediatR.Users.Register;
 
-public record RegisterUserCommand(RegisterUserDTO Dto) : IRequest<Result<RegisterUserResponseDTO>>;
+public record RegisterUserCommand(RegisterUserDTO registeredUserDto) : IRequest<Result<RegisterUserResponseDTO>>;
