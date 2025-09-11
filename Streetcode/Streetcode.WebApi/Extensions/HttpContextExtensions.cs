@@ -9,25 +9,34 @@
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            var cookieOptions = new CookieOptions
+            if (string.IsNullOrWhiteSpace(accessToken))
             {
-                HttpOnly = true, // Запобігає доступу до куків через клієнтський JavaScript
-                Secure = true,   // Куки будуть надсилатися лише через HTTPS
-                SameSite = SameSiteMode.Strict, // Запобігає CSRF-атакам
-                Expires = DateTime.UtcNow.AddHours(1) // Час життя токена
-            };
+                throw new ArgumentException("Access token must be a non-empty string.", nameof(accessToken));
+            }
 
-            httpContext.Response.Cookies.Append("access_token", accessToken, cookieOptions);
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new ArgumentException("Refresh token must be a non-empty string.", nameof(refreshToken));
+            }
 
-            // Додаємо Refresh Token до куків
-            var refreshTokenCookieOptions = new CookieOptions
+            if (httpContext.Response.HasStarted)
+            {
+                throw new InvalidOperationException("Response has already started; cannot append cookies.");
+            }
+
+            // Локальна функція-фабрика для створення CookieOptions
+            CookieOptions CreateAuthCookieOptions(TimeSpan ttl) => new()
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(7)
+                Path = "/",
+                MaxAge = ttl
             };
-            httpContext.Response.Cookies.Append("refresh_token", refreshToken, refreshTokenCookieOptions);
+
+            httpContext.Response.Cookies.Append("__Host-access_token", accessToken, CreateAuthCookieOptions(TimeSpan.FromHours(1)));
+
+            httpContext.Response.Cookies.Append("__Host-refresh_token", refreshToken, CreateAuthCookieOptions(TimeSpan.FromDays(7)));
         }
     }
 }
