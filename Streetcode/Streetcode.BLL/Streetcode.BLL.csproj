@@ -47,9 +47,11 @@
 
   <ItemGroup>
     <Folder Include="Mapping\Analytics\" />
+    <Folder Include="Mapping\Comments\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
+    <Folder Include="MediatR\Comments\" />
     <Folder Include="Validators\Email\" />
     <Folder Include="Validators\Helpers\" />
     <Folder Include="Validators\Payment\" />
