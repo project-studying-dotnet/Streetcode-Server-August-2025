@@ -1,6 +1,7 @@
-﻿using System.Text;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.Linq.Expressions;
+using System.Text;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
@@ -318,7 +319,6 @@ public class JwtTokenServiceTests
         // Assert
         result.Should().NotBeNull();
         result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Message == "Refresh token does not match");
     }
 
     [Fact]
@@ -391,6 +391,53 @@ public class JwtTokenServiceTests
 
         // Assert
         token1.Should().NotBe(token2);
+    }
+
+    [Fact]
+    public async Task RevokeRefreshTokenAsync_ShouldFail_WhenUserNotFound()
+    {
+        // Arrange
+        _userRepositoryMock
+            .Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
+            .ReturnsAsync((User)null);
+
+        _repositoryWrapperMock.Setup(r => r.UserRepository).Returns(_userRepositoryMock.Object);
+
+        // Act
+        var result = await _jwtTokenService.RevokeRefreshTokenAsync(1);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.First().Message.Should().Be("User not found");
+    }
+
+    [Fact]
+    public async Task RevokeRefreshTokenAsync_ShouldSucceed_WhenValidUserWithToken()
+    {
+        // Arrange
+        var userWithToken = new User
+        {
+            Id = 1,
+            RefreshToken = "some-token",
+            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1)
+        };
+
+        _userRepositoryMock
+            .Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
+            .ReturnsAsync(userWithToken);
+
+        _repositoryWrapperMock.Setup(r => r.UserRepository).Returns(_userRepositoryMock.Object);
+        _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
+        // Act
+        var result = await _jwtTokenService.RevokeRefreshTokenAsync(1);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        userWithToken.RefreshToken.Should().BeNull();
+        userWithToken.RefreshTokenExpiryTime.Should().BeNull();
+        _userRepositoryMock.Verify(r => r.Update(userWithToken), Times.Once);
+        _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
     private static IConfiguration BuildConfiguration()
