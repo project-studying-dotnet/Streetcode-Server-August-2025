@@ -9,9 +9,18 @@ using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.WebApi.Middlewares;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
+
+// Ocelot Basic setup
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddOcelot(); // single ocelot.json file in read-only mode
+builder.Services
+    .AddOcelot(builder.Configuration);
 
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSwaggerServices();
@@ -68,6 +77,9 @@ if (app.Environment.EnvironmentName != "Local")
 //     Cron.Monthly);
 
 app.MapControllers();
+
+// Add middlewares ocelot
+await app.UseOcelot();
 
 await app.RunAsync();
 
