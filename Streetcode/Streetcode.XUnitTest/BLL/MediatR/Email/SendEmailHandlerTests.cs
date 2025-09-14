@@ -8,85 +8,88 @@ using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Xunit;
 
-public class SendEmailHandlerTests
+namespace Streetcode.XUnitTest.BLL.MediatR.Email
 {
-    private readonly Mock<IEmailService> _emailServiceMock;
-    private readonly Mock<ILoggerService> _loggerMock;
-    private readonly SendEmailHandler _handler;
-
-    public SendEmailHandlerTests()
+    public class SendEmailHandlerTests
     {
-        _emailServiceMock = new Mock<IEmailService>();
-        _loggerMock = new Mock<ILoggerService>();
-        _handler = new SendEmailHandler(_emailServiceMock.Object, _loggerMock.Object);
-    }
+        private readonly Mock<IEmailService> _emailServiceMock;
+        private readonly Mock<ILoggerService> _loggerMock;
+        private readonly SendEmailHandler _handler;
 
-    [Fact]
-    public async Task Handle_ShouldReturnOk_WhenEmailSentSuccessfully()
-    {
-        var command = new SendEmailCommand(new EmailDTO
+        public SendEmailHandlerTests()
         {
-            From = "test@domain.com",
-            Content = "Hello!"
-        });
+            _emailServiceMock = new Mock<IEmailService>();
+            _loggerMock = new Mock<ILoggerService>();
+            _handler = new SendEmailHandler(_emailServiceMock.Object, _loggerMock.Object);
+        }
 
-        _emailServiceMock
-            .Setup(s => s.SendEmailAsync(It.IsAny<Message>()))
-            .ReturnsAsync(true);
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
-        Assert.Equal(Unit.Value, result.Value);
-        _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnFail_WhenEmailSendingFails()
-    {
-        var command = new SendEmailCommand(new EmailDTO
+        [Fact]
+        public async Task Handle_ShouldReturnOk_WhenEmailSentSuccessfully()
         {
-            From = "fail@domain.com",
-            Content = "Failure test"
-        });
-        string errorMessage = Errors_Email.FailedToSend;
+            var command = new SendEmailCommand(new EmailDTO
+            {
+                From = "test@domain.com",
+                Content = "Hello!"
+            });
 
-        _emailServiceMock
-            .Setup(s => s.SendEmailAsync(It.IsAny<Message>()))
-            .ReturnsAsync(false);
+            _emailServiceMock
+                .Setup(s => s.SendEmailAsync(It.IsAny<Message>()))
+                .ReturnsAsync(true);
 
-        var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-        Assert.True(result.IsFailed);
-        Assert.Contains(errorMessage, result.Errors[0].Message);
+            Assert.True(result.IsSuccess);
+            Assert.Equal(Unit.Value, result.Value);
+            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
+        }
 
-        _loggerMock.Verify(
+        [Fact]
+        public async Task Handle_ShouldReturnFail_WhenEmailSendingFails()
+        {
+            var command = new SendEmailCommand(new EmailDTO
+            {
+                From = "fail@domain.com",
+                Content = "Failure test"
+            });
+            string errorMessage = Errors_Email.FailedToSend;
+
+            _emailServiceMock
+                .Setup(s => s.SendEmailAsync(It.IsAny<Message>()))
+                .ReturnsAsync(false);
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            Assert.True(result.IsFailed);
+            Assert.Contains(errorMessage, result.Errors[0].Message);
+
+            _loggerMock.Verify(
             l => l.LogError(command, It.Is<string>(msg => msg.Contains(errorMessage))),
             Times.Once);
     }
 
-    [Fact]
-    public async Task Handle_ShouldPassCorrectMessage_ToEmailService()
-    {
-        var emailDto = new EmailDTO
+        [Fact]
+        public async Task Handle_ShouldPassCorrectMessage_ToEmailService()
         {
-            From = "sender@test.com",
-            Content = "Unit test content"
-        };
-        var command = new SendEmailCommand(emailDto);
+            var emailDto = new EmailDTO
+            {
+                From = "sender@test.com",
+                Content = "Unit test content"
+            };
+            var command = new SendEmailCommand(emailDto);
 
-        Message capturedMessage = null!;
-        _emailServiceMock
-            .Setup(s => s.SendEmailAsync(It.IsAny<Message>()))
-            .Callback<Message>(msg => capturedMessage = msg)
-            .ReturnsAsync(true);
+            Message capturedMessage = null!;
+            _emailServiceMock
+                .Setup(s => s.SendEmailAsync(It.IsAny<Message>()))
+                .Callback<Message>(msg => capturedMessage = msg)
+                .ReturnsAsync(true);
 
-        var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(capturedMessage);
-        Assert.Equal("sender@test.com", capturedMessage.From);
-        Assert.Equal("Unit test content", capturedMessage.Content);
-        Assert.Contains(capturedMessage.To, addr => addr.Address == "streetcodeua@gmail.com");
+            Assert.True(result.IsSuccess);
+            Assert.NotNull(capturedMessage);
+            Assert.Equal("sender@test.com", capturedMessage.From);
+            Assert.Equal("Unit test content", capturedMessage.Content);
+            Assert.Contains(capturedMessage.To, addr => addr.Address == "streetcodeua@gmail.com");
+        }
     }
 }

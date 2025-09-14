@@ -172,7 +172,7 @@ public class JwtTokenService : IJwtTokenService
 
         if (user.RefreshToken != refreshToken)
         {
-            return Result.Fail<LoginResultDTO>("Refresh token does not match");
+            return Result.Fail<LoginResultDTO>("Refresh token does not match or was revoked");
         }
 
         if (user.RefreshTokenExpiryTime is null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
@@ -219,6 +219,32 @@ public class JwtTokenService : IJwtTokenService
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
+    }
+
+    public async Task<Result> RevokeRefreshTokenAsync(int userId)
+    {
+        try
+        {
+            var user = await _repositoryWrapper.UserRepository
+                .GetFirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user is null)
+            {
+                return Result.Fail("User not found");
+            }
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+
+            _repositoryWrapper.UserRepository.Update(user);
+            await _repositoryWrapper.SaveChangesAsync();
+
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(new ExceptionalError(ex));
+        }
     }
 
     private Result<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token)

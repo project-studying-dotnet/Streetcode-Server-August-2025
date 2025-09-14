@@ -5,37 +5,40 @@ using Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create;
 using Streetcode.BLL.Validators.Team.TeamMembersLinks;
 using Xunit;
 
-public class CreateTeamLinkQueryValidatorTests
+namespace Streetcode.XUnitTest.BLL.Validators.Team.TeamMembersLinks
 {
-    private readonly CreateTeamLinkQueryValidator _validator;
-
-    public CreateTeamLinkQueryValidatorTests()
+    public class CreateTeamLinkQueryValidatorTests
     {
-        _validator = new CreateTeamLinkQueryValidator();
-    }
+        private readonly CreateTeamLinkQueryValidator _validator;
 
-    [Fact]
-    public void Should_Have_Error_When_TeamMember_Is_Null()
-    {
-        var command = new CreateTeamLinkQuery(null);
-        var result = _validator.TestValidate(command);
-        result.ShouldHaveValidationErrorFor(x => x.teamMember);
-    }
-
-    [Fact]
-    public void Should_Not_Have_Error_When_TeamMember_Valid()
-    {
-        var command = new CreateTeamLinkQuery(new TeamMemberLinkDTO
+        public CreateTeamLinkQueryValidatorTests()
         {
-            LogoType = LogoTypeDTO.Twitter,
-            TargetUrl = "https://example.com",
-            TeamMemberId = 1
-        });
+            _validator = new CreateTeamLinkQueryValidator();
+        }
 
-        var result = _validator.TestValidate(command);
+        [Fact]
+        public void Should_Have_Error_When_TeamMember_Is_Null()
+        {
+            var command = new CreateTeamLinkQuery(null);
+            var result = _validator.TestValidate(command);
+            result.ShouldHaveValidationErrorFor(x => x.teamMember);
+        }
 
-        result.ShouldNotHaveValidationErrorFor(x => x.teamMember.LogoType);
-        result.ShouldNotHaveValidationErrorFor(x => x.teamMember.TargetUrl);
-        result.ShouldNotHaveValidationErrorFor(x => x.teamMember.TeamMemberId);
+        [Fact]
+        public void Should_Not_Have_Error_When_TeamMember_Valid()
+        {
+            var command = new CreateTeamLinkQuery(new TeamMemberLinkDTO
+            {
+                LogoType = LogoTypeDTO.Twitter,
+                TargetUrl = "https://example.com",
+                TeamMemberId = 1
+            });
+
+            var result = _validator.TestValidate(command);
+
+            result.ShouldNotHaveValidationErrorFor(x => x.teamMember.LogoType);
+            result.ShouldNotHaveValidationErrorFor(x => x.teamMember.TargetUrl);
+            result.ShouldNotHaveValidationErrorFor(x => x.teamMember.TeamMemberId);
+        }
     }
 }
