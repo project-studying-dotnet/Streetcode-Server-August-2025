@@ -22,9 +22,8 @@ public class JwtTokenServiceTests
 {
     private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IRefreshTokenRepository> _refreshTokenRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
-    private readonly Mock<IConfiguration> _configurationMock;
-    private readonly Mock<IConfigurationSection> _jwtSectionMock;
     private readonly JwtTokenService _jwtTokenService;
     private readonly JwtEnvironmentVariables _jwtVariables;
     private readonly User _testUser;
@@ -35,11 +34,13 @@ public class JwtTokenServiceTests
         // Setup mocks
         _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
         _userRepositoryMock = new Mock<IUserRepository>();
+        _refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
         _mapperMock = new Mock<IMapper>();
 
         var configuration = BuildConfiguration();
 
         _repositoryWrapperMock.Setup(x => x.UserRepository).Returns(_userRepositoryMock.Object);
+        _repositoryWrapperMock.Setup(x => x.RefreshTokenRepository).Returns(_refreshTokenRepositoryMock.Object);
         _testUser = new User
         {
             Id = 1,
@@ -47,9 +48,7 @@ public class JwtTokenServiceTests
             UserName = "johndoe",
             Surname = "Doe",
             Email = "john.doe@example.com",
-            Role = UserRole.User,
-            RefreshToken = null,
-            RefreshTokenExpiryTime = null
+            Role = UserRole.User
         };
 
         _testUserDto = new UserDTO
@@ -73,9 +72,11 @@ public class JwtTokenServiceTests
         // Arrange
         var userId = 1;
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
+                It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync(_testUser);
+        _refreshTokenRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<RefreshToken>()))
+            .ReturnsAsync((RefreshToken rt) => rt);
         _repositoryWrapperMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
@@ -92,11 +93,7 @@ public class JwtTokenServiceTests
         result.Value.RefreshToken.Should().NotBeNull();
         result.Value.RefreshToken.Token.Should().NotBeNullOrEmpty();
 
-        // Verify that refresh token was updated in user
-        _userRepositoryMock.Verify(
-            x => x.Update(It.Is<User>(u =>
-            u.RefreshToken != null &&
-            u.RefreshTokenExpiryTime != null)), Times.Once);
+        _refreshTokenRepositoryMock.Verify(x => x.CreateAsync(It.IsAny<RefreshToken>()), Times.Once);
         _repositoryWrapperMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
@@ -107,7 +104,7 @@ public class JwtTokenServiceTests
         var userId = 999;
 
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
+                It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync((User)null);
 
@@ -126,9 +123,11 @@ public class JwtTokenServiceTests
         // Arrange
         var userId = 1;
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
+                It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync(_testUser);
+        _refreshTokenRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<RefreshToken>()))
+            .ReturnsAsync((RefreshToken rt) => rt);
         _repositoryWrapperMock.Setup(x => x.SaveChangesAsync()).ThrowsAsync(new Exception("Database error"));
 
         // Act
@@ -146,9 +145,11 @@ public class JwtTokenServiceTests
         // Arrange
         var userId = 1;
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
+                It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync(_testUser);
+        _refreshTokenRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<RefreshToken>()))
+            .ReturnsAsync((RefreshToken rt) => rt);
         _repositoryWrapperMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
@@ -250,22 +251,29 @@ public class JwtTokenServiceTests
     [Fact]
     public async Task RefreshTokenAsync_ValidTokensAndUser_ShouldReturnNewTokens()
     {
-        // Arrange
         var expiredToken = GenerateExpiredToken();
-        var refreshToken = "valid-refresh-token";
-
-        _testUser.RefreshToken = refreshToken;
-        _testUser.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
+        var oldRefreshTokenString = "valid-refresh-token";
+        var oldRefreshToken = new RefreshToken
+        {
+            Token = oldRefreshTokenString,
+            ExpiresAt = DateTime.UtcNow.AddDays(1)
+        };
 
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
-                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+            It.IsAny<Expression<Func<User, bool>>>(),
+            It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync(_testUser);
+        _refreshTokenRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
+            It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync(oldRefreshToken);
+        _refreshTokenRepositoryMock.Setup(x => x.Update(It.IsAny<RefreshToken>()));
+        _refreshTokenRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<RefreshToken>()))
+            .ReturnsAsync((RefreshToken rt) => rt);
         _repositoryWrapperMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
         // Act
-        var result = await _jwtTokenService.RefreshTokenAsync(expiredToken, refreshToken);
+        var result = await _jwtTokenService.RefreshTokenAsync(expiredToken, oldRefreshTokenString);
 
         // Assert
         result.Should().NotBeNull();
@@ -273,7 +281,11 @@ public class JwtTokenServiceTests
         result.Value.Should().NotBeNull();
         result.Value.AccessToken.Token.Should().NotBeNullOrEmpty();
         result.Value.RefreshToken.Token.Should().NotBeNullOrEmpty();
-        result.Value.RefreshToken.Token.Should().NotBe(refreshToken);
+        result.Value.RefreshToken.Token.Should().NotBe(oldRefreshTokenString);
+
+        _refreshTokenRepositoryMock.Verify(x => x.Update(It.Is<RefreshToken>(rt => rt.Token == oldRefreshToken.Token)), Times.Once);
+        _refreshTokenRepositoryMock.Verify(x => x.CreateAsync(It.IsAny<RefreshToken>()), Times.Once);
+        _repositoryWrapperMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -284,7 +296,7 @@ public class JwtTokenServiceTests
         var refreshToken = "valid-refresh-token";
 
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
+                It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync((User)null);
 
@@ -305,13 +317,14 @@ public class JwtTokenServiceTests
         var refreshToken = "valid-refresh-token";
         var differentRefreshToken = "different-refresh-token";
 
-        _testUser.RefreshToken = differentRefreshToken;
-        _testUser.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
-
+        // Simulate no matching refresh token found
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
-                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+            It.IsAny<Expression<Func<User, bool>>>(),
+            It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync(_testUser);
+        _refreshTokenRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
+            It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync((RefreshToken)null);
 
         // Act
         var result = await _jwtTokenService.RefreshTokenAsync(expiredToken, refreshToken);
@@ -328,13 +341,19 @@ public class JwtTokenServiceTests
         var expiredToken = GenerateExpiredToken();
         var refreshToken = "valid-refresh-token";
 
-        _testUser.RefreshToken = refreshToken;
-        _testUser.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(-1); // Expired
+        var expiredRefreshToken = new RefreshToken
+        {
+            Token = refreshToken,
+            ExpiresAt = DateTime.UtcNow.AddDays(-1)
+        };
 
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
-                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+            It.IsAny<Expression<Func<User, bool>>>(),
+            It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync(_testUser);
+        _refreshTokenRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
+            It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync(expiredRefreshToken);
 
         // Act
         var result = await _jwtTokenService.RefreshTokenAsync(expiredToken, refreshToken);
@@ -352,13 +371,19 @@ public class JwtTokenServiceTests
         var expiredToken = GenerateExpiredToken();
         var refreshToken = "valid-refresh-token";
 
-        _testUser.RefreshToken = refreshToken;
-        _testUser.RefreshTokenExpiryTime = null; // Null expiry time
+        var nullExpiryRefreshToken = new RefreshToken
+        {
+            Token = refreshToken,
+            ExpiresAt = default
+        };
 
         _userRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(),
-                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+            It.IsAny<Expression<Func<User, bool>>>(),
+            It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
             .ReturnsAsync(_testUser);
+        _refreshTokenRepositoryMock.Setup(x => x.GetFirstOrDefaultAsync(
+            It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync(nullExpiryRefreshToken);
 
         // Act
         var result = await _jwtTokenService.RefreshTokenAsync(expiredToken, refreshToken);
@@ -370,63 +395,28 @@ public class JwtTokenServiceTests
     }
 
     [Fact]
-    public void GenerateRefreshToken_ShouldReturnBase64String()
-    {
-        // Act
-        var refreshToken = _jwtTokenService.GenerateRefreshToken();
-
-        // Assert
-        refreshToken.Should().NotBeNullOrEmpty();
-
-        var act = () => Convert.FromBase64String(refreshToken);
-        act.Should().NotThrow();
-    }
-
-    [Fact]
-    public void GenerateRefreshToken_ShouldReturnUniqueTokens()
-    {
-        // Act
-        var token1 = _jwtTokenService.GenerateRefreshToken();
-        var token2 = _jwtTokenService.GenerateRefreshToken();
-
-        // Assert
-        token1.Should().NotBe(token2);
-    }
-
-    [Fact]
-    public async Task RevokeRefreshTokenAsync_ShouldFail_WhenUserNotFound()
-    {
-        // Arrange
-        _userRepositoryMock
-            .Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
-            .ReturnsAsync((User)null);
-
-        _repositoryWrapperMock.Setup(r => r.UserRepository).Returns(_userRepositoryMock.Object);
-
-        // Act
-        var result = await _jwtTokenService.RevokeRefreshTokenAsync(1);
-
-        // Assert
-        result.IsFailed.Should().BeTrue();
-        result.Errors.First().Message.Should().Be("User not found");
-    }
-
-    [Fact]
     public async Task RevokeRefreshTokenAsync_ShouldSucceed_WhenValidUserWithToken()
     {
         // Arrange
         var userWithToken = new User
         {
-            Id = 1,
-            RefreshToken = "some-token",
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1)
+            Id = 1
+        };
+
+        var activeRefreshToken = new RefreshToken
+        {
+            Token = "some-token",
+            ExpiresAt = DateTime.UtcNow.AddDays(1)
         };
 
         _userRepositoryMock
             .Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
             .ReturnsAsync(userWithToken);
-
+        _refreshTokenRepositoryMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync(new List<RefreshToken> { activeRefreshToken });
+        _refreshTokenRepositoryMock.Setup(r => r.Update(It.IsAny<RefreshToken>()));
         _repositoryWrapperMock.Setup(r => r.UserRepository).Returns(_userRepositoryMock.Object);
+        _repositoryWrapperMock.Setup(r => r.RefreshTokenRepository).Returns(_refreshTokenRepositoryMock.Object);
         _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
 
         // Act
@@ -434,9 +424,7 @@ public class JwtTokenServiceTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        userWithToken.RefreshToken.Should().BeNull();
-        userWithToken.RefreshTokenExpiryTime.Should().BeNull();
-        _userRepositoryMock.Verify(r => r.Update(userWithToken), Times.Once);
+        _refreshTokenRepositoryMock.Verify(r => r.Update(It.Is<RefreshToken>(rt => rt.Token == activeRefreshToken.Token)), Times.Once);
         _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 

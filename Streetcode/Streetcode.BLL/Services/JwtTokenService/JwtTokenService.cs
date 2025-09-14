@@ -157,14 +157,18 @@ public class JwtTokenService : IJwtTokenService
         // Validate expired access token to get userId
         var userResult = await GetUserFromExpiredTokenAsync(token);
         if (userResult.IsFailed)
+        {
             return Result.Fail<LoginResultDTO>(userResult.Errors);
+        }
 
         var user = userResult.Value;
 
         // Check the refresh token in DB
         var refreshTokenResult = await ValidateRefreshTokenAsync(user.Id, refreshToken);
         if (refreshTokenResult.IsFailed)
+        {
             return Result.Fail<LoginResultDTO>(refreshTokenResult.Errors);
+        }
 
         var storedRefreshToken = refreshTokenResult.Value;
 
@@ -254,21 +258,27 @@ public class JwtTokenService : IJwtTokenService
         // 1. Validate the expired access token
         var principalResult = GetPrincipalFromExpiredToken(token);
         if (principalResult.IsFailed)
+        {
             return Result.Fail<User>(principalResult.Errors);
+        }
 
         var principal = principalResult.Value;
 
         // 2. Extract userId claim
         var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim is null || !int.TryParse(userIdClaim.Value, out var userId))
+        {
             return Result.Fail<User>("UserId claim missing or invalid");
+        }
 
         // 3. Load user from DB
         var user = await _repositoryWrapper.UserRepository
             .GetFirstOrDefaultAsync(u => u.Id == userId);
 
         if (user is null)
+        {
             return Result.Fail<User>("User not found");
+        }
 
         return Result.Ok(user);
     }

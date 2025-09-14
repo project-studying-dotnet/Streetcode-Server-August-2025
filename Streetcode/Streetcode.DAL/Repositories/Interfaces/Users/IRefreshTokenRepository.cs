@@ -3,7 +3,6 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.DAL.Repositories.Interfaces.Users;
 
-public interface IRefreshTokenRepository: IRepositoryBase<RefreshToken>
+public interface IRefreshTokenRepository : IRepositoryBase<RefreshToken>
 {
-    
 }
