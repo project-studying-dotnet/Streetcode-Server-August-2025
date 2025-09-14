@@ -2,7 +2,7 @@
 
 namespace Streetcode.DAL.Entities.Users;
 
-[Table("RefreshTokens", Schema = "RefreshTokens")]
+[Table("refresh_tokens", Schema = "user")]
 public class RefreshToken
 {
     public int Id { get; set; }
