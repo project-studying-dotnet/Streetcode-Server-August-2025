@@ -13,5 +13,5 @@ public class CommentDTO
     public int StreetcodeId { get; set; }
     public int? ParentCommentId { get; set; }
 
-    public ICollection<CommentContent> Replies { get; set; } = new List<CommentContent>();
+    public ICollection<CommentDTO> Replies { get; set; } = new List<CommentDTO>();
 }
