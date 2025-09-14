@@ -4,6 +4,7 @@ using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Interfaces.AdditionalContent;
 using Streetcode.DAL.Repositories.Interfaces.Analytics;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.DAL.Repositories.Interfaces.Comments;
 using Streetcode.DAL.Repositories.Interfaces.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Streetcode.DAL.Repositories.Interfaces.Partners;
@@ -17,6 +18,7 @@ using Streetcode.DAL.Repositories.Interfaces.Transactions;
 using Streetcode.DAL.Repositories.Interfaces.Users;
 using Streetcode.DAL.Repositories.Realizations.AdditionalContent;
 using Streetcode.DAL.Repositories.Realizations.Analytics;
+using Streetcode.DAL.Repositories.Realizations.Comments;
 using Streetcode.DAL.Repositories.Realizations.Media;
 using Streetcode.DAL.Repositories.Realizations.Media.Images;
 using Streetcode.DAL.Repositories.Realizations.Newss;
@@ -37,6 +39,8 @@ public class RepositoryWrapper : IRepositoryWrapper
     private readonly StreetcodeDbContext _streetcodeDbContext;
 
     private IVideoRepository _videoRepository;
+
+    private ICommentRepository _commentRepository;
 
     private IAudioRepository _audioRepository;
 
@@ -111,6 +115,19 @@ public class RepositoryWrapper : IRepositoryWrapper
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
         _streetcodeDbContext = streetcodeDbContext;
+    }
+
+    public ICommentRepository CommentRepository
+    {
+        get
+        {
+            if (_commentRepository is null)
+            {
+                _commentRepository = new CommentRepository(_streetcodeDbContext);
+            }
+
+            return _commentRepository;
+        }
     }
 
     public INewsRepository NewsRepository
