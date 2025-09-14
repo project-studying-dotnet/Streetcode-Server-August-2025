@@ -11,5 +11,5 @@ public interface IJwtTokenService
     Result<ClaimsPrincipal> ValidateToken(string token);
     Result<int> GetUserIdFromToken(string token);
     Task<Result<LoginResultDTO>> RefreshTokenAsync(string token, string refreshToken);
-    Task<Result> RevokeRefreshTokenAsync(int userId);
+    Task<Result> RevokeRefreshTokenAsync(string refreshToken);
 }

@@ -222,26 +222,25 @@ public class JwtTokenService : IJwtTokenService
         return Convert.ToBase64String(randomNumber);
     }
 
-    public async Task<Result> RevokeRefreshTokenAsync(int userId)
+    public async Task<Result> RevokeRefreshTokenAsync(string refreshToken)
     {
         try
         {
-            var user = await _repositoryWrapper.UserRepository
-                .GetFirstOrDefaultAsync(u => u.Id == userId);
+            var storedToken = await _repositoryWrapper.RefreshTokenRepository
+                .GetFirstOrDefaultAsync(rt => rt.Token == refreshToken);
 
-            if (user is null)
+            if (storedToken is null)
             {
-                return Result.Fail("User not found");
+                return Result.Fail("Refresh token not found");
             }
 
-            var activeTokens = await _repositoryWrapper.RefreshTokenRepository
-                .GetAllAsync(rt => rt.UserId == userId && rt.IsActive);
-
-            foreach (var token in activeTokens)
+            if (storedToken.IsRevoked)
             {
-                token.IsRevoked = true;
-                _repositoryWrapper.RefreshTokenRepository.Update(token);
+                return Result.Fail("Refresh token is already revoked");
             }
+
+            storedToken.IsRevoked = true;
+            _repositoryWrapper.RefreshTokenRepository.Update(storedToken);
 
             await _repositoryWrapper.SaveChangesAsync();
 
