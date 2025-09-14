@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Streetcode.BLL.DTO.Comments;
 
-namespace Streetcode.BLL.DTO.Comments
+public class CommentCreateDTO
 {
-    internal class CommentCreateDTO
-    {
-    }
+    public string? Text { get; set; }
+    public int UserId { get; set; }
+    public int StreetcodeId { get; set; }
+    public int? ParentCommentId { get; set; }
 }
