@@ -13,11 +13,10 @@ public class RefreshToken
     public User? User { get; set; }
 
     public string Token { get; set; }
+    public bool IsRevoked { get; set; }
 
     public DateTime ExpiresAt { get; set; }
-    public DateTime? RevokedAt { get; set; }
 
     public bool IsExpired => DateTime.UtcNow >= ExpiresAt;
-    public bool IsRevoked => RevokedAt != null;
     public bool IsActive => !IsRevoked && !IsExpired;
 }
