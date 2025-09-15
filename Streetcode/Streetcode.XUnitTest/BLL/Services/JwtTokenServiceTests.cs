@@ -428,6 +428,103 @@ public class JwtTokenServiceTests
         _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
+    [Fact]
+    public async Task RevokeRefreshTokenAsync_ShouldFail_WhenTokenNotFound()
+    {
+        // Arrange
+        _refreshTokenRepositoryMock.Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync((RefreshToken)null);
+
+        // Act
+        var result = await _jwtTokenService.RevokeRefreshTokenAsync("nonexistent-token");
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Refresh token not found");
+    }
+
+    [Fact]
+    public async Task RevokeRefreshTokenAsync_ShouldFail_WhenTokenAlreadyRevoked()
+    {
+        // Arrange
+        var revokedToken = new RefreshToken
+        {
+            Token = "revoked-token",
+            IsRevoked = true
+        };
+        _refreshTokenRepositoryMock.Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync(revokedToken);
+
+        // Act
+        var result = await _jwtTokenService.RevokeRefreshTokenAsync("revoked-token");
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task RevokeRefreshTokenAsync_ShouldFail_WhenExceptionThrown()
+    {
+        // Arrange
+        _refreshTokenRepositoryMock.Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ThrowsAsync(new Exception("DB error"));
+
+        // Act
+        var result = await _jwtTokenService.RevokeRefreshTokenAsync("any-token");
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.GetType().Name == "ExceptionalError");
+    }
+
+    [Fact]
+    public void ValidateToken_ShouldFail_WhenSecurityTokenValidationExceptionThrown()
+    {
+        // Arrange
+        var tokenHandlerMock = new Mock<JwtSecurityTokenHandler>();
+        tokenHandlerMock.Setup(h => h.ValidateToken(
+            It.IsAny<string>(),
+            It.IsAny<TokenValidationParameters>(),
+            out It.Ref<SecurityToken>.IsAny))
+            .Throws(new SecurityTokenValidationException("Validation failed"));
+
+        var jwtTokenService = new JwtTokenService(BuildConfiguration(), _mapperMock.Object, _repositoryWrapperMock.Object);
+        typeof(JwtTokenService)
+            .GetField("_jwtSecurityTokenHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .SetValue(jwtTokenService, tokenHandlerMock.Object);
+
+        // Act
+        var result = jwtTokenService.ValidateToken("any-token");
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Token validation failed");
+    }
+
+    [Fact]
+    public void ValidateToken_ShouldFail_WhenGeneralExceptionThrown()
+    {
+        // Arrange
+        var tokenHandlerMock = new Mock<JwtSecurityTokenHandler>();
+        tokenHandlerMock.Setup(h => h.ValidateToken(
+            It.IsAny<string>(),
+            It.IsAny<TokenValidationParameters>(),
+            out It.Ref<SecurityToken>.IsAny))
+            .Throws(new Exception("General error"));
+
+        var jwtTokenService = new JwtTokenService(BuildConfiguration(), _mapperMock.Object, _repositoryWrapperMock.Object);
+        typeof(JwtTokenService)
+            .GetField("_jwtSecurityTokenHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .SetValue(jwtTokenService, tokenHandlerMock.Object);
+
+        // Act
+        var result = jwtTokenService.ValidateToken("any-token");
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.GetType().Name == "ExceptionalError");
+    }
+
     private static IConfiguration BuildConfiguration()
     {
         var configData = new Dictionary<string, string>
