@@ -412,15 +412,15 @@ public class JwtTokenServiceTests
         _userRepositoryMock
             .Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
             .ReturnsAsync(userWithToken);
-        _refreshTokenRepositoryMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
-            .ReturnsAsync(new List<RefreshToken> { activeRefreshToken });
+        _refreshTokenRepositoryMock.Setup(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>(), null))
+            .ReturnsAsync(activeRefreshToken );
         _refreshTokenRepositoryMock.Setup(r => r.Update(It.IsAny<RefreshToken>()));
         _repositoryWrapperMock.Setup(r => r.UserRepository).Returns(_userRepositoryMock.Object);
         _repositoryWrapperMock.Setup(r => r.RefreshTokenRepository).Returns(_refreshTokenRepositoryMock.Object);
         _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
 
         // Act
-        var result = await _jwtTokenService.RevokeRefreshTokenAsync(1);
+        var result = await _jwtTokenService.RevokeRefreshTokenAsync("some-token");
 
         // Assert
         result.IsSuccess.Should().BeTrue();
