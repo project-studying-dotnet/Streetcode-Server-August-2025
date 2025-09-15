@@ -11,6 +11,7 @@ using AutoMapper;
 using FluentResults;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources;
 
 namespace Streetcode.BLL.Services.JwtService;
 
@@ -42,7 +43,7 @@ public class JwtTokenService : IJwtTokenService
 
         if (user is null)
         {
-            return Result.Fail<LoginResultDTO>("User with this userId was not found");
+            return Result.Fail<LoginResultDTO>(Errors_Jwt.UserWithThisIdWasNotFound);
         }
 
         try
@@ -116,11 +117,11 @@ public class JwtTokenService : IJwtTokenService
         }
         catch (SecurityTokenExpiredException)
         {
-            return Result.Fail<ClaimsPrincipal>("Token has expired");
+            return Result.Fail<ClaimsPrincipal>(Errors_Jwt.TokenHasExpired);
         }
         catch (SecurityTokenValidationException)
         {
-            return Result.Fail<ClaimsPrincipal>("Token validation failed");
+            return Result.Fail<ClaimsPrincipal>(Errors_Jwt.TokenValidationFailed);
         }
         catch (Exception ex)
         {
@@ -141,12 +142,12 @@ public class JwtTokenService : IJwtTokenService
         var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim is null)
         {
-            return Result.Fail<int>("UserId claim not found in token");
+            return Result.Fail<int>(Errors_Jwt.UserIdClaimNotFound);
         }
 
         if (!int.TryParse(userIdClaim.Value, out var userId))
         {
-            return Result.Fail<int>($"UserId claim has invalid format: {userIdClaim.Value}");
+            return Result.Fail<int>(string.Format(Errors_Jwt.UserIdClaimInvalidFormat, userIdClaim.Value));
         }
 
         return Result.Ok(userId);
@@ -231,12 +232,12 @@ public class JwtTokenService : IJwtTokenService
 
             if (storedToken is null)
             {
-                return Result.Fail("Refresh token not found");
+                return Result.Fail(Errors_Jwt.RefreshTokenNotFound);
             }
 
             if (storedToken.IsRevoked)
             {
-                return Result.Fail("Refresh token is already revoked");
+                return Result.Fail(Errors_Jwt.RefreshTokenAlreadyRevoked);
             }
 
             storedToken.IsRevoked = true;
@@ -267,7 +268,7 @@ public class JwtTokenService : IJwtTokenService
         var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim is null || !int.TryParse(userIdClaim.Value, out var userId))
         {
-            return Result.Fail<User>("UserId claim missing or invalid");
+            return Result.Fail<User>(Errors_Jwt.UserIdClaimMissingOrInvalid);
         }
 
         // 3. Load user from DB
@@ -276,7 +277,7 @@ public class JwtTokenService : IJwtTokenService
 
         if (user is null)
         {
-            return Result.Fail<User>("User not found");
+            return Result.Fail<User>(Errors_Jwt.UserNotFound);
         }
 
         return Result.Ok(user);
@@ -289,17 +290,17 @@ public class JwtTokenService : IJwtTokenService
 
         if (storedRefreshToken is null)
         {
-            return Result.Fail<RefreshToken>("Refresh token not found for this user");
+            return Result.Fail<RefreshToken>(Errors_Jwt.RefreshTokenNotFoundForUser);
         }
 
         if (storedRefreshToken.IsRevoked)
         {
-            return Result.Fail<RefreshToken>("Refresh token has been revoked");
+            return Result.Fail<RefreshToken>(Errors_Jwt.RefreshTokenRevoked);
         }
 
         if (storedRefreshToken.IsExpired)
         {
-            return Result.Fail<RefreshToken>("Refresh token has expired");
+            return Result.Fail<RefreshToken>(Errors_Jwt.RefreshTokenExpired);
         }
 
         return Result.Ok(storedRefreshToken);
@@ -328,14 +329,14 @@ public class JwtTokenService : IJwtTokenService
                     SecurityAlgorithms.HmacSha256,
                     StringComparison.InvariantCultureIgnoreCase))
             {
-                return Result.Fail<ClaimsPrincipal>("Invalid token: unsupported or mismatched algorithm");
+                return Result.Fail<ClaimsPrincipal>(Errors_Jwt.InvalidTokenAlgorithm);
             }
 
             return Result.Ok(principal);
         }
         catch(SecurityTokenException ex)
         {
-            return Result.Fail<ClaimsPrincipal>(new Error("Token validation failed").CausedBy(ex));
+            return Result.Fail<ClaimsPrincipal>(new Error(Errors_Jwt.TokenValidationFailed).CausedBy(ex));
         }
         catch (Exception ex)
         {
