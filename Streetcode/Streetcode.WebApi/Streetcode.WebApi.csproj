@@ -70,10 +70,10 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Streetcode.WebApi\ocelot.json">
+		<Content Include="..\Streetcode.WebApi\ocelot.json">
+			<Link>ocelot.json</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-
 </Project>
 
