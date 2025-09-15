@@ -38,6 +38,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5555" // "https://localhost:7777"
+    "BaseUrl": "http://localhost:5001"
   }
 }
