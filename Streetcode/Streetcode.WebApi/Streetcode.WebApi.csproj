@@ -69,5 +69,11 @@
     <Folder Include="Controllers\Analytics\" />
   </ItemGroup>
 
+	<ItemGroup>
+		<Content Include="Streetcode.WebApi\ocelot.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
 </Project>
 
