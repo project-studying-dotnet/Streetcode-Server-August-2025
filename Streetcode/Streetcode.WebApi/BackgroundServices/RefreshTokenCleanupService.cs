@@ -1,19 +1,19 @@
 ﻿using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.WebApi.BackgroundService;
+namespace Streetcode.WebApi.BackgroundServices;
 
-public class RefreshTokenCleanupService : Microsoft.Extensions.Hosting.BackgroundService
+public class RefreshTokenCleanupService : BackgroundService
 {
     private readonly ILogger<RefreshTokenCleanupService> _logger;
-    private readonly IServiceScopeFactory _scopeFactory;
     private readonly TimeSpan _interval = TimeSpan.FromHours(1);
+    private readonly IRepositoryWrapper _repositoryWrapper;
 
     public RefreshTokenCleanupService(
         ILogger<RefreshTokenCleanupService> logger,
-        IServiceScopeFactory scopeFactory)
+        IRepositoryWrapper repositoryWrapper)
     {
         _logger = logger;
-        _scopeFactory = scopeFactory;
+        _repositoryWrapper = repositoryWrapper;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -22,23 +22,20 @@ public class RefreshTokenCleanupService : Microsoft.Extensions.Hosting.Backgroun
         {
             try
             {
-                using var scope = _scopeFactory.CreateScope();
-                var repositoryWrapper = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
-
                 var now = DateTime.UtcNow;
 
                 // Get expired OR revoked tokens
-                var expiredTokens = await repositoryWrapper.RefreshTokenRepository
+                var expiredTokens = await _repositoryWrapper.RefreshTokenRepository
                     .GetAllAsync(rt => rt.IsRevoked || rt.ExpiresAt <= now);
 
                 if (expiredTokens.Any())
                 {
                     foreach (var token in expiredTokens)
                     {
-                        repositoryWrapper.RefreshTokenRepository.Delete(token);
+                        _repositoryWrapper.RefreshTokenRepository.Delete(token);
                     }
 
-                    await repositoryWrapper.SaveChangesAsync();
+                    await _repositoryWrapper.SaveChangesAsync();
                     _logger.LogInformation("Deleted {Count} expired/revoked refresh tokens", expiredTokens.Count());
                 }
             }
