@@ -107,6 +107,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>MediatR.Payment.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Errors_Jwt.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors_Jwt.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -121,6 +126,10 @@
     <EmbeddedResource Update="Resources\Errors.Email.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.Email.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors_Jwt.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors_Jwt.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Errors.RelatedTerm.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

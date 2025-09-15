@@ -11,6 +11,7 @@ using AutoMapper;
 using FluentResults;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources;
 
 namespace Streetcode.BLL.Services.JwtService;
 
@@ -42,7 +43,7 @@ public class JwtTokenService : IJwtTokenService
 
         if (user is null)
         {
-            return Result.Fail<LoginResultDTO>("User with this userId was not found");
+            return Result.Fail<LoginResultDTO>(Errors_Jwt.UserWithThisIdWasNotFound);
         }
 
         try
@@ -55,13 +56,18 @@ public class JwtTokenService : IJwtTokenService
             var expireAt = token.ValidTo;
 
             // Create refresh token
-            var refreshToken = GenerateRefreshToken();
+            var refreshTokenString = GenerateRefreshToken();
             var refreshExpiryDate = DateTime.UtcNow.AddDays(7);
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = refreshExpiryDate;
 
-            _repositoryWrapper.UserRepository.Update(user);
+            var refreshToken = new RefreshToken
+            {
+                UserId = user.Id,
+                Token = refreshTokenString,
+                ExpiresAt = refreshExpiryDate,
+                IsRevoked = false
+            };
 
+            await _repositoryWrapper.RefreshTokenRepository.CreateAsync(refreshToken);
             await _repositoryWrapper.SaveChangesAsync();
             var userDto = _mapper.Map<UserDTO>(user);
 
@@ -75,7 +81,7 @@ public class JwtTokenService : IJwtTokenService
                 },
                 RefreshToken = new TokenDTO
                 {
-                    Token = refreshToken,
+                    Token = refreshTokenString,
                     ExpireAt = refreshExpiryDate
                 },
             });
@@ -111,11 +117,11 @@ public class JwtTokenService : IJwtTokenService
         }
         catch (SecurityTokenExpiredException)
         {
-            return Result.Fail<ClaimsPrincipal>("Token has expired");
+            return Result.Fail<ClaimsPrincipal>(Errors_Jwt.TokenHasExpired);
         }
         catch (SecurityTokenValidationException)
         {
-            return Result.Fail<ClaimsPrincipal>("Token validation failed");
+            return Result.Fail<ClaimsPrincipal>(Errors_Jwt.TokenValidationFailed);
         }
         catch (Exception ex)
         {
@@ -136,12 +142,12 @@ public class JwtTokenService : IJwtTokenService
         var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim is null)
         {
-            return Result.Fail<int>("UserId claim not found in token");
+            return Result.Fail<int>(Errors_Jwt.UserIdClaimNotFound);
         }
 
         if (!int.TryParse(userIdClaim.Value, out var userId))
         {
-            return Result.Fail<int>($"UserId claim has invalid format: {userIdClaim.Value}");
+            return Result.Fail<int>(string.Format(Errors_Jwt.UserIdClaimInvalidFormat, userIdClaim.Value));
         }
 
         return Result.Ok(userId);
@@ -149,48 +155,44 @@ public class JwtTokenService : IJwtTokenService
 
     public async Task<Result<LoginResultDTO>> RefreshTokenAsync(string token, string refreshToken)
     {
-        var principalResult = GetPrincipalFromExpiredToken(token);
-        if(principalResult.IsFailed)
+        // Validate expired access token to get userId
+        var userResult = await GetUserFromExpiredTokenAsync(token);
+        if (userResult.IsFailed)
         {
-            return Result.Fail<LoginResultDTO>(principalResult.Errors);
+            return Result.Fail<LoginResultDTO>(userResult.Errors);
         }
 
-        var principal = principalResult.Value;
+        var user = userResult.Value;
 
-        var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim is null || !int.TryParse(userIdClaim.Value, out var userId))
+        // Check the refresh token in DB
+        var refreshTokenResult = await ValidateRefreshTokenAsync(user.Id, refreshToken);
+        if (refreshTokenResult.IsFailed)
         {
-            return Result.Fail<LoginResultDTO>("UserId claim missing or invalid");
+            return Result.Fail<LoginResultDTO>(refreshTokenResult.Errors);
         }
 
-        var user = await _repositoryWrapper.UserRepository.GetFirstOrDefaultAsync(u => u.Id == userId);
+        var storedRefreshToken = refreshTokenResult.Value;
 
-        if (user == null)
-        {
-            return Result.Fail<LoginResultDTO>("User not found");
-        }
-
-        if (user.RefreshToken != refreshToken)
-        {
-            return Result.Fail<LoginResultDTO>("Refresh token does not match or was revoked");
-        }
-
-        if (user.RefreshTokenExpiryTime is null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-        {
-            return Result.Fail<LoginResultDTO>("Refresh token has expired");
-        }
-
-        // Generate new tokens
+        // Generate new access token
         var descriptor = GetTokenDescriptor(user);
         var newToken = _jwtSecurityTokenHandler.CreateToken(descriptor);
         var jwt = _jwtSecurityTokenHandler.WriteToken(newToken);
 
-        var newRefreshToken = GenerateRefreshToken();
-        var refreshExpiryDate = DateTime.UtcNow.AddDays(7);
+        // Generate new refresh token
+        var newRefreshTokenString = GenerateRefreshToken();
+        var newRefreshExpiryDate = DateTime.UtcNow.AddDays(7);
+        var newRefreshToken = new RefreshToken
+        {
+            UserId = user.Id,
+            Token = newRefreshTokenString,
+            ExpiresAt = newRefreshExpiryDate,
+            IsRevoked = false
+        };
 
-        user.RefreshToken = newRefreshToken;
-        user.RefreshTokenExpiryTime = refreshExpiryDate;
-        _repositoryWrapper.UserRepository.Update(user);
+        // Revoke the old token and save the new one
+        storedRefreshToken.IsRevoked = true;
+        _repositoryWrapper.RefreshTokenRepository.Update(storedRefreshToken);
+        await _repositoryWrapper.RefreshTokenRepository.CreateAsync(newRefreshToken);
         await _repositoryWrapper.SaveChangesAsync();
 
         var userDto = _mapper.Map<UserDTO>(user);
@@ -205,8 +207,8 @@ public class JwtTokenService : IJwtTokenService
             },
             RefreshToken = new TokenDTO
             {
-                Token = newRefreshToken,
-                ExpireAt = refreshExpiryDate
+                Token = newRefreshTokenString,
+                ExpireAt = newRefreshExpiryDate
             },
         };
 
@@ -221,22 +223,26 @@ public class JwtTokenService : IJwtTokenService
         return Convert.ToBase64String(randomNumber);
     }
 
-    public async Task<Result> RevokeRefreshTokenAsync(int userId)
+    public async Task<Result> RevokeRefreshTokenAsync(string refreshToken)
     {
         try
         {
-            var user = await _repositoryWrapper.UserRepository
-                .GetFirstOrDefaultAsync(u => u.Id == userId);
+            var storedToken = await _repositoryWrapper.RefreshTokenRepository
+                .GetFirstOrDefaultAsync(rt => rt.Token == refreshToken);
 
-            if (user is null)
+            if (storedToken is null)
             {
-                return Result.Fail("User not found");
+                return Result.Fail(Errors_Jwt.RefreshTokenNotFound);
             }
 
-            user.RefreshToken = null;
-            user.RefreshTokenExpiryTime = null;
+            if (storedToken.IsRevoked)
+            {
+                return Result.Fail(Errors_Jwt.RefreshTokenAlreadyRevoked);
+            }
 
-            _repositoryWrapper.UserRepository.Update(user);
+            storedToken.IsRevoked = true;
+            _repositoryWrapper.RefreshTokenRepository.Update(storedToken);
+
             await _repositoryWrapper.SaveChangesAsync();
 
             return Result.Ok();
@@ -245,6 +251,59 @@ public class JwtTokenService : IJwtTokenService
         {
             return Result.Fail(new ExceptionalError(ex));
         }
+    }
+
+    private async Task<Result<User>> GetUserFromExpiredTokenAsync(string token)
+    {
+        // 1. Validate the expired access token
+        var principalResult = GetPrincipalFromExpiredToken(token);
+        if (principalResult.IsFailed)
+        {
+            return Result.Fail<User>(principalResult.Errors);
+        }
+
+        var principal = principalResult.Value;
+
+        // 2. Extract userId claim
+        var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim is null || !int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Result.Fail<User>(Errors_Jwt.UserIdClaimMissingOrInvalid);
+        }
+
+        // 3. Load user from DB
+        var user = await _repositoryWrapper.UserRepository
+            .GetFirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return Result.Fail<User>(Errors_Jwt.UserNotFound);
+        }
+
+        return Result.Ok(user);
+    }
+
+    private async Task<Result<RefreshToken>> ValidateRefreshTokenAsync(int userId, string refreshToken)
+    {
+        var storedRefreshToken = await _repositoryWrapper.RefreshTokenRepository
+            .GetFirstOrDefaultAsync(rt => rt.UserId == userId && rt.Token == refreshToken);
+
+        if (storedRefreshToken is null)
+        {
+            return Result.Fail<RefreshToken>(Errors_Jwt.RefreshTokenNotFoundForUser);
+        }
+
+        if (storedRefreshToken.IsRevoked)
+        {
+            return Result.Fail<RefreshToken>(Errors_Jwt.RefreshTokenRevoked);
+        }
+
+        if (storedRefreshToken.IsExpired)
+        {
+            return Result.Fail<RefreshToken>(Errors_Jwt.RefreshTokenExpired);
+        }
+
+        return Result.Ok(storedRefreshToken);
     }
 
     private Result<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token)
@@ -270,14 +329,14 @@ public class JwtTokenService : IJwtTokenService
                     SecurityAlgorithms.HmacSha256,
                     StringComparison.InvariantCultureIgnoreCase))
             {
-                return Result.Fail<ClaimsPrincipal>("Invalid token: unsupported or mismatched algorithm");
+                return Result.Fail<ClaimsPrincipal>(Errors_Jwt.InvalidTokenAlgorithm);
             }
 
             return Result.Ok(principal);
         }
         catch(SecurityTokenException ex)
         {
-            return Result.Fail<ClaimsPrincipal>(new Error("Token validation failed").CausedBy(ex));
+            return Result.Fail<ClaimsPrincipal>(new Error(Errors_Jwt.TokenValidationFailed).CausedBy(ex));
         }
         catch (Exception ex)
         {

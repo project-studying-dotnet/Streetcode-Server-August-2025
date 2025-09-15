@@ -111,6 +111,7 @@ public class RepositoryWrapper : IRepositoryWrapper
     private IStreetcodeToponymRepository _streetcodeToponymRepository;
 
     private IStreetcodeImageRepository _streetcodeImageRepository;
+    private IRefreshTokenRepository _refreshTokenRepository;
 
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
@@ -584,6 +585,19 @@ public class RepositoryWrapper : IRepositoryWrapper
             }
 
             return _streetcodeImageRepository;
+        }
+    }
+
+    public IRefreshTokenRepository RefreshTokenRepository
+    {
+        get
+        {
+            if (_refreshTokenRepository is null)
+            {
+                _refreshTokenRepository = new RefreshTokenRepository(_streetcodeDbContext);
+            }
+
+            return _refreshTokenRepository;
         }
     }
 
