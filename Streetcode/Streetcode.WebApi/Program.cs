@@ -1,15 +1,8 @@
 ﻿using Hangfire;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.DAL.Entities.Users;
-using Streetcode.DAL.Persistence;
-using Streetcode.WebApi.Attributes;
-using Streetcode.WebApi.BackgroundService;
+using Streetcode.WebApi.BackgroundServices;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Middlewares;
-using Streetcode.WebApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
