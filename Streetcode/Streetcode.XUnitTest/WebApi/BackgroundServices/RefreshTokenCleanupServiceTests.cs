@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -13,6 +14,9 @@ public class RefreshTokenCleanupServiceTests
     private readonly Mock<ILogger<RefreshTokenCleanupService>> _loggerMock;
     private readonly Mock<IRefreshTokenRepository> _refreshTokenRepoMock;
     private readonly Mock<IRepositoryWrapper> _repoWrapperMock;
+    private readonly Mock<IServiceScopeFactory> _scopeFactoryMock;
+    private readonly Mock<IServiceScope> _scopeMock;
+    private readonly Mock<IServiceProvider> _serviceProviderMock;
     private readonly RefreshTokenCleanupService _service;
 
     public RefreshTokenCleanupServiceTests()
@@ -21,7 +25,16 @@ public class RefreshTokenCleanupServiceTests
         _refreshTokenRepoMock = new Mock<IRefreshTokenRepository>();
         _repoWrapperMock = new Mock<IRepositoryWrapper>();
         _repoWrapperMock.Setup(r => r.RefreshTokenRepository).Returns(_refreshTokenRepoMock.Object);
-        _service = new RefreshTokenCleanupService(_loggerMock.Object, _repoWrapperMock.Object);
+
+        _scopeFactoryMock = new Mock<IServiceScopeFactory>();
+        _scopeMock = new Mock<IServiceScope>();
+        _serviceProviderMock = new Mock<IServiceProvider>();
+
+        _scopeFactoryMock.Setup(f => f.CreateScope()).Returns(_scopeMock.Object);
+        _scopeMock.Setup(s => s.ServiceProvider).Returns(_serviceProviderMock.Object);
+        _serviceProviderMock.Setup(sp => sp.GetService(typeof(IRepositoryWrapper))).Returns(_repoWrapperMock.Object);
+
+        _service = new RefreshTokenCleanupService(_loggerMock.Object, _scopeFactoryMock.Object);
     }
 
     [Fact]
