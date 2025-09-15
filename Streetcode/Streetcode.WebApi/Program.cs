@@ -16,7 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
 // Ocelot Basic setup
-builder.Configuration.AddOcelot(); // uses content root set by host config
+builder.Configuration
+      .SetBasePath(builder.Environment.ContentRootPath)
+      .AddOcelot(); // single ocelot.json file in read-only mode
 builder.Services
     .AddOcelot(builder.Configuration);
 
