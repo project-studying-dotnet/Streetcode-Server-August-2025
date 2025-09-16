@@ -15,18 +15,21 @@ public class CreateCommentCommandValidator : AbstractValidator<CreateCommentComm
             .NotNull()
             .WithMessage(Errors_Validation.IsRequired.FormatWith("NewComment"));
 
-        RuleFor(x => x.NewComment.Text)
-            .NotEmpty()
-            .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("Text"))
-            .MaximumLength(MaxTextLength)
-            .WithMessage(Errors_Validation.MaxLength.FormatWith("Text"));
+        When(x => x.NewComment != null, () =>
+        {
+            RuleFor(x => x.NewComment.Text)
+                .NotEmpty()
+                .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("Text"))
+                .MaximumLength(MaxTextLength)
+                .WithMessage(Errors_Validation.MaxLength.FormatWith("Text", MaxTextLength));
 
-        RuleFor(x => x.NewComment.UserId)
-            .GreaterThan(0)
-            .WithMessage(Errors_Validation.IsRequired.FormatWith("UserId"));
+            RuleFor(x => x.NewComment.UserId)
+                .GreaterThan(0)
+                .WithMessage(Errors_Validation.IsRequired.FormatWith("UserId"));
 
-        RuleFor(x => x.NewComment.StreetcodeId)
-            .GreaterThan(0)
-            .WithMessage(Errors_Validation.IsRequired.FormatWith("StreetcodeId"));
+            RuleFor(x => x.NewComment.StreetcodeId)
+                .GreaterThan(0)
+                .WithMessage(Errors_Validation.IsRequired.FormatWith("StreetcodeId"));
+        });
     }
 }
