@@ -1,13 +1,7 @@
 ﻿using Hangfire;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.DAL.Persistence;
-using Streetcode.WebApi.Attributes;
+using Streetcode.WebApi.BackgroundServices;
 using Streetcode.WebApi.Extensions;
-using Streetcode.WebApi.Utils;
-using Streetcode.DAL.Entities.Users;
 using Streetcode.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +15,7 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.ConfigureJwt(builder);
+builder.Services.AddHostedService<RefreshTokenCleanupService>();
 
 // Connect extension method Identity
 builder.Services.AddIdentityServices();

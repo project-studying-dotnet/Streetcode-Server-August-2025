@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Streetcode.DAL.Persistence;
 
@@ -11,9 +12,11 @@ using Streetcode.DAL.Persistence;
 namespace Streetcode.DAL.Persistence.Migrations
 {
     [DbContext(typeof(StreetcodeDbContext))]
-    partial class StreetcodeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250911211239_AddCommentsTable")]
+    partial class AddCommentsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1190,34 +1193,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.ToTable("transaction_links", "transactions");
                 });
 
-            modelBuilder.Entity("Streetcode.DAL.Entities.Users.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("refresh_tokens", "user");
-                });
-
             modelBuilder.Entity("Streetcode.DAL.Entities.Users.User", b =>
                 {
                     b.Property<int>("Id")
@@ -1265,6 +1240,12 @@ namespace Streetcode.DAL.Persistence.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -1817,17 +1798,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Streetcode");
-                });
-
-            modelBuilder.Entity("Streetcode.DAL.Entities.Users.RefreshToken", b =>
-                {
-                    b.HasOne("Streetcode.DAL.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types.StreetcodeCoordinate", b =>

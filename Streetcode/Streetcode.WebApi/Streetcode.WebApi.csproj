@@ -66,6 +66,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Analytics\" />
+    <Folder Include="BackgroundServices\" />
   </ItemGroup>
 
 </Project>

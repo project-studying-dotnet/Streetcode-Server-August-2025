@@ -6,6 +6,7 @@ using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
 using Streetcode.DAL.Entities.Analytics;
+using Streetcode.DAL.Entities.Comments;
 using Streetcode.DAL.Entities.Feedback;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Entities.Media.Images;
@@ -35,6 +36,7 @@ public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<int>, in
     {
     }
 
+    public DbSet<CommentContent> Comments { get; set; }
     public DbSet<Art> Arts { get; set; }
     public DbSet<Audio> Audios { get; set; }
     public DbSet<ToponymCoordinate> ToponymCoordinates { get; set; }
@@ -72,6 +74,7 @@ public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<int>, in
     public DbSet<HistoricalContextTimeline> HistoricalContextsTimelines { get; set; }
     public DbSet<StreetcodePartner> StreetcodePartners { get; set; }
     public DbSet<TeamMemberPositions> TeamMemberPosition { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
