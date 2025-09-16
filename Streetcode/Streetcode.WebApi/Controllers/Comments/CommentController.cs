@@ -1,5 +1,13 @@
-﻿namespace Streetcode.WebApi.Controllers.Comments;
+﻿using Microsoft.AspNetCore.Mvc;
+using Streetcode.BLL.MediatR.Comments.GetByStreetcodeId;
 
-public class CommentController
+namespace Streetcode.WebApi.Controllers.Comments;
+
+public class CommentController : BaseApiController
 {
+    [HttpGet("{streetcodeId:int}")]
+    public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new GetCommentsByStreetcodeIdQuery(streetcodeId)));
+    }
 }
