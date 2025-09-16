@@ -249,6 +249,7 @@ public class CreateCommentHandlerTests
             StreetcodeId = 1,
             ParentCommentId = null
         };
+
         // Simulate a user trying to create a comment for another user
         return new CreateCommentCommand(dto, 1);
     }

@@ -25,6 +25,8 @@ public class CommentContent
 
     public int? ParentCommentId { get; set; }
     public CommentContent? ParentComment { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     public ICollection<CommentContent> Replies { get; set; } = new List<CommentContent>();
 }

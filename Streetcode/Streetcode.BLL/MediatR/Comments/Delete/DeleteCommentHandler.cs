@@ -14,7 +14,6 @@ namespace Streetcode.BLL.MediatR.Comments.Delete;
 public class DeleteCommentCommandHandler
     : IRequestHandler<DeleteCommentCommand, Result<CommentDTO>>
 {
-
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
     private readonly IMapper _mapper;
@@ -33,7 +32,7 @@ public class DeleteCommentCommandHandler
         {
             string errorMsg = Errors_Common.NotFoundById.FormatWith("comment", commendId);
             _logger.LogError(request, errorMsg);
-            return Result.Fail(errorMsg);
+            return Result.Fail<CommentDTO>(errorMsg);
         }
 
         bool isAdmin = request.UserRole == UserRole.MainAdministrator
@@ -60,7 +59,7 @@ public class DeleteCommentCommandHandler
         {
             string errorMsg = Errors_Common.FailedToDelete.FormatWith("comment");
             _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            return Result.Fail<CommentDTO>(new Error(errorMsg));
         }
     }
 }

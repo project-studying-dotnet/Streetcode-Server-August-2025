@@ -1,5 +1,5 @@
-﻿using Streetcode.DAL.Enums;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using Streetcode.DAL.Enums;
 
 namespace Streetcode.WebApi.Utils;
 
@@ -9,7 +9,9 @@ public static class AuthHelper
     {
         var claim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(claim))
+        {
             throw new UnauthorizedAccessException("UserId not found in token.");
+        }
 
         return int.Parse(claim);
     }
@@ -18,10 +20,14 @@ public static class AuthHelper
     {
         var roleClaim = user.FindFirst(ClaimTypes.Role)?.Value;
         if (string.IsNullOrEmpty(roleClaim))
+        {
             throw new UnauthorizedAccessException("Role not found in token.");
+        }
 
         if (!Enum.TryParse<UserRole>(roleClaim, out var role))
+        {
             throw new UnauthorizedAccessException($"Invalid role in token: {roleClaim}");
+        }
 
         return role;
     }
