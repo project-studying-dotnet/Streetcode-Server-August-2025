@@ -11,14 +11,9 @@ public class AzureBlobService : IBlobService
 {
     private readonly BlobContainerClient _blobContainerClient;
 
-    public AzureBlobService(IOptions<AzureBlobEnvironmentVariables> azureOptions)
+    public AzureBlobService(BlobContainerClient blobContainerClient)
     {
-        var options = azureOptions.Value;
-
-        var blobServiceClient = new BlobServiceClient(options.ConnectionString);
-        _blobContainerClient = blobServiceClient.GetBlobContainerClient(options.ContainerName);
-
-        _blobContainerClient.CreateIfNotExists();
+        _blobContainerClient = blobContainerClient;
     }
 
     public string SaveFileInStorage(string base64, string name, string mimeType)
@@ -27,7 +22,7 @@ public class AzureBlobService : IBlobService
 
         var createdBlobName = $"{DateTime.Now}{name}"
             .Replace(" ", "_")
-            .Replace(":", "-")
+            .Replace(":", "_")
             .Replace(".", "_");
 
         var hashBlobName = HashFunction(createdBlobName);

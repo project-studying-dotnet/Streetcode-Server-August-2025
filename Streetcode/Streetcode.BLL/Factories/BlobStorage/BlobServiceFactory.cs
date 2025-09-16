@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Options;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -27,8 +28,18 @@ public class BlobServiceFactory : IBlobServiceFactory
 
         return storageType switch
         {
-            "azure" => new AzureBlobService(_azureBlobOptions),
+            "azure" => CreateAzureBlobService(),
             _ => new BlobService(_blobOptions, _repositoryWrapper),
         };
+    }
+
+    private IBlobService CreateAzureBlobService()
+    {
+        var options = _azureBlobOptions.Value;
+
+        var blobServiceClient = new BlobServiceClient(options.ConnectionString);
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(options.ContainerName);
+
+        return new AzureBlobService(blobContainerClient);
     }
 }
