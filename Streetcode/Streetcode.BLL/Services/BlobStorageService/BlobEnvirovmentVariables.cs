@@ -4,4 +4,5 @@ public class BlobEnvironmentVariables
 {
     public string BlobStoreKey { get; set; }
     public string BlobStorePath { get; set; }
+    public string StorageType { get; set; } = "Local";
 }
