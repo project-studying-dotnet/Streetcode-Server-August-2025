@@ -1,12 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Streetcode.BLL.DTO.Comments;
+using Streetcode.BLL.MediatR.Comments.Create;
 using Streetcode.BLL.MediatR.Comments.Delete;
+using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Utils;
 
 namespace Streetcode.WebApi.Controllers.Comments;
 
 public class CommentController : BaseApiController
 {
+    [HttpPost]
+    [AuthorizeRoles]
+    public async Task<IActionResult> Create([FromBody] CommentCreateDTO commentCreate)
+    {
+        return HandleResult(await Mediator.Send(new CreateCommentCommand(commentCreate)));
+    }
+
     [Authorize]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
