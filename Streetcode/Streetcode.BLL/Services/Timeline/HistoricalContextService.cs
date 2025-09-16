@@ -129,6 +129,8 @@ namespace Streetcode.BLL.Services.Timeline
                     {
                         return Result.Fail(Errors_Common.NotFoundById.FormatWith("Historical context", contextDto.Id.Value));
                     }
+
+                    _repositoryWrapper.HistoricalContextRepository.Attach(historicalContext);
                 }
                 else
                 {
