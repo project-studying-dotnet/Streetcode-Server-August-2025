@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using FluentResults;
@@ -7,8 +8,8 @@ using Streetcode.BLL.MediatR.AdditionalContent.Coordinate.Delete;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.AdditionalContent;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
 namespace Streetcode.XUnitTest.BLL.MediatR.AdditionalContent.Coordinate;
@@ -38,11 +39,13 @@ public class DeleteCoordinateHandlerTests
         var request = new DeleteCoordinateCommand(1);
         var coordinateEntity = new StreetcodeCoordinate { Id = 1 };
 
-        _mockStreetcodeCoordinateRepository.Setup(r => r.GetFirstOrDefaultAsync(c => c.Id == It.IsAny<int>(), null))
+        _mockStreetcodeCoordinateRepository.Setup(r => r.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<StreetcodeCoordinate, bool>>>(),
+                null))
             .ReturnsAsync(coordinateEntity);
 
         _mockStreetcodeCoordinateRepository.Setup(r => r.Delete(coordinateEntity));
-        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1); // Ensure this returns > 0
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -50,7 +53,7 @@ public class DeleteCoordinateHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(Unit.Value);
-        _mockStreetcodeCoordinateRepository.Verify(r => r.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<StreetcodeCoordinate, bool>>>(), null), Times.Once);
+        _mockStreetcodeCoordinateRepository.Verify(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCoordinate, bool>>>(), null), Times.Once);
         _mockStreetcodeCoordinateRepository.Verify(r => r.Delete(It.IsAny<StreetcodeCoordinate>()), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
@@ -83,12 +86,15 @@ public class DeleteCoordinateHandlerTests
     {
         // Arrange
         var request = new DeleteCoordinateCommand(1);
-        var coordinateEntity = new StreetcodeCoordinate { Id = 1 };
+        var coordinateEntity = new StreetcodeCoordinate { Id = 1 }; // Return a valid entity
 
-        _mockStreetcodeCoordinateRepository.Setup(r => r.GetFirstOrDefaultAsync(c => c.Id == It.IsAny<int>(), null))
-            .ReturnsAsync(coordinateEntity);
+        _mockStreetcodeCoordinateRepository.Setup(r => r.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<StreetcodeCoordinate, bool>>>(),
+                null))
+            .ReturnsAsync(coordinateEntity); // Mock a successful find
 
-        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
+        _mockStreetcodeCoordinateRepository.Setup(r => r.Delete(It.IsAny<StreetcodeCoordinate>()));
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0); // Mock a failed save
 
         var expectedError = Errors_Common.FailedToDelete.FormatWith("streetcodeCoordinate");
 
@@ -99,7 +105,7 @@ public class DeleteCoordinateHandlerTests
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
         result.Errors.First().Message.Should().Contain(expectedError);
-        _mockStreetcodeCoordinateRepository.Verify(r => r.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<StreetcodeCoordinate, bool>>>(), null), Times.Once);
+        _mockStreetcodeCoordinateRepository.Verify(r => r.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCoordinate, bool>>>(), null), Times.Once);
         _mockStreetcodeCoordinateRepository.Verify(r => r.Delete(It.IsAny<StreetcodeCoordinate>()), Times.Once);
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
