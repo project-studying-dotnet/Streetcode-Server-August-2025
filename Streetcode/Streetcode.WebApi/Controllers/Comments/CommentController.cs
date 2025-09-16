@@ -11,10 +11,11 @@ namespace Streetcode.WebApi.Controllers.Comments;
 public class CommentController : BaseApiController
 {
     [HttpPost]
-    [AuthorizeRoles]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] CommentCreateDTO commentCreate)
     {
-        return HandleResult(await Mediator.Send(new CreateCommentCommand(commentCreate)));
+        var userId = AuthHelper.GetUserId(HttpContext.User);
+        return HandleResult(await Mediator.Send(new CreateCommentCommand(commentCreate, userId)));
     }
 
     [Authorize]
