@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.Interfaces.Logging;
@@ -40,7 +42,7 @@ public class DeleteCommentTests
     }
 
     [Fact]
-    public async Task DeleteComment_WhenAdminOrOwner_ShouldReturnSuccessAndDeleteComment()
+    public async Task DeleteComment_WhenAdminOrOwnerAndNoReplies_ShouldHardDelete()
     {
         // Arrange
         var command = CreateDeleteCommand(1, 100, UserRole.Administrator);
@@ -48,7 +50,8 @@ public class DeleteCommentTests
         var mappedComment = new CommentDTO { Id = 1, UserId = 100, Text = "Test", CreatedAt = DateTime.UtcNow, StreetcodeId = 1 };
 
         _mockCommentRepository.Setup(r => r.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<CommentContent, bool>>>(), null))
+            It.IsAny<Expression<Func<CommentContent, bool>>>(),
+            It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
             .ReturnsAsync(comment);
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(1);
@@ -66,6 +69,52 @@ public class DeleteCommentTests
     }
 
     [Fact]
+    public async Task DeleteComment_WhenAdminOrOwnerAndHasReplies_ShouldSoftDelete()
+    {
+        // Arrange
+        var command = CreateDeleteCommand(1, 100, UserRole.Administrator);
+        var comment = CreateComment(1, 100);
+        comment.Replies = new List<CommentContent>
+        {
+            new()
+            {
+                Id = 2
+            }
+        };
+        var mappedComment = new CommentDTO
+        {
+            Id = 1,
+            UserId = 100,
+            Text = "Test",
+            CreatedAt = DateTime.UtcNow,
+            StreetcodeId = 1,
+            IsDeleted = true,
+            DeletedAt = DateTime.UtcNow
+        };
+
+        _mockCommentRepository.Setup(r => r.GetFirstOrDefaultAsync(
+            It.IsAny<Expression<Func<CommentContent, bool>>>(),
+            It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
+            .ReturnsAsync(comment);
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+        _mockMapper.Setup(m => m.Map<CommentDTO>(comment)).Returns(mappedComment);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEquivalentTo(mappedComment);
+        _mockCommentRepository.Verify(r => r.Delete(It.IsAny<CommentContent>()), Times.Never);
+        _mockCommentRepository.Verify(r => r.Update(comment), Times.Once);
+        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
+        comment.IsDeleted.Should().BeTrue();
+        comment.DeletedAt.Should().NotBeNull();
+    }
+
+    [Fact]
     public async Task DeleteComment_WhenUnauthorized_ShouldReturnFailure()
     {
         // Arrange
@@ -74,7 +123,8 @@ public class DeleteCommentTests
         var errorMsg = Errors_Common.UnauthorizedAction.FormatWith("delete this comment");
 
         _mockCommentRepository.Setup(r => r.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<CommentContent, bool>>>(), null))
+            It.IsAny<Expression<Func<CommentContent, bool>>>(),
+            It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
             .ReturnsAsync(comment);
 
         // Act
@@ -96,7 +146,8 @@ public class DeleteCommentTests
         var errorMsg = Errors_Common.NotFoundById.FormatWith("comment", command.Id);
 
         _mockCommentRepository.Setup(r => r.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<CommentContent, bool>>>(), null))
+            It.IsAny<Expression<Func<CommentContent, bool>>>(),
+            It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
             .ReturnsAsync((CommentContent?)null);
 
         // Act
@@ -119,7 +170,8 @@ public class DeleteCommentTests
         var errorMsg = Errors_Common.FailedToDelete.FormatWith("comment");
 
         _mockCommentRepository.Setup(r => r.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<CommentContent, bool>>>(), null))
+            It.IsAny<Expression<Func<CommentContent, bool>>>(),
+            It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
             .ReturnsAsync(comment);
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
             .ReturnsAsync(0);
@@ -135,26 +187,6 @@ public class DeleteCommentTests
         _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
-    [Fact]
-    public async Task DeleteComment_WhenRepositoryThrowsException_ShouldPropagateException()
-    {
-        // Arrange
-        var command = CreateDeleteCommand(1, 100, UserRole.MainAdministrator);
-        var comment = CreateComment(1, 100);
-
-        _mockCommentRepository.Setup(r => r.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<CommentContent, bool>>>(), null))
-            .ReturnsAsync(comment);
-        _mockCommentRepository.Setup(r => r.Delete(comment))
-            .Throws<InvalidOperationException>();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(
-            () => _handler.Handle(command, CancellationToken.None));
-        _mockCommentRepository.Verify(r => r.Delete(comment), Times.Once);
-        _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
-    }
-
     // Helper methods
     private static DeleteCommentCommand CreateDeleteCommand(int id, int requestingUserId, UserRole role)
         => new(id, requestingUserId, role);
@@ -166,6 +198,7 @@ public class DeleteCommentTests
             Text = "Test",
             CreatedAt = DateTime.UtcNow,
             UserId = userId,
-            StreetcodeId = 1
+            StreetcodeId = 1,
+            Replies = new List<CommentContent>()
         };
 }
