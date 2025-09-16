@@ -380,4 +380,152 @@ public class AzureBlobServiceTests
         result.Should().EndWith($".{mimeType}");
         capturedStream.Should().NotBeNull();
     }
+
+    [Fact]
+    public void SaveFileInStorageWithName_ValidParameters_ShouldUploadWithCorrectNameAndExtension()
+    {
+        // Arrange
+        var testData = "Hello World";
+        var base64Data = Convert.ToBase64String(Encoding.UTF8.GetBytes(testData));
+        var fileName = "custom-name";
+        var extension = "png";
+
+        var mockResponse = new Mock<Response<BlobContentInfo>>();
+        var blobContentInfo = BlobsModelFactory.BlobContentInfo(
+            eTag: new ETag("etag"),
+            lastModified: DateTimeOffset.UtcNow,
+            contentHash: Array.Empty<byte>(),
+            versionId: "version",
+            encryptionKeySha256: "key",
+            encryptionScope: "scope",
+            blobSequenceNumber: 1);
+        mockResponse.Setup(x => x.Value).Returns(blobContentInfo);
+
+        string capturedBlobName = null!;
+        _mockContainerClient
+            .Setup(x => x.GetBlobClient(It.IsAny<string>()))
+            .Callback<string>(name => capturedBlobName = name)
+            .Returns(_mockBlobClient.Object);
+
+        BlobUploadOptions capturedOptions = null!;
+        _mockBlobClient
+            .Setup(x => x.Upload(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), It.IsAny<CancellationToken>()))
+            .Callback<Stream, BlobUploadOptions, CancellationToken>((_, options, _) => capturedOptions = options)
+            .Returns(mockResponse.Object);
+
+        // Act
+        _azureBlobService.SaveFileInStorageWithName(base64Data, fileName, extension);
+
+        // Assert
+        capturedBlobName.Should().Be($"{fileName}.{extension}");
+        capturedOptions.Should().NotBeNull();
+        capturedOptions.HttpHeaders.ContentType.Should().Be("image/png");
+    }
+
+    [Theory]
+    [InlineData("jpg", "image/jpeg")]
+    [InlineData("jpeg", "image/jpeg")]
+    [InlineData("png", "image/png")]
+    [InlineData("gif", "image/gif")]
+    [InlineData("mp3", "audio/mpeg")]
+    [InlineData("wav", "audio/wav")]
+    [InlineData("pdf", "application/pdf")]
+    [InlineData("unknown", "application/octet-stream")]
+    public void SaveFileInStorageWithName_DifferentExtensions_ShouldSetCorrectContentType(string extension, string expectedContentType)
+    {
+        // Arrange
+        var testData = "Hello World";
+        var base64Data = Convert.ToBase64String(Encoding.UTF8.GetBytes(testData));
+        var fileName = "custom-name";
+
+        var mockResponse = new Mock<Response<BlobContentInfo>>();
+        var blobContentInfo = BlobsModelFactory.BlobContentInfo(
+            eTag: new ETag("etag"),
+            lastModified: DateTimeOffset.UtcNow,
+            contentHash: Array.Empty<byte>(),
+            versionId: "version",
+            encryptionKeySha256: "key",
+            encryptionScope: "scope",
+            blobSequenceNumber: 1);
+        mockResponse.Setup(x => x.Value).Returns(blobContentInfo);
+
+        BlobUploadOptions capturedOptions = null!;
+        _mockBlobClient
+            .Setup(x => x.Upload(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), It.IsAny<CancellationToken>()))
+            .Callback<Stream, BlobUploadOptions, CancellationToken>((_, options, _) => capturedOptions = options)
+            .Returns(mockResponse.Object);
+
+        // Act
+        _azureBlobService.SaveFileInStorageWithName(base64Data, fileName, extension);
+
+        // Assert
+        capturedOptions.Should().NotBeNull();
+        capturedOptions.HttpHeaders.ContentType.Should().Be(expectedContentType);
+    }
+
+    [Fact]
+    public void SaveFileInStorageWithName_InvalidBase64_ShouldThrowFormatException()
+    {
+        // Arrange
+        var base64Data = "invalid-base64-string";
+        var fileName = "custom-name";
+        var extension = "jpg";
+
+        // Act & Assert
+        var action = () => _azureBlobService.SaveFileInStorageWithName(base64Data, fileName, extension);
+        action.Should().Throw<FormatException>();
+    }
+
+    [Fact]
+    public void SaveFileInStorageWithName_NullBase64_ShouldThrowArgumentNullException()
+    {
+        // Arrange
+        string base64Data = null!;
+        var fileName = "custom-name";
+        var extension = "jpg";
+
+        // Act & Assert
+        var action = () => _azureBlobService.SaveFileInStorageWithName(base64Data, fileName, extension);
+        action.Should().Throw<ArgumentNullException>();
+    }
+
+    [Theory]
+    [InlineData("file with spaces.txt")]
+    [InlineData("file:with:colons.jpg")]
+    [InlineData("file.with.dots.png")]
+    [InlineData("normal-file.pdf")]
+    public void SaveFileInStorageWithName_FileNameWithSpecialCharacters_ShouldPreserveNameAndExtension(string fileName)
+    {
+        // Arrange
+        var testData = "Hello World";
+        var base64Data = Convert.ToBase64String(Encoding.UTF8.GetBytes(testData));
+        var extension = "jpg";
+
+        var mockResponse = new Mock<Response<BlobContentInfo>>();
+        var blobContentInfo = BlobsModelFactory.BlobContentInfo(
+            eTag: new ETag("etag"),
+            lastModified: DateTimeOffset.UtcNow,
+            contentHash: Array.Empty<byte>(),
+            versionId: "version",
+            encryptionKeySha256: "key",
+            encryptionScope: "scope",
+            blobSequenceNumber: 1);
+        mockResponse.Setup(x => x.Value).Returns(blobContentInfo);
+
+        string capturedBlobName = null!;
+        _mockContainerClient
+            .Setup(x => x.GetBlobClient(It.IsAny<string>()))
+            .Callback<string>(name => capturedBlobName = name)
+            .Returns(_mockBlobClient.Object);
+
+        _mockBlobClient
+            .Setup(x => x.Upload(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), It.IsAny<CancellationToken>()))
+            .Returns(mockResponse.Object);
+
+        // Act
+        _azureBlobService.SaveFileInStorageWithName(base64Data, fileName, extension);
+
+        // Assert
+        capturedBlobName.Should().Be($"{fileName}.{extension}");
+    }
 }

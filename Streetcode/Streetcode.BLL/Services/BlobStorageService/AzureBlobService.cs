@@ -41,6 +41,22 @@ public class AzureBlobService : IBlobService
         return $"{hashBlobName}.{mimeType}";
     }
 
+    public void SaveFileInStorageWithName(string base64, string name, string extension)
+    {
+        var bytes = Convert.FromBase64String(base64);
+
+        using var stream = new MemoryStream(bytes);
+        var blobClient = _blobContainerClient.GetBlobClient($"{name}.{extension}");
+
+        blobClient.Upload(stream, new BlobUploadOptions
+        {
+            HttpHeaders = new BlobHttpHeaders
+            {
+                ContentType = GetContentType(extension)
+            }
+        });
+    }
+
     public MemoryStream FindFileInStorageAsMemoryStream(string name)
     {
         var bytes = FindFileInStorage(name);
