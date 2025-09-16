@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.Delete;
@@ -27,7 +28,9 @@ public class DeleteCommentCommandHandler
     public async Task<Result<CommentDTO>> Handle(DeleteCommentCommand request, CancellationToken cancellationToken)
     {
         int commendId = request.Id;
-        var comment = await _repositoryWrapper.CommentRepository.GetFirstOrDefaultAsync(c => c.Id == commendId);
+        var comment = await _repositoryWrapper.CommentRepository.GetFirstOrDefaultAsync(
+            c => c.Id == commendId,
+            include: c => c.Include(cc => cc.Replies));
         if (comment == null)
         {
             string errorMsg = Errors_Common.NotFoundById.FormatWith("comment", commendId);
@@ -48,7 +51,20 @@ public class DeleteCommentCommandHandler
             return Result.Fail<CommentDTO>(errorMsg);
         }
 
-        _repositoryWrapper.CommentRepository.Delete(comment);
+        // Check if comment has replies
+        if (comment.Replies != null && comment.Replies.Any())
+        {
+            // Soft delete if replies exist
+            comment.IsDeleted = true;
+            comment.DeletedAt = DateTime.UtcNow;
+            _repositoryWrapper.CommentRepository.Update(comment);
+        }
+        else
+        {
+            // Hard delete if no replies
+            _repositoryWrapper.CommentRepository.Delete(comment);
+        }
+
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
         if (resultIsSuccess)
         {
