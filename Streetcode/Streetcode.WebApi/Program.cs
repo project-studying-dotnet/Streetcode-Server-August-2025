@@ -3,6 +3,8 @@ using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.WebApi.BackgroundServices;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Middlewares;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
@@ -16,6 +18,13 @@ builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.ConfigureJwt(builder);
 builder.Services.AddHostedService<RefreshTokenCleanupService>();
+
+// Ocelot Basic setup
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddOcelot(); // single ocelot.json file in read-only mode
+builder.Services
+    .AddOcelot(builder.Configuration);
 
 // Connect extension method Identity
 builder.Services.AddIdentityServices();
@@ -64,6 +73,8 @@ if (app.Environment.EnvironmentName != "Local")
 
 app.MapControllers();
 
+// Add middlewares ocelot
+await app.UseOcelot();
 await app.RunAsync();
 
 public partial class Program
