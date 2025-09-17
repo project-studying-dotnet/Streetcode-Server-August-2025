@@ -27,6 +27,7 @@ using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.MediatR;
 using Streetcode.BLL;
+using Streetcode.BLL.Factories.BlobStorage;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.BLL.Services.JwtService;
 using Streetcode.DAL.Entities.Users;
@@ -57,7 +58,14 @@ public static class ServiceCollectionExtensions
             ApplicationAssembly.Assembly,
             includeInternalTypes: true);
 
-        services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<IBlobServiceFactory, BlobServiceFactory>();
+
+        services.AddScoped<IBlobService>(provider =>
+        {
+            var factory = provider.GetRequiredService<IBlobServiceFactory>();
+            return factory.CreateBlobService();
+        });
+
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
