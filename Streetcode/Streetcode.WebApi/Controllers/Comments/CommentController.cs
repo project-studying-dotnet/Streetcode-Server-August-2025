@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Streetcode.BLL.MediatR.Comments.GetByStreetcodeId;
 using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.MediatR.Comments.Create;
 using Streetcode.DAL.Enums;
@@ -8,6 +9,12 @@ namespace Streetcode.WebApi.Controllers.Comments;
 
 public class CommentController : BaseApiController
 {
+    [HttpGet("{streetcodeId:int}")]
+    public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new GetCommentsByStreetcodeIdQuery(streetcodeId)));
+    }
+
     [HttpPost]
     [AuthorizeRoles]
     public async Task<IActionResult> Create([FromBody] CommentCreateDTO commentCreate)
