@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
 using Streetcode.BLL.Interfaces.Jwt;
-using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Entities.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

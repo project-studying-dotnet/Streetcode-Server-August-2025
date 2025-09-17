@@ -34,7 +34,7 @@ public class CreateCommentsValidatorTests
     public void ShouldReturnError_WhenNewCommentIsNull()
     {
         // Arrange
-        var command = new CreateCommentCommand(null!);
+        var command = new CreateCommentCommand(null!, 1);
         var expectedMessage = Errors_Validation.IsRequired.FormatWith("NewComment");
 
         // Act
@@ -203,12 +203,13 @@ public class CreateCommentsValidatorTests
     public void ShouldReturnMultipleErrors_WhenMultipleFieldsAreInvalid()
     {
         // Arrange
-        var command = new CreateCommentCommand(new CommentCreateDTO
-        {
-            Text = string.Empty,
-            UserId = 0,
-            StreetcodeId = -1
-        });
+        var command = new CreateCommentCommand(
+            new CommentCreateDTO
+            {
+                Text = string.Empty,
+                UserId = 0,
+                StreetcodeId = -1
+            }, 1);
 
         // Act
         var result = _validator.TestValidate(command);
@@ -221,12 +222,13 @@ public class CreateCommentsValidatorTests
 
     private static CreateCommentCommand GetValidCommentCommand()
     {
-        return new CreateCommentCommand(new CommentCreateDTO
-        {
-            Text = "This is a valid comment text.",
-            UserId = 1,
-            StreetcodeId = 1,
-            ParentCommentId = null
-        });
+        return new CreateCommentCommand(
+            new CommentCreateDTO
+            {
+                Text = "This is a valid comment text.",
+                UserId = 1,
+                StreetcodeId = 1,
+                ParentCommentId = null
+            }, 1);
     }
 }

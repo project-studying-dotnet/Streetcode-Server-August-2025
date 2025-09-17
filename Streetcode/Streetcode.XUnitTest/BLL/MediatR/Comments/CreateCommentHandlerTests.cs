@@ -116,14 +116,43 @@ public class CreateCommentHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithParentComment_ShouldReturnSuccess()
+    public async Task Handle_WithDifferentUserIds_ShouldReturnFailure()
+    {
+        // Arrange
+        var request = CreateRequestWithDifferentUserId();
+        var commentEntity = CreateCommentEntityWithDifferentUserId();
+        var errorMsg = Errors_Common.UnauthorizedAction.FormatWith("create comment for another user");
+
+        _mockMapper.Setup(m => m.Map<CommentContent>(request.NewComment))
+            .Returns(commentEntity);
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailed);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
+        _mockLogger.Verify(l => l.LogWarning($"User {request.UserId} attempted to create a comment for another user {commentEntity.UserId}"), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_CreateReply_Success()
     {
         // Arrange
         var request = CreateRequestWithParentComment();
         var commentEntity = CreateCommentEntityWithParent();
         var commentDto = CreateCommentDtoWithParent();
 
-        SetupMocksForSuccess(request, commentEntity, commentDto);
+        _mockMapper.Setup(m => m.Map<CommentContent>(request.NewComment))
+            .Returns(commentEntity);
+        _mockRepositoryWrapper.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<CommentContent, bool>>>(), null))
+            .ReturnsAsync(new CommentContent { Id = commentEntity.ParentCommentId!.Value });
+        _mockRepositoryWrapper.Setup(r => r.CommentRepository.CreateAsync(commentEntity))
+            .ReturnsAsync(commentEntity);
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+        _mockMapper.Setup(m => m.Map<CommentDTO>(commentEntity))
+            .Returns(commentDto);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -132,6 +161,28 @@ public class CreateCommentHandlerTests
         Assert.True(result.IsSuccess);
         Assert.Equal(commentDto, result.Value);
         Assert.Equal(5, result.Value.ParentCommentId);
+    }
+
+    [Fact]
+    public async Task Handle_CreateReply_Failure_ParentNotFound()
+    {
+        // Arrange
+        var request = CreateRequestWithParentComment();
+        var commentEntity = CreateCommentEntityWithParent();
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("parent comment", commentEntity.ParentCommentId!.Value);
+
+        _mockMapper.Setup(m => m.Map<CommentContent>(request.NewComment))
+            .Returns(commentEntity);
+        _mockRepositoryWrapper.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<CommentContent, bool>>>(), null))
+            .ReturnsAsync((CommentContent)null!);
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsFailed);
+        Assert.Contains(errorMsg, result.Errors[0].Message);
+        _mockLogger.Verify(l => l.LogError(request, errorMsg), Times.Once);
     }
 
     [Fact]
@@ -153,67 +204,54 @@ public class CreateCommentHandlerTests
         Assert.Equal(1000, result.Value.Text!.Length);
     }
 
-    [Fact]
-    public async Task Handle_WithDifferentUserIds_ShouldReturnSuccess()
-    {
-        // Arrange
-        var request = CreateRequestWithDifferentUserId();
-        var commentEntity = CreateCommentEntityWithDifferentUserId();
-        var commentDto = CreateCommentDtoWithDifferentUserId();
-
-        SetupMocksForSuccess(request, commentEntity, commentDto);
-
-        // Act
-        var result = await _handler.Handle(request, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(commentDto, result.Value);
-        Assert.Equal(999, result.Value.UserId);
-    }
-
     private static CreateCommentCommand CreateValidRequest()
     {
-        return new CreateCommentCommand(new CommentCreateDTO
+        var dto = new CommentCreateDTO
         {
             Text = "This is a test comment.",
             UserId = 1,
             StreetcodeId = 1,
             ParentCommentId = null
-        });
+        };
+        return new CreateCommentCommand(dto, dto.UserId);
     }
 
     private static CreateCommentCommand CreateRequestWithParentComment()
     {
-        return new CreateCommentCommand(new CommentCreateDTO
+        var dto = new CommentCreateDTO
         {
             Text = "This is a reply comment.",
             UserId = 2,
             StreetcodeId = 1,
             ParentCommentId = 5
-        });
+        };
+        return new CreateCommentCommand(dto, dto.UserId);
     }
 
     private static CreateCommentCommand CreateRequestWithLongText()
     {
-        return new CreateCommentCommand(new CommentCreateDTO
+        var dto = new CommentCreateDTO
         {
             Text = new string('a', 1000),
             UserId = 1,
             StreetcodeId = 1,
             ParentCommentId = null
-        });
+        };
+        return new CreateCommentCommand(dto, dto.UserId);
     }
 
     private static CreateCommentCommand CreateRequestWithDifferentUserId()
     {
-        return new CreateCommentCommand(new CommentCreateDTO
+        var dto = new CommentCreateDTO
         {
             Text = "Comment from different user.",
             UserId = 999,
             StreetcodeId = 1,
             ParentCommentId = null
-        });
+        };
+
+        // Simulate a user trying to create a comment for another user
+        return new CreateCommentCommand(dto, 1);
     }
 
     private static CommentContent CreateCommentEntity()
