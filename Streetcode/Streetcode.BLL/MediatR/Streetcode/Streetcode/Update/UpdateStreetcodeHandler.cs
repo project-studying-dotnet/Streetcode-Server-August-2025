@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Interfaces;
 using Streetcode.BLL.DTO.Media.Images;
-using Streetcode.BLL.DTO.Streetcode;
-using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
 {
@@ -25,12 +19,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
         private IRepositoryWrapper _repositoryWrapper;
         private IMapper _mapper;
         private ILoggerService _logger;
+        private readonly IRedisService<StreetcodeContent> _redisService;
 
-        public UpdateStreetcodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+        public UpdateStreetcodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger, IRedisService<StreetcodeContent> redisService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _logger = logger;
+            _redisService = redisService;
         }
 
         public async Task<Result<int>> Handle(UpdateStreetcodeCommand request, CancellationToken cancellationToken)
@@ -71,6 +67,15 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                         _logger.LogInformation($"No changes detected for Streetcode ID {existingEntity.Id}; committing transaction.");
                     }
 
+                    var redisKeys = new[]
+                        {
+                            $"streetcodeById:{existingEntity.Id}",
+                            $"streetcodeByIndex:{existingEntity.Index}",
+                            $"streetcodeByUrl:{existingEntity.TransliterationUrl}",
+                            $"streetcodeShortById:{existingEntity.Id}"
+                        };
+
+                    await _redisService.DeleteAsync(redisKeys, cancellationToken);
                     transactionScope.Complete();
 
                     _logger.LogInformation($"Success! Streetcode with ID {existingEntity.Id} was updated");

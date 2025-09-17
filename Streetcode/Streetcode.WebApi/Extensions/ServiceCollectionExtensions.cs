@@ -22,6 +22,8 @@ using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.MediatR;
 using Streetcode.BLL;
+using Streetcode.BLL.Interfaces.Redis;
+using Streetcode.BLL.Services.Redis;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -52,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped(typeof(IRedisService<>), typeof(RedisService<>));
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -96,6 +99,12 @@ public static class ServiceCollectionExtensions
 
         services.AddLogging();
         services.AddControllers();
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = "redis:6379";
+            options.InstanceName = "Streetcode_";
+        });
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)

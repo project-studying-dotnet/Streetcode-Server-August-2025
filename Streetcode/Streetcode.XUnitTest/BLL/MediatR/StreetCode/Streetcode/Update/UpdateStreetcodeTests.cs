@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using System.Transactions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
-using Streetcode.BLL.MediatR.Streetcode.Text.GetById;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
@@ -25,13 +20,16 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILoggerService> _loggerServiceMock;
+        private readonly Mock<IRedisService<StreetcodeContent>> _redisServiceMock;
         private readonly UpdateStreetcodeHandler _handler;
         public UpdateStreetcodeTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
             _loggerServiceMock = new Mock<ILoggerService>();
-            _handler = new UpdateStreetcodeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object);
+            _redisServiceMock = new Mock<IRedisService<StreetcodeContent>>();
+
+            _handler = new UpdateStreetcodeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object, _redisServiceMock.Object);
         }
 
         [Fact]
