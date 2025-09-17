@@ -25,6 +25,7 @@ public class AuthHelperTests
         Assert.Equal(123, result);
     }
 
+    [Fact]
     public void GetUserId_WithNoClaim_ThrowsUnauthorizedAccessException()
     {
         // Arrange
