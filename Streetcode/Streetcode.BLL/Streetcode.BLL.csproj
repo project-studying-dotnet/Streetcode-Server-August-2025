@@ -52,7 +52,6 @@
     <Folder Include="MediatR\AdditionalContent\Tag\" />
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
-    <Folder Include="MediatR\Comments\" />
     <Folder Include="MediatR\Users\Register\" />
     <Folder Include="Validators\Email\" />
     <Folder Include="Validators\Helpers\" />
