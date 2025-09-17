@@ -18,7 +18,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Users.Logout
 {
-    public class LogoutUserHandler : IRequestHandler<LogoutUserCommand, Result<LogoutResponceDTO>>
+    public class LogoutUserHandler : IRequestHandler<LogoutUserCommand, Result<LogoutResponseDTO>>
     {
         private readonly ILoggerService _loggerService;
         private readonly IJwtTokenService _jwtTokenService;
@@ -29,7 +29,7 @@ namespace Streetcode.BLL.MediatR.Users.Logout
             _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<Result<LogoutResponceDTO>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
+        public async Task<Result<LogoutResponseDTO>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
         {
             var result = await _jwtTokenService.RevokeRefreshTokenAsync(request.logoutRequestDTO.RefreshToken);
 
@@ -40,7 +40,7 @@ namespace Streetcode.BLL.MediatR.Users.Logout
                 return Result.Fail(new Error(errorMsg));
             }
 
-            return Result.Ok(new LogoutResponceDTO
+            return Result.Ok(new LogoutResponseDTO
             {
                 IsSuccess = true,
                 Message = "Logout successful."

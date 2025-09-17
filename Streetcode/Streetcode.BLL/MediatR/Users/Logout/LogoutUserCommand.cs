@@ -10,5 +10,5 @@ using Streetcode.BLL.DTO.Users.Logout;
 
 namespace Streetcode.BLL.MediatR.Users.Logout
 {
-    public record LogoutUserCommand(LogoutRequestDTO logoutRequestDTO) : IRequest<Result<LogoutResponceDTO>>;
+    public record LogoutUserCommand(LogoutRequestDTO logoutRequestDTO) : IRequest<Result<LogoutResponseDTO>>;
 }

@@ -38,7 +38,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Users
                 RefreshToken = "refresh-token"
             };
 
-            var expectedResponse = new LogoutResponceDTO
+            var expectedResponse = new LogoutResponseDTO
             {
                 IsSuccess = true,
                 Message = "Logout successful."
@@ -64,7 +64,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Users
                 RefreshToken = "refresh-token"
             };
 
-            var expectedResponse = new LogoutResponceDTO
+            var expectedResponse = new LogoutResponseDTO
             {
                 IsSuccess = true,
                 Message = "Logout successful."

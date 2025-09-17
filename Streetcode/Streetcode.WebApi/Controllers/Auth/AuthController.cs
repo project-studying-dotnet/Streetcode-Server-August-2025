@@ -26,7 +26,7 @@ namespace Streetcode.WebApi.Controllers.Auth
         }
 
         [HttpPost("logout")]
-        public async Task<ActionResult<LogoutResponceDTO>> Logout([FromBody] LogoutRequestDTO dto, CancellationToken ct)
+        public async Task<ActionResult<LogoutResponseDTO>> Logout([FromBody] LogoutRequestDTO dto, CancellationToken ct)
         {
             var result = await Mediator.Send(new LogoutUserCommand(dto), ct);
 

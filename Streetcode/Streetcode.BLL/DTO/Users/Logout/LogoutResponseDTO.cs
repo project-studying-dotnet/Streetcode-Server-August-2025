@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Streetcode.BLL.DTO.Users.Logout
 {
-    public class LogoutResponceDTO
+    public class LogoutResponseDTO
     {
         public bool IsSuccess { get; set; }
         public string? Message { get; set; }
