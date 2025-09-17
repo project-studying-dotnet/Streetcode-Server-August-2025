@@ -12,6 +12,8 @@ public class CommentDTO
     public int UserId { get; set; }
     public int StreetcodeId { get; set; }
     public int? ParentCommentId { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     public ICollection<CommentDTO> Replies { get; set; } = new List<CommentDTO>();
 }

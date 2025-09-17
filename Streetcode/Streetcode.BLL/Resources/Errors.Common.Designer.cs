@@ -203,5 +203,14 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("NotFoundByUrl", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unauthorized to {0}.
+        /// </summary>
+        public static string UnauthorizedAction {
+            get {
+                return ResourceManager.GetString("UnauthorizedAction", resourceCulture);
+            }
+        }
     }
 }

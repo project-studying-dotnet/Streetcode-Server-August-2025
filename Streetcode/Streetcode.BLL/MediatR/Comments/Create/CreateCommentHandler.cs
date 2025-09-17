@@ -36,6 +36,29 @@ public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, Result
             return Result.Fail(new Error(errorMsg));
         }
 
+        if (commentEntity.UserId != request.UserId)
+        {
+            var errorMsg = Errors_Common.UnauthorizedAction.FormatWith("create comment for another user");
+            _logger.LogWarning($"User {request.UserId} attempted to create a comment for another user {commentEntity.UserId}");
+
+            return Result.Fail(new Error(errorMsg));
+        }
+
+        if (commentEntity.ParentCommentId.HasValue)
+        {
+            var parent = await _repositoryWrapper.CommentRepository
+                .GetFirstOrDefaultAsync(c => c.Id == commentEntity.ParentCommentId.Value);
+
+            if (parent == null)
+            {
+                var errorMsg = Errors_Common.NotFoundById.FormatWith("parent comment", commentEntity.ParentCommentId.Value);
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
+            }
+        }
+
+        commentEntity.CreatedAt = DateTime.UtcNow;
+
         var createdComment = await _repositoryWrapper.CommentRepository.CreateAsync(commentEntity);
         var isSuccessResult = await _repositoryWrapper.SaveChangesAsync() > 0;
 

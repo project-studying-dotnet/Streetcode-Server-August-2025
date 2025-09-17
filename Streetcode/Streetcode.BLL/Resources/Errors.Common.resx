@@ -165,4 +165,7 @@
   <data name="NotFoundByUrl" xml:space="preserve">
     <value>No {0} by entered Url - {1}</value>
   </data>
+  <data name="UnauthorizedAction" xml:space="preserve">
+    <value>Unauthorized to {0}</value>
+  </data>
 </root>
