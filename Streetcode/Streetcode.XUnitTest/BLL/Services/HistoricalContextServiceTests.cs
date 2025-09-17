@@ -209,6 +209,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
                 It.IsAny<Expression<Func<HistoricalContextEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<HistoricalContextEntity>, IIncludableQueryable<HistoricalContextEntity, object>>>()))
                 .ReturnsAsync(existingContext);
+            _repositoryWrapperMock.Setup(r => r.HistoricalContextRepository.Attach(existingContext));
 
             // Act
             var result = await _service.BuildHistoricalContextLinksAsync(timelineItem, contexts);
@@ -223,6 +224,7 @@ namespace Streetcode.XUnitTest.BLL.Services.Timeline
                 It.IsAny<Expression<Func<HistoricalContextEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<HistoricalContextEntity>,
                 IIncludableQueryable<HistoricalContextEntity, object>>>()), Times.Once);
+            _repositoryWrapperMock.Verify(r => r.HistoricalContextRepository.Attach(existingContext), Times.Once);
 
             _repositoryWrapperMock.VerifyNoOtherCalls();
         }

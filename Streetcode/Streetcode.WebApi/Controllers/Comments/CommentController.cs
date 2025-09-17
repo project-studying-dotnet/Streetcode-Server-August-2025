@@ -4,6 +4,7 @@ using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.MediatR.Comments.Create;
 using Streetcode.BLL.MediatR.Comments.Delete;
 using Streetcode.WebApi.Attributes;
+using Streetcode.BLL.MediatR.Comments.Update;
 using Streetcode.WebApi.Utils;
 
 namespace Streetcode.WebApi.Controllers.Comments;
@@ -33,5 +34,13 @@ public class CommentController : BaseApiController
         var result = await Mediator.Send(command, ct);
 
         return HandleResult(result);
+    }
+
+    [HttpPut]
+    [Authorize]
+    public async Task<IActionResult> Update([FromBody] CommentUpdateDTO comment)
+    {
+        var userId = AuthHelper.GetUserId(HttpContext.User);
+        return HandleResult(await Mediator.Send(new UpdateCommentCommand(comment, userId)));
     }
 }
