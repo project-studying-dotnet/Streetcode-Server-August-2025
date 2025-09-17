@@ -39,7 +39,7 @@ namespace Streetcode.BLL.MediatR.Comments.Update
 
                 if (!isOwner)
                 {
-                    string errorMsg = Errors_Common.UnauthorizedAction.FormatWith("delete this comment");
+                    string errorMsg = Errors_Common.UnauthorizedAction.FormatWith("update this comment");
                     _logger.LogError(request, errorMsg);
                     return Result.Fail<CommentDTO>(errorMsg);
                 }

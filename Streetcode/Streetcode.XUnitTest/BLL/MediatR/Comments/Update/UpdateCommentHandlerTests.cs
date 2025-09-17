@@ -106,7 +106,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.Update
             var requestDto = new CommentUpdateDTO { Id = 1, Text = "Updated text" };
             var existingComment = new CommentContent { Id = 1, Text = "Old text", UserId = 1 };
             var command = new UpdateCommentCommand(requestDto, 2);
-            string errorMsg = Errors_Common.UnauthorizedAction.FormatWith("delete this comment");
+            string errorMsg = Errors_Common.UnauthorizedAction.FormatWith("update this comment");
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<CommentContent, bool>>>(),
