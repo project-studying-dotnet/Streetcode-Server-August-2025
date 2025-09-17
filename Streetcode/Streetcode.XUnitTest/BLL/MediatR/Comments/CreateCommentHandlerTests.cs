@@ -338,6 +338,18 @@ public class CreateCommentHandlerTests
         };
     }
 
+    private static CommentDTO CreateCommentDtoWithDifferentUserId()
+    {
+        return new CommentDTO
+        {
+            Id = 4,
+            Text = "Comment from different user.",
+            UserId = 999,
+            StreetcodeId = 1,
+            ParentCommentId = null
+        };
+    }
+
     private void SetupMocksForSuccess(CreateCommentCommand request, CommentContent entity, CommentDTO dto)
     {
         _mockMapper.Setup(m => m.Map<CommentContent>(request.NewComment))

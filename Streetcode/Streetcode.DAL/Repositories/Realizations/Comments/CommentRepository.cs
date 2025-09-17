@@ -5,7 +5,7 @@ using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.DAL.Repositories.Realizations.Comments;
 
-public class CommentRepository : RepositoryBase<CommentContent>, ICommentRepository
+public class CommentRepository : Base.RepositoryBase<CommentContent>, ICommentRepository
 {
     public CommentRepository(StreetcodeDbContext dbContext)
         : base(dbContext)

@@ -57,7 +57,7 @@ public class BlobService : IBlobService
         return hashBlobStorageName;
     }
 
-    public void SaveFileInStorageBase64(string base64, string name, string extension)
+    public void SaveFileInStorageWithName(string base64, string name, string extension)
     {
         byte[] imageBytes = Convert.FromBase64String(base64);
         Directory.CreateDirectory(_blobPath);
