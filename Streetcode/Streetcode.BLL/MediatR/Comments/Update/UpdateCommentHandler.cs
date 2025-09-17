@@ -35,6 +35,15 @@ namespace Streetcode.BLL.MediatR.Comments.Update
                     return Result.Fail(errorMsg);
                 }
 
+                bool isOwner = comment.UserId == request.RequestingUserId;
+
+                if (!isOwner)
+                {
+                    string errorMsg = Errors_Common.UnauthorizedAction.FormatWith("delete this comment");
+                    _logger.LogError(request, errorMsg);
+                    return Result.Fail<CommentDTO>(errorMsg);
+                }
+
                 _mapper.Map(request.Comment, comment);
                 comment.UpdatedAt = DateTime.UtcNow;
 

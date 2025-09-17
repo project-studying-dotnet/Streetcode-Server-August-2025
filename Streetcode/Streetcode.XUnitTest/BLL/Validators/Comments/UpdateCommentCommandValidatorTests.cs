@@ -34,7 +34,7 @@ public class UpdateCommentCommandValidatorTests
     public void ShouldReturnError_WhenCommentIsNull()
     {
         // Arrange
-        var command = new UpdateCommentCommand(null!);
+        var command = new UpdateCommentCommand(null!, 1);
         var expectedMessage = Errors_Validation.IsRequired.FormatWith("Comment");
 
         // Act
@@ -115,11 +115,12 @@ public class UpdateCommentCommandValidatorTests
     public void ShouldReturnMultipleErrors_WhenMultipleFieldsAreInvalid()
     {
         // Arrange
-        var command = new UpdateCommentCommand(new CommentUpdateDTO
-        {
-            Id = 0,
-            Text = string.Empty
-        });
+        var command = new UpdateCommentCommand(
+            new CommentUpdateDTO
+            {
+                Id = 0,
+                Text = string.Empty
+            }, 1);
 
         // Act
         var result = _validator.TestValidate(command);
@@ -129,12 +130,36 @@ public class UpdateCommentCommandValidatorTests
         result.ShouldHaveValidationErrorFor(c => c.Comment.Text);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void ShouldReturnError_WhenRequestingUserIdIsInvalid(int invalidUserId)
+    {
+        // Arrange
+        var command = new UpdateCommentCommand(
+            new CommentUpdateDTO
+            {
+                Id = 0,
+                Text = string.Empty
+            }, invalidUserId);
+
+        var expectedMessage = Errors_Validation.IsRequired.FormatWith("RequestingUserId");
+
+        // Act
+        var result = _validator.TestValidate(command);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(c => c.RequestingUserId)
+            .WithErrorMessage(expectedMessage);
+    }
+
     private static UpdateCommentCommand GetValidCommentCommand()
     {
-        return new UpdateCommentCommand(new CommentUpdateDTO
-        {
-            Id = 1,
-            Text = "This is a valid updated comment text."
-        });
+        return new UpdateCommentCommand(
+            new CommentUpdateDTO
+            {
+                Id = 1,
+                Text = "This is a valid updated comment text."
+            }, 1);
     }
 }

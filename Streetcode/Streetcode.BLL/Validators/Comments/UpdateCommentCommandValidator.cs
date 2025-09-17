@@ -15,6 +15,10 @@ public class UpdateCommentCommandValidator : AbstractValidator<UpdateCommentComm
             .NotNull()
             .WithMessage(Errors_Validation.IsRequired.FormatWith("Comment"));
 
+        RuleFor(x => x.RequestingUserId)
+            .GreaterThan(0)
+            .WithMessage(Errors_Validation.IsRequired.FormatWith("RequestingUserId"));
+
         When(x => x.Comment != null, () =>
         {
             RuleFor(x => x.Comment.Id)

@@ -37,9 +37,10 @@ public class CommentController : BaseApiController
     }
 
     [HttpPut]
-    [AuthorizeRoles]
+    [Authorize]
     public async Task<IActionResult> Update([FromBody] CommentUpdateDTO comment)
     {
-        return HandleResult(await Mediator.Send(new UpdateCommentCommand(comment)));
+        var userId = AuthHelper.GetUserId(HttpContext.User);
+        return HandleResult(await Mediator.Send(new UpdateCommentCommand(comment, userId)));
     }
 }

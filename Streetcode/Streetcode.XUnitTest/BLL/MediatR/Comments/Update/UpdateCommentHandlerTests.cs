@@ -37,9 +37,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.Update
         {
             // Arrange
             var requestDto = new CommentUpdateDTO { Id = 1, Text = "Updated text" };
-            var existingComment = new CommentContent { Id = 1, Text = "Old text" };
+            var existingComment = new CommentContent { Id = 1, Text = "Old text", UserId = 1 };
             var resultDto = new CommentDTO { Id = requestDto.Id, Text = requestDto.Text, UpdatedAt = DateTime.UtcNow };
-            var command = new UpdateCommentCommand(requestDto);
+            var command = new UpdateCommentCommand(requestDto, existingComment.UserId);
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<CommentContent, bool>>>(),
@@ -73,8 +73,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.Update
         public async Task Handle_WhenCommentNotFound_ReturnsFailAndLogsError()
         {
             // Arrange
+            int userId = 1;
             var requestDto = new CommentUpdateDTO { Id = 1 };
-            var command = new UpdateCommentCommand(requestDto);
+            var command = new UpdateCommentCommand(requestDto, userId);
             string errorMsg = Errors_Common.NotFoundById.FormatWith("comment", command.Comment.Id);
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(
@@ -99,12 +100,42 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.Update
         }
 
         [Fact]
+        public async Task Handle_WhenUnauthorized_ReturnsFailAndLogsError()
+        {
+            // Arrange
+            var requestDto = new CommentUpdateDTO { Id = 1, Text = "Updated text" };
+            var existingComment = new CommentContent { Id = 1, Text = "Old text", UserId = 1 };
+            var command = new UpdateCommentCommand(requestDto, 2);
+            string errorMsg = Errors_Common.UnauthorizedAction.FormatWith("delete this comment");
+
+            _repositoryWrapperMock.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<CommentContent, bool>>>(),
+                It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
+                .ReturnsAsync(existingComment);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsFailed);
+            Assert.Contains(errorMsg, result.Errors[0].Message);
+
+            _repositoryWrapperMock.Verify(
+                r => r.CommentRepository.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<CommentContent, bool>>>(),
+                It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()), Times.Once);
+            _repositoryWrapperMock.VerifyNoOtherCalls();
+            _mapperMock.VerifyNoOtherCalls();
+            _loggerMock.Verify(l => l.LogError(command, errorMsg), Times.Once);
+        }
+
+        [Fact]
         public async Task Handle_WhenFailedToSave_ReturnsFailAndLogsError()
         {
             // Arrange
             var requestDto = new CommentUpdateDTO { Id = 1, Text = "Updated text" };
-            var existingComment = new CommentContent { Id = 1, Text = "Old text" };
-            var command = new UpdateCommentCommand(requestDto);
+            var existingComment = new CommentContent { Id = 1, Text = "Old text", UserId = 1 };
+            var command = new UpdateCommentCommand(requestDto, existingComment.UserId);
             string errorMsg = Errors_Common.FailedToUpdate.FormatWith("comment");
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(
@@ -138,8 +169,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.Update
         public async Task Handle_ThrowsException_ReturnsFail()
         {
             // Arrange
+            int userId = 1;
             var requestDto = new CommentUpdateDTO { Id = 1, Text = "Updated text" };
-            var command = new UpdateCommentCommand(requestDto);
+            var command = new UpdateCommentCommand(requestDto, userId);
             const string errorMsg = "Database connection lost";
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(
