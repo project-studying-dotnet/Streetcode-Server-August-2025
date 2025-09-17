@@ -26,7 +26,7 @@ namespace Streetcode.BLL.MediatR.Comments.Update
         {
             try
             {
-                var comment = await _repositoryWrapper.CommentRepository.GetByIdAsync(request.Comment.Id);
+                var comment = await _repositoryWrapper.CommentRepository.GetFirstOrDefaultAsync(c => c.Id == request.Comment.Id);
 
                 if (comment is null)
                 {
@@ -38,7 +38,7 @@ namespace Streetcode.BLL.MediatR.Comments.Update
                 _mapper.Map(request.Comment, comment);
                 comment.UpdatedAt = DateTime.UtcNow;
 
-                await _repositoryWrapper.CommentRepository.UpdateAsync(comment);
+                _repositoryWrapper.CommentRepository.Update(comment);
 
                 var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
                 if (resultIsSuccess)
