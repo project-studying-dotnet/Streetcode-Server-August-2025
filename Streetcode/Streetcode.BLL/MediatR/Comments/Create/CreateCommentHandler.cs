@@ -55,6 +55,13 @@ public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, Result
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
+            if (parent.IsDeleted)
+            {
+                var errorMsg = Errors_Common.UnauthorizedAction
+                    .FormatWith("reply to a deleted comment");
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
+            }
         }
 
         commentEntity.CreatedAt = DateTime.UtcNow;
