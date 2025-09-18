@@ -3,6 +3,8 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
@@ -28,7 +30,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
 
             if (relatedTerm is null)
             {
-                const string errorMsg = "Cannot create new related word for a term!";
+                string errorMsg = Errors_Common.CannotConvertNull.FormatWith("related term");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -39,31 +41,31 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
 
             if (existingTerms is null || existingTerms.Any())
             {
-                const string errorMsg = "Слово з цим визначенням уже існує";
+                string errorMsg = Errors_RelatedTerm.AlreadyExist;
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var createdRelatedTerm = _repository.RelatedTermRepository.Create(relatedTerm);
+            var createdRelatedTerm = await _repository.RelatedTermRepository.CreateAsync(relatedTerm);
 
             var isSuccessResult = await _repository.SaveChangesAsync() > 0;
 
-            if(!isSuccessResult)
+            if (!isSuccessResult)
             {
-                const string errorMsg = "Cannot save changes in the database after related word creation!";
+                string errorMsg = Errors_Common.FailedToCreate.FormatWith("related word for a term");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
             var createdRelatedTermDTO = _mapper.Map<RelatedTermDTO>(createdRelatedTerm);
 
-            if(createdRelatedTermDTO != null)
+            if (createdRelatedTermDTO != null)
             {
                 return Result.Ok(createdRelatedTermDTO);
             }
             else
             {
-                const string errorMsg = "Cannot map entity!";
+                string errorMsg = Errors_Common.CannotMap.FormatWith("entity!");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

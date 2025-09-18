@@ -3,7 +3,8 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Team;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Team.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create
@@ -27,17 +28,16 @@ namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create
 
             if (teamMemberLink is null)
             {
-                const string errorMsg = "Cannot convert null to team link";
+                string errorMsg = Errors_Common.CannotConvertNull.FormatWith("team link");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var createdTeamLink = _repository.TeamLinkRepository.Create(teamMemberLink);
+            var createdTeamLink = await _repository.TeamLinkRepository.CreateAsync(teamMemberLink);
 
             if (createdTeamLink is null)
             {
-                const string errorMsg = "Cannot create team link";
-                _logger.LogError(request, errorMsg);
+                string errorMsg = Errors_Common.FailedToCreate.FormatWith("team link");
                 return Result.Fail(new Error(errorMsg));
             }
 
@@ -45,20 +45,20 @@ namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create
 
             if (!resultIsSuccess)
             {
-                const string errorMsg = "Failed to create a team";
+                string errorMsg = Errors_Common.FailedToCreate.FormatWith("team");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
             var createdTeamLinkDTO = _mapper.Map<TeamMemberLinkDTO>(createdTeamLink);
 
-            if(createdTeamLinkDTO != null)
+            if (createdTeamLinkDTO != null)
             {
                 return Result.Ok(createdTeamLinkDTO);
             }
             else
             {
-                const string errorMsg = "Failed to map created team link";
+                string errorMsg = Errors_Common.CannotMap.FormatWith("team link");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

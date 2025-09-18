@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Coordinate.Create;
@@ -22,12 +24,12 @@ public class CreateCoordinateHandler : IRequestHandler<CreateCoordinateCommand, 
 
         if (streetcodeCoordinate is null)
         {
-            return Result.Fail(new Error("Cannot convert null to streetcodeCoordinate"));
+            return Result.Fail(new Error(Errors_Common.CannotConvertNull.FormatWith("streetcodeCoordinate")));
         }
 
-        _repositoryWrapper.StreetcodeCoordinateRepository.Create(streetcodeCoordinate);
+        await _repositoryWrapper.StreetcodeCoordinateRepository.CreateAsync(streetcodeCoordinate);
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
-        return resultIsSuccess ? Result.Ok(Unit.Value) : Result.Fail(new Error("Failed to create a streetcodeCoordinate"));
+        return resultIsSuccess ? Result.Ok(Unit.Value) : Result.Fail(new Error(Errors_Common.FailedToCreate.FormatWith("streetcodeCoordinate")));
     }
 }

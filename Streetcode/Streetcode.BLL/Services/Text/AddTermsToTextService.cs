@@ -10,7 +10,7 @@ namespace Streetcode.BLL.Services.Text
     public class AddTermsToTextService : ITextService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private List<int> _buffer;
+        private readonly List<int> _buffer;
 
         private readonly StringBuilder _text = new StringBuilder();
 
@@ -99,7 +99,7 @@ namespace Streetcode.BLL.Services.Text
             return MarkTermWithDescription(clearedWord, relatedTerm.Term.Description);
         }
 
-        private (string _clearedWord, string _extras) CleanWord(string word)
+        private static (string _clearedWord, string _extras) CleanWord(string word)
         {
             var clearedWord = word.Split('.', ',').First();
 

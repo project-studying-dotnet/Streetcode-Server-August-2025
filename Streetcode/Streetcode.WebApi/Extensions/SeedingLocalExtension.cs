@@ -1,6 +1,8 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
@@ -15,53 +17,50 @@ using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Entities.Team;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Entities.Transactions;
+using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
-using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.WebApi.Extensions
 {
     public static class SeedingLocalExtension
     {
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<User, IdentityRole<int>>()
+                .AddEntityFrameworkStores<StreetcodeDbContext>()
+                .AddUserManager<UserManager<User>>()
+                .AddSignInManager<SignInManager<User>>();
+
+            return services;
+        }
+
         public static async Task SeedDataAsync(this WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
             {
-                Directory.CreateDirectory(app.Configuration.GetValue<string>("Blob:BlobStorePath"));
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
-                var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
-                string blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath");
-                var repo = new RepositoryWrapper(dbContext);
-                var blobService = new BlobService(blobOptions, repo);
+                var blobServiceFactory = scope.ServiceProvider.GetRequiredService<IBlobServiceFactory>();
+                var blobService = blobServiceFactory.CreateBlobService();
+                var blobOptions = scope.ServiceProvider.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
+
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
+
                 if (!dbContext.Images.Any())
                 {
-                    string imageJson = File.ReadAllText(initialDataImagePath, Encoding.UTF8);
-                    string audiosJson = File.ReadAllText(initialDataAudioPath, Encoding.UTF8);
+                    string imageJson = await File.ReadAllTextAsync(initialDataImagePath, Encoding.UTF8);
+                    string audiosJson = await File.ReadAllTextAsync(initialDataAudioPath, Encoding.UTF8);
                     var imgfromJson = JsonConvert.DeserializeObject<List<Image>>(imageJson);
                     var audiosfromJson = JsonConvert.DeserializeObject<List<Audio>>(audiosJson);
 
-                    foreach (var img in imgfromJson)
-                    {
-                        string filePath = Path.Combine(blobPath, img.BlobName);
-                        if (!File.Exists(filePath))
-                        {
-                            blobService.SaveFileInStorageBase64(img.Base64, img.BlobName.Split('.')[0], img.BlobName.Split('.')[1]);
-                        }
-                    }
+                    // Seed images
+                    await SeedMediaFiles(imgfromJson, blobService, blobOptions.Value);
 
-                    foreach (var audio in audiosfromJson)
-                    {
-                        string filePath = Path.Combine(blobPath, audio.BlobName);
-                        if (!File.Exists(filePath))
-                        {
-                            blobService.SaveFileInStorageBase64(audio.Base64, audio.BlobName.Split('.')[0], audio.BlobName.Split('.')[1]);
-                        }
-                    }
+                    // Seed audios
+                    await SeedMediaFiles(audiosfromJson, blobService, blobOptions.Value);
 
                     dbContext.Images.AddRange(imgfromJson);
-
                     await dbContext.SaveChangesAsync();
 
                     if (!dbContext.Responses.Any())
@@ -267,20 +266,56 @@ namespace Streetcode.WebApi.Extensions
                         }
                     }
 
-                    if (!dbContext.Users.Any())
-                    {
-                        dbContext.Users.AddRange(
-                            new DAL.Entities.Users.User
-                            {
-                                Email = "admin",
-                                Role = UserRole.MainAdministrator,
-                                Login = "admin",
-                                Name = "admin",
-                                Password = "admin",
-                                Surname = "admin",
-                            });
+                    // Seed Roles and Admin User
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
-                        await dbContext.SaveChangesAsync();
+                    // Seed Roles
+                    string[] roleNames = Enum.GetNames(typeof(UserRole));
+
+                    foreach (var roleName in roleNames)
+                    {
+                        if (roleName != "None" && !await roleManager.RoleExistsAsync(roleName))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole<int>(roleName));
+                        }
+                    }
+
+                    // Seed Admin User
+                    var adminUser = await userManager.FindByEmailAsync("admin@gmail.com");
+                    if (adminUser == null)
+                    {
+                        var newAdminUser = new User
+                        {
+                            Email = "admin@gmail.com",
+                            Name = "admin",
+                            Surname = "admin",
+                        };
+
+                        var createResult = await userManager.CreateAsync(newAdminUser, "admin_password_123!");
+                        if (createResult.Succeeded)
+                        {
+                            await userManager.AddToRoleAsync(newAdminUser, UserRole.MainAdministrator.ToString());
+                        }
+                    }
+
+                    // Seed a regular user
+                    var regularUser = await userManager.FindByEmailAsync("user@gmail.com");
+                    if (regularUser == null)
+                    {
+                        var newRegularUser = new User
+                        {
+                            Email = "user@gmail.com",
+                            Name = "user",
+                            Surname = "user"
+                        };
+
+                        var createResult = await userManager.CreateAsync(newRegularUser, "user_password_123!");
+                        if (createResult.Succeeded)
+                        {
+                            // Add user to the User role
+                            await userManager.AddToRoleAsync(newRegularUser, UserRole.User.ToString());
+                        }
                     }
 
                     if (!dbContext.News.Any())
@@ -1070,7 +1105,7 @@ namespace Streetcode.WebApi.Extensions
                             if (!dbContext.Facts.Any())
                             {
                                 dbContext.Facts.AddRange(
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Викуп з кріпацтва",
                                         FactContent = "Навесні 1838-го Карл Брюллов і Василь Жуковський вирішили викупити молодого поета з кріпацтва. " +
@@ -1081,7 +1116,7 @@ namespace Streetcode.WebApi.Extensions
                                         ImageId = 6,
                                         StreetcodeId = 1,
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Перший Кобзар",
                                         FactContent = " Ознайомившись випадково з рукописними творами Шевченка й вражений ними, П. Мартос виявив до них великий інтерес." +
@@ -1089,98 +1124,98 @@ namespace Streetcode.WebApi.Extensions
                                         ImageId = 5,
                                         StreetcodeId = 1,
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Премія Романа Ратушного",
                                         FactContent = "Український журналіст, публіцист і письменник Вахтанг Кіпіані від імені «Історичної правди» ініціював заснування іменної премії Романа Ратушного для молодих авторів за публікації, що стосуються історії Києва. Гроші на започаткування премії дали батьки Романа.",
                                         ImageId = 16,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Стипендія для активістів",
                                         FactContent = "На честь Романа в Інституті права Київського національного університету імені Тараса Шевченка заснували стипендіальну програму для громадських активістів, які здобувають юридичну освіту.",
                                         ImageId = 17,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Премія Романа Ратушного",
                                         FactContent = "Український журналіст, публіцист і письменник Вахтанг Кіпіані від імені «Історичної правди» ініціював заснування іменної премії Романа Ратушного для молодих авторів за публікації, що стосуються історії Києва. Гроші на започаткування премії дали батьки Романа.",
                                         ImageId = 18,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Карта мафіозних зв’язків",
                                         FactContent = "Романа можна вважати «хрещеним» Державного бюро розслідувань. У 2015 році він самостійно створив карту зв’язків російської та української мафій, засновану на відкритих даних. Підтримував розслідування злочинів. За його даними, таких взаємопов’язаних осіб було близько тисячі.",
                                         ImageId = 19,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Стати громадянином",
                                         FactContent = "За словами мами Романа, Світлани Поваляєвої, маленький громадянин Ратушний почав ходити на мітинги та протести із семи років. Першою суспільно корисною активністю стала Помаранчева революція. «Участь у політичних і соціальних процесах своєї держави має бути атрибутом життя кожного громадянина», — наголошував Роман.",
                                         ImageId = 16,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "«У мене все добре»",
                                         FactContent = "Якось під час найзапеклішого протистояння на Євромайдані він подзвонив батькові та звично сказав: «У мене все добре, ми з друзями вже їдемо з Майдану додому, не хвилюйся і на добраніч». А через деякий час в той же вечір Роман вже коментував події у прямій телевізійній трансляції: «Ми зараз штурмуємо Український Дім, там засіли внутрішні війська, їх біля сотні, але ми їх зараз звідти викуримо…». Він завжди був там, де найгарячіше. Каску, в якій Роман був на Майдані, його мама Світлана Поваляєва згодом передала в Музей Революції Гідності.",
                                         ImageId = 17,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Життєві плани",
                                         FactContent = "Після Революції гідності в 2014 році під час подорожі Європою тато Романа делікатно просував йому, юнакові, обпаленому Майданом, ідею навчання в одному з європейських університетів. А Роман делікатно відмовився. «На цей момент мій життєвий план такого не передбачає», — відповів.",
                                         ImageId = 18,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Культура життя",
                                         FactContent = "Роман зростав у середовищі культурних діячів Києва. Це не могло не позначитися на його особистості, поглядах і смаках. Театри, вистави, виставки. Багато музики та читання. Цікавість до історії та права. Разом із братом Василем навчався грі на трубі в Джазовій академії. Відвідував концерти в Національній філармонії та Будинку органної і камерної музики. Друзі відзначали витончений смак Романа в одязі, але в цілому аскетичний підхід до матеріальних принад життя.",
                                         ImageId = 19,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Громада понад усе",
                                         FactContent = "Всі знали Ратушного як щедру та безкорисливу людину. Так, компенсацію Європейського суду з прав людини, яку він отримав як потерпілий від побиття студентів «Беркутом», Роман фактично повністю витратив на громаду та боротьбу за Протасів Яр.",
                                         ImageId = 16,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Сенека",
                                         FactContent = "На фронті Роман взяв собі позивний Сенека. Йому відгукувалися погляди давньоримського філософа на жертовність та героїзм заради суспільства. Сенека виклав їх у своїх «Листах». А Роман підтвердив свої переконання яскравим життям із героїчним запалом. Зі світоглядом Сенеки погляди Романа порівняв його батько в своєму тексті пам’яті про сина. Спецпідрозділ радіоелектронної розвідки і радіоелектронного штурму 93-ї окремої механізованої бригади ЗСУ «Холодний Яр», де служив Ратушний, назвали «Сенека». На його честь, бо він його і задумав.",
                                         ImageId = 17,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Заповіт нам",
                                         FactContent = "20 травня 2022 року, незадовго до загибелі, Роман на своїй сторінці у фейсбуці опублікував пост — свого роду заповіт нам. «Допоки Збройні сили вбивають русню на фронті, ви нездатні вбити русню в собі. Просто запам’ятайте: чим більше росіян ми вб’ємо зараз, тим менше росіян доведеться вбивати нашим дітям. Ця війна триває більше трьох сотень років…».",
                                         ImageId = 18,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "«Загинув за Тебе»",
                                         FactContent = "Побратими стверджують, що Роман готувався до свого останнього бойового завдання. Дав вказівку зібрати свої речі та віддати їх братові у випадку загибелі. Написав заповіт з докладними інструкціями. Описав, як саме хотів провести свій похорон. А ще написав у заповіті кілька останніх слів про любов до свого Києва: «Загинув далеко від Тебе, Києве, але загинув за Тебе…».",
                                         ImageId = 19,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Мріяв про вільну Україну",
                                         FactContent = "У липні 2022 року в Лугано президентка Єврокомісії Урсула фон дер Ляєн під час конференції з відбудови України розпочала свій виступ словами про Романа, активіста та журналіста, який мріяв про Україну, вільну від корупції, та поклав життя за її суверенітет.",
                                         ImageId = 16,
                                         StreetcodeId = 2
                                     },
-                                    new Fact
+                                    new Facts
                                     {
                                         Title = "Жива справа",
                                         FactContent = "За словами мами Романа Світлани Поваляєвої, він заповів фінансово підтримати музей Шевченка, Національну капелу бандуристів імені Майбороди, а також видання «Історична правда» та «Новинарня». А ще попросив донатити на добровольчий медичний батальйон «Госпітальєри» та інші волонтерські організації, що займаються екіпіруванням ЗСУ.",
@@ -1245,7 +1280,7 @@ namespace Streetcode.WebApi.Extensions
                                         },
                                         new StreetcodeCategoryContent
                                         {
-                                            Text = "Хроніки про Т. Г. Шевченко",
+                                            Text = "Хроніки про Т. Г. Шевченка",
                                             SourceLinkCategoryId = 2,
                                             StreetcodeId = 2
                                         },
@@ -1417,6 +1452,73 @@ namespace Streetcode.WebApi.Extensions
                     await dbContext.SaveChangesAsync();
                 }
             }
+        }
+
+        private static async Task SeedMediaFiles<T>(List<T> mediaFiles, IBlobService blobService, BlobEnvironmentVariables blobConfig)
+            where T : class
+        {
+            foreach (var mediaFile in mediaFiles)
+            {
+                var blobNameProperty = typeof(T).GetProperty("BlobName");
+                var base64Property = typeof(T).GetProperty("Base64");
+
+                if (blobNameProperty?.GetValue(mediaFile) is string blobName &&
+                    base64Property?.GetValue(mediaFile) is string base64)
+                {
+                    await SeedMediaFile(blobService, blobConfig, blobName, base64);
+                }
+            }
+        }
+
+        private static Task SeedMediaFile(IBlobService blobService, BlobEnvironmentVariables blobConfig, string blobName, string base64)
+        {
+            // Check if we're using local storage and if file already exists
+            if (blobConfig.StorageType?.ToLower() != "azure")
+            {
+                string blobPath = blobConfig.BlobStorePath;
+                Directory.CreateDirectory(blobPath);
+                string filePath = Path.Combine(blobPath, blobName);
+                if (File.Exists(filePath))
+                {
+                    return Task.CompletedTask;
+                }
+            }
+
+            try
+            {
+                // For Azure storage, we need to check if blob exists differently
+                if (blobConfig.StorageType?.ToLower() == "azure")
+                {
+                    try
+                    {
+                        // Try to find the file - if it exists, this won't throw
+                        blobService.FindFileInStorageAsBase64(blobName);
+                        return Task.CompletedTask;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // File doesn't exist, continue with seeding
+                    }
+                }
+
+                // Extract name and extension from blobName
+                var blobNameParts = blobName.Split('.');
+                if (blobNameParts.Length >= 2)
+                {
+                    var nameWithoutExtension = string.Join(".", blobNameParts.Take(blobNameParts.Length - 1));
+                    var extension = blobNameParts.Last();
+
+                    // Use the common interface method
+                    blobService.SaveFileInStorageWithName(base64, nameWithoutExtension, extension);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error but continue with other files
+                Console.WriteLine($"Error seeding file {blobName}: {ex.Message}");
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

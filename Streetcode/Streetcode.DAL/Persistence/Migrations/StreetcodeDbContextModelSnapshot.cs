@@ -18,10 +18,143 @@ namespace Streetcode.DAL.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Ukrainian_CP1251_CI_AS")
-                .HasAnnotation("ProductVersion", "6.0.11")
+                .HasAnnotation("ProductVersion", "8.0.19")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Coordinates.Coordinate", b =>
                 {
@@ -29,11 +162,12 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CoordinateType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.Property<decimal>("Latitude")
                         .HasColumnType("decimal(18,4)");
@@ -46,6 +180,8 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.ToTable("coordinates", "add_content");
 
                     b.HasDiscriminator<string>("CoordinateType").HasValue("coordinate_base");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.StreetcodeTagIndex", b =>
@@ -75,7 +211,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("StreetcodeId")
                         .HasColumnType("int");
@@ -97,7 +233,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -115,7 +251,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -144,13 +280,57 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.ToTable("qr_coordinates", "coordinates");
                 });
 
+            modelBuilder.Entity("Streetcode.DAL.Entities.Comments.CommentContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StreetcodeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("StreetcodeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("comments", "comment");
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.Feedback.Response", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -176,7 +356,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BlobName")
                         .IsRequired()
@@ -203,7 +383,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(400)
@@ -230,7 +410,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BlobName")
                         .IsRequired()
@@ -253,7 +433,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Alt")
                         .HasMaxLength(300)
@@ -295,7 +475,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -324,7 +504,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -364,7 +544,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(600)
@@ -408,7 +588,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("LogoType")
                         .HasColumnType("tinyint");
@@ -449,7 +629,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ImageId")
                         .HasColumnType("int");
@@ -468,6 +648,12 @@ namespace Streetcode.DAL.Persistence.Migrations
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Sources.StreetcodeCategoryContent", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("SourceLinkCategoryId")
                         .HasColumnType("int");
 
@@ -479,7 +665,9 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.HasKey("SourceLinkCategoryId", "StreetcodeId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceLinkCategoryId");
 
                     b.HasIndex("StreetcodeId");
 
@@ -503,10 +691,13 @@ namespace Streetcode.DAL.Persistence.Migrations
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.StreetcodeArt", b =>
                 {
-                    b.Property<int>("ArtId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("StreetcodeId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArtId")
                         .HasColumnType("int");
 
                     b.Property<int>("Index")
@@ -514,13 +705,47 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
-                    b.HasKey("ArtId", "StreetcodeId");
+                    b.Property<int?>("StreetcodeArtSlideId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StreetcodeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreetcodeArtSlideId");
 
                     b.HasIndex("StreetcodeId");
 
-                    b.HasIndex("ArtId", "StreetcodeId");
+                    b.HasIndex("ArtId", "StreetcodeArtSlideId");
 
                     b.ToTable("streetcode_art", "streetcode");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.StreetcodeArtSlide", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Index")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("StreetcodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Template")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreetcodeId");
+
+                    b.ToTable("streetcode_art_slides", "streetcode");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", b =>
@@ -529,7 +754,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Alias")
                         .HasMaxLength(50)
@@ -562,7 +787,8 @@ namespace Streetcode.DAL.Persistence.Migrations
 
                     b.Property<string>("StreetcodeType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("Teaser")
                         .HasMaxLength(650)
@@ -603,15 +829,17 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.ToTable("streetcodes", "streetcode");
 
                     b.HasDiscriminator<string>("StreetcodeType").HasValue("streetcode-base");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.TextContent.Fact", b =>
+            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.TextContent.Facts", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FactContent")
                         .IsRequired()
@@ -621,13 +849,16 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Property<int?>("ImageId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
                     b.Property<int>("StreetcodeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(68)
+                        .HasColumnType("nvarchar(68)");
 
                     b.HasKey("Id");
 
@@ -644,7 +875,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("TermId")
                         .HasColumnType("int");
@@ -667,7 +898,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -690,7 +921,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdditionalText")
                         .HasMaxLength(500)
@@ -723,7 +954,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Position")
                         .IsRequired()
@@ -741,7 +972,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -777,7 +1008,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("LogoType")
                         .HasColumnType("tinyint");
@@ -818,7 +1049,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -851,7 +1082,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -899,7 +1130,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdminRegionNew")
                         .HasMaxLength(150)
@@ -942,7 +1173,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("StreetcodeId")
                         .HasColumnType("int");
@@ -964,44 +1195,109 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.ToTable("transaction_links", "transactions");
                 });
 
+            modelBuilder.Entity("Streetcode.DAL.Entities.Users.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("refresh_tokens", "user");
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.Users.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .IsRequired()
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", "Users");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types.StreetcodeCoordinate", b =>
@@ -1066,6 +1362,57 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.HasDiscriminator().HasValue("streetcode-person");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.StreetcodeTagIndex", b =>
                 {
                     b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
@@ -1113,6 +1460,32 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("Streetcode");
 
                     b.Navigation("StreetcodeCoordinate");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Comments.CommentContent", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Comments.CommentContent", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
+                        .WithMany()
+                        .HasForeignKey("StreetcodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("Streetcode");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Media.Images.Art", b =>
@@ -1274,13 +1647,29 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeArtSlide", "StreetcodeArtSlide")
+                        .WithMany("StreetcodeArts")
+                        .HasForeignKey("StreetcodeArtSlideId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
                         .WithMany("StreetcodeArts")
+                        .HasForeignKey("StreetcodeId");
+
+                    b.Navigation("Art");
+
+                    b.Navigation("Streetcode");
+
+                    b.Navigation("StreetcodeArtSlide");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.StreetcodeArtSlide", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
+                        .WithMany("StreetcodeArtSlides")
                         .HasForeignKey("StreetcodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Art");
 
                     b.Navigation("Streetcode");
                 });
@@ -1295,7 +1684,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("Audio");
                 });
 
-            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.TextContent.Fact", b =>
+            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.TextContent.Facts", b =>
                 {
                     b.HasOne("Streetcode.DAL.Entities.Media.Images.Image", "Image")
                         .WithMany("Facts")
@@ -1436,6 +1825,17 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("Streetcode");
                 });
 
+            modelBuilder.Entity("Streetcode.DAL.Entities.Users.RefreshToken", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types.StreetcodeCoordinate", b =>
                 {
                     b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
@@ -1461,6 +1861,11 @@ namespace Streetcode.DAL.Persistence.Migrations
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Tag", b =>
                 {
                     b.Navigation("StreetcodeTagIndices");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Comments.CommentContent", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Media.Audio", b =>
@@ -1500,6 +1905,11 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("StreetcodeCategoryContents");
                 });
 
+            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.StreetcodeArtSlide", b =>
+                {
+                    b.Navigation("StreetcodeArts");
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", b =>
                 {
                     b.Navigation("Coordinates");
@@ -1509,6 +1919,8 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("Observers");
 
                     b.Navigation("StatisticRecords");
+
+                    b.Navigation("StreetcodeArtSlides");
 
                     b.Navigation("StreetcodeArts");
 

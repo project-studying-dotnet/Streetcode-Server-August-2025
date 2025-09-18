@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetCategoryContentByStreetcodeId
@@ -23,10 +24,10 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetCategoryContentBy
 
         public async Task<Result<StreetcodeCategoryContentDTO>> Handle(GetCategoryContentByStreetcodeIdQuery request, CancellationToken cancellationToken)
         {
-            if((await _repositoryWrapper.StreetcodeRepository
+            if ((await _repositoryWrapper.StreetcodeRepository
                 .GetFirstOrDefaultAsync(s => s.Id == request.streetcodeId)) == null)
             {
-                string errorMsg = $"No such streetcode with id = {request.streetcodeId}";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("streetcode", request.streetcodeId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -37,7 +38,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetCategoryContentBy
 
             if (streetcodeContent == null)
             {
-                string errorMsg = "The streetcode content is null";
+                string errorMsg = Errors_Streetcode.DoesnotExist.FormatWith(request.streetcodeId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

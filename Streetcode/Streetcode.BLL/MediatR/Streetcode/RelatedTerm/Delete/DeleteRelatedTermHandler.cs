@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
@@ -22,11 +24,11 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
 
         public async Task<Result<RelatedTermDTO>> Handle(DeleteRelatedTermCommand request, CancellationToken cancellationToken)
         {
-            var relatedTerm = await _repository.RelatedTermRepository.GetFirstOrDefaultAsync(rt => rt.Word.ToLower().Equals(request.word.ToLower()));
+            var relatedTerm = await _repository.RelatedTermRepository.GetFirstOrDefaultAsync(rt => rt.Word.ToLower() == request.word.ToLower() && rt.TermId == request.TermId);
 
             if (relatedTerm is null)
             {
-                string errorMsg = $"Cannot find a related term: {request.word}";
+                string errorMsg = Errors_RelatedTerm.NotFoundRelatedTermForTerm.FormatWith(request.word, request.TermId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -35,13 +37,13 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
 
             var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
             var relatedTermDto = _mapper.Map<RelatedTermDTO>(relatedTerm);
-            if(resultIsSuccess && relatedTermDto != null)
+            if (resultIsSuccess && relatedTermDto != null)
             {
                 return Result.Ok(relatedTermDto);
             }
             else
             {
-                const string errorMsg = "Failed to delete a related term";
+                string errorMsg = Errors_Common.FailedToDelete.FormatWith("related term");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

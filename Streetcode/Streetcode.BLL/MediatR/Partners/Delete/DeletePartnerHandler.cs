@@ -3,6 +3,8 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Partners.Delete
@@ -25,7 +27,7 @@ namespace Streetcode.BLL.MediatR.Partners.Delete
             var partner = await _repositoryWrapper.PartnersRepository.GetFirstOrDefaultAsync(p => p.Id == request.id);
             if (partner == null)
             {
-                const string errorMsg = "No partner with such id";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("partner", request.id);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
@@ -34,10 +36,10 @@ namespace Streetcode.BLL.MediatR.Partners.Delete
                 _repositoryWrapper.PartnersRepository.Delete(partner);
                 try
                 {
-                    _repositoryWrapper.SaveChanges();
+                    await _repositoryWrapper.SaveChangesAsync();
                     return Result.Ok(_mapper.Map<PartnerDTO>(partner));
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(request, ex.Message);
                     return Result.Fail(ex.Message);

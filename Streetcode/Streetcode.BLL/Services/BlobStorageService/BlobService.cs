@@ -34,16 +34,14 @@ public class BlobService : IBlobService
 
     public string FindFileInStorageAsBase64(string name)
     {
-        string[] splitedName = name.Split('.');
-
-        byte[] decodedBytes = DecryptFile(splitedName[0], splitedName[1]);
+        byte[] decodedBytes = DecryptFile(name);
 
         string base64 = Convert.ToBase64String(decodedBytes);
 
         return base64;
     }
 
-    public string SaveFileInStorage(string base64, string name, string extension)
+    public string SaveFileInStorage(string base64, string name, string mimeType)
     {
         byte[] imageBytes = Convert.FromBase64String(base64);
         string createdFileName = $"{DateTime.Now}{name}"
@@ -54,12 +52,12 @@ public class BlobService : IBlobService
         string hashBlobStorageName = HashFunction(createdFileName);
 
         Directory.CreateDirectory(_blobPath);
-        EncryptFile(imageBytes, extension, hashBlobStorageName);
+        EncryptFile(imageBytes, mimeType, hashBlobStorageName);
 
         return hashBlobStorageName;
     }
 
-    public void SaveFileInStorageBase64(string base64, string name, string extension)
+    public void SaveFileInStorageWithName(string base64, string name, string extension)
     {
         byte[] imageBytes = Convert.FromBase64String(base64);
         Directory.CreateDirectory(_blobPath);
@@ -114,7 +112,7 @@ public class BlobService : IBlobService
         return paths.Select(p => Path.GetFileName(p));
     }
 
-    private string HashFunction(string createdFileName)
+    private static string HashFunction(string createdFileName)
     {
         using (var hash = SHA256.Create())
         {
@@ -150,9 +148,13 @@ public class BlobService : IBlobService
         File.WriteAllBytes($"{_blobPath}{name}.{type}", encryptedData);
     }
 
-    private byte[] DecryptFile(string fileName, string type)
+    private byte[] DecryptFile(string fileName, string? type = null)
     {
-        byte[] encryptedData = File.ReadAllBytes($"{_blobPath}{fileName}.{type}");
+        string fullPath = type is null
+            ? Path.Combine(_blobPath, fileName)
+            : Path.Combine(_blobPath, $"{fileName}.{type}");
+
+        byte[] encryptedData = File.ReadAllBytes(fullPath);
         byte[] keyBytes = Encoding.UTF8.GetBytes(_keyCrypt);
 
         byte[] iv = new byte[16];

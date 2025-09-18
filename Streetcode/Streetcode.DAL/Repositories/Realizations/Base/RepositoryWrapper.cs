@@ -4,6 +4,7 @@ using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Interfaces.AdditionalContent;
 using Streetcode.DAL.Repositories.Interfaces.Analytics;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.DAL.Repositories.Interfaces.Comments;
 using Streetcode.DAL.Repositories.Interfaces.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Streetcode.DAL.Repositories.Interfaces.Partners;
@@ -17,6 +18,7 @@ using Streetcode.DAL.Repositories.Interfaces.Transactions;
 using Streetcode.DAL.Repositories.Interfaces.Users;
 using Streetcode.DAL.Repositories.Realizations.AdditionalContent;
 using Streetcode.DAL.Repositories.Realizations.Analytics;
+using Streetcode.DAL.Repositories.Realizations.Comments;
 using Streetcode.DAL.Repositories.Realizations.Media;
 using Streetcode.DAL.Repositories.Realizations.Media.Images;
 using Streetcode.DAL.Repositories.Realizations.Newss;
@@ -38,6 +40,8 @@ public class RepositoryWrapper : IRepositoryWrapper
 
     private IVideoRepository _videoRepository;
 
+    private ICommentRepository _commentRepository;
+
     private IAudioRepository _audioRepository;
 
     private IStreetcodeCoordinateRepository _streetcodeCoordinateRepository;
@@ -49,6 +53,8 @@ public class RepositoryWrapper : IRepositoryWrapper
     private IArtRepository _artRepository;
 
     private IStreetcodeArtRepository _streetcodeArtRepository;
+
+    private IStreetcodeArtSlideRepository _streetcodeArtSlideRepository;
 
     private IFactRepository _factRepository;
 
@@ -105,10 +111,24 @@ public class RepositoryWrapper : IRepositoryWrapper
     private IStreetcodeToponymRepository _streetcodeToponymRepository;
 
     private IStreetcodeImageRepository _streetcodeImageRepository;
+    private IRefreshTokenRepository _refreshTokenRepository;
 
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
         _streetcodeDbContext = streetcodeDbContext;
+    }
+
+    public ICommentRepository CommentRepository
+    {
+        get
+        {
+            if (_commentRepository is null)
+            {
+                _commentRepository = new CommentRepository(_streetcodeDbContext);
+            }
+
+            return _commentRepository;
+        }
     }
 
     public INewsRepository NewsRepository
@@ -238,6 +258,19 @@ public class RepositoryWrapper : IRepositoryWrapper
             }
 
             return _streetcodeArtRepository;
+        }
+    }
+
+    public IStreetcodeArtSlideRepository StreetcodeArtSlideRepository
+    {
+        get
+        {
+            if (_streetcodeArtSlideRepository is null)
+            {
+                _streetcodeArtSlideRepository = new StreetcodeArtSlideRepository(_streetcodeDbContext);
+            }
+
+            return _streetcodeArtSlideRepository;
         }
     }
 
@@ -440,7 +473,7 @@ public class RepositoryWrapper : IRepositoryWrapper
     {
         get
         {
-            if(_relatedTermRepository is null)
+            if (_relatedTermRepository is null)
             {
                 _relatedTermRepository = new RelatedTermRepository(_streetcodeDbContext);
             }
@@ -479,7 +512,7 @@ public class RepositoryWrapper : IRepositoryWrapper
     {
         get
         {
-            if(_partnerStreetcodeRepository is null)
+            if (_partnerStreetcodeRepository is null)
             {
                 _partnerStreetcodeRepository = new PartnerStreetodeRepository(_streetcodeDbContext);
             }
@@ -514,7 +547,7 @@ public class RepositoryWrapper : IRepositoryWrapper
         }
     }
 
-    public IImageDetailsRepository ImageDetailsRepository => _imageDetailsRepository??=new ImageDetailsRepository(_streetcodeDbContext);
+    public IImageDetailsRepository ImageDetailsRepository => _imageDetailsRepository ??= new ImageDetailsRepository(_streetcodeDbContext);
 
     public IHistoricalContextTimelineRepository HistoricalContextTimelineRepository
     {
@@ -530,30 +563,43 @@ public class RepositoryWrapper : IRepositoryWrapper
     }
 
     public IStreetcodeToponymRepository StreetcodeToponymRepository
-	{
-		get
-		{
-			if (_streetcodeToponymRepository is null)
-			{
-				_streetcodeToponymRepository = new StreetcodeToponymRepository(_streetcodeDbContext);
-			}
+    {
+        get
+        {
+            if (_streetcodeToponymRepository is null)
+            {
+                _streetcodeToponymRepository = new StreetcodeToponymRepository(_streetcodeDbContext);
+            }
 
-			return _streetcodeToponymRepository;
-		}
-	}
+            return _streetcodeToponymRepository;
+        }
+    }
 
     public IStreetcodeImageRepository StreetcodeImageRepository
-	{
-		get
-		{
-			if (_streetcodeImageRepository is null)
-			{
-				_streetcodeImageRepository = new StreetcodeImageRepository(_streetcodeDbContext);
-			}
+    {
+        get
+        {
+            if (_streetcodeImageRepository is null)
+            {
+                _streetcodeImageRepository = new StreetcodeImageRepository(_streetcodeDbContext);
+            }
 
-			return _streetcodeImageRepository;
-		}
-	}
+            return _streetcodeImageRepository;
+        }
+    }
+
+    public IRefreshTokenRepository RefreshTokenRepository
+    {
+        get
+        {
+            if (_refreshTokenRepository is null)
+            {
+                _refreshTokenRepository = new RefreshTokenRepository(_streetcodeDbContext);
+            }
+
+            return _refreshTokenRepository;
+        }
+    }
 
     public int SaveChanges()
     {

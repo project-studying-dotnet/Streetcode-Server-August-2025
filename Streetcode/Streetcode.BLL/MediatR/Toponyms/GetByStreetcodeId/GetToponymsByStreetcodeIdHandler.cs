@@ -2,9 +2,10 @@ using AutoMapper;
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
 using Streetcode.BLL.DTO.Toponyms;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Toponyms.GetByStreetcodeId;
@@ -28,12 +29,11 @@ public class GetToponymsByStreetcodeIdHandler : IRequestHandler<GetToponymsByStr
             .ToponymRepository
             .GetAllAsync(
                 predicate: sc => sc.Streetcodes.Any(s => s.Id == request.StreetcodeId),
-                include: scl => scl
-                    .Include(sc => sc.Coordinate));
-        toponyms.DistinctBy(x => x.StreetName);
-        if (toponyms is null)
+                include: scl => scl.Include(sc => sc.Coordinate));
+
+        if (toponyms is null || !toponyms.Any())
         {
-            string errorMsg = $"Cannot find any toponym by the streetcode id: {request.StreetcodeId}";
+            string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("toponym", request.StreetcodeId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
