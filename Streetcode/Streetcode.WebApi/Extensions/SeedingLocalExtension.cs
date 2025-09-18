@@ -1,6 +1,8 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
@@ -15,26 +17,36 @@ using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Entities.Team;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Entities.Transactions;
+using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
-using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.WebApi.Extensions
 {
     public static class SeedingLocalExtension
     {
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<User, IdentityRole<int>>()
+                .AddEntityFrameworkStores<StreetcodeDbContext>()
+                .AddUserManager<UserManager<User>>()
+                .AddSignInManager<SignInManager<User>>();
+
+            return services;
+        }
+
         public static async Task SeedDataAsync(this WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
             {
-                Directory.CreateDirectory(app.Configuration.GetValue<string>("Blob:BlobStorePath"));
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
-                var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
-                string blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath");
-                var repo = new RepositoryWrapper(dbContext);
-                var blobService = new BlobService(blobOptions, repo);
+                var blobServiceFactory = scope.ServiceProvider.GetRequiredService<IBlobServiceFactory>();
+                var blobService = blobServiceFactory.CreateBlobService();
+                var blobOptions = scope.ServiceProvider.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
+
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
+
                 if (!dbContext.Images.Any())
                 {
                     string imageJson = await File.ReadAllTextAsync(initialDataImagePath, Encoding.UTF8);
@@ -42,26 +54,13 @@ namespace Streetcode.WebApi.Extensions
                     var imgfromJson = JsonConvert.DeserializeObject<List<Image>>(imageJson);
                     var audiosfromJson = JsonConvert.DeserializeObject<List<Audio>>(audiosJson);
 
-                    foreach (var img in imgfromJson)
-                    {
-                        string filePath = Path.Combine(blobPath, img.BlobName);
-                        if (!File.Exists(filePath))
-                        {
-                            blobService.SaveFileInStorageBase64(img.Base64, img.BlobName.Split('.')[0], img.BlobName.Split('.')[1]);
-                        }
-                    }
+                    // Seed images
+                    await SeedMediaFiles(imgfromJson, blobService, blobOptions.Value);
 
-                    foreach (var audio in audiosfromJson)
-                    {
-                        string filePath = Path.Combine(blobPath, audio.BlobName);
-                        if (!File.Exists(filePath))
-                        {
-                            blobService.SaveFileInStorageBase64(audio.Base64, audio.BlobName.Split('.')[0], audio.BlobName.Split('.')[1]);
-                        }
-                    }
+                    // Seed audios
+                    await SeedMediaFiles(audiosfromJson, blobService, blobOptions.Value);
 
                     dbContext.Images.AddRange(imgfromJson);
-
                     await dbContext.SaveChangesAsync();
 
                     if (!dbContext.Responses.Any())
@@ -267,20 +266,56 @@ namespace Streetcode.WebApi.Extensions
                         }
                     }
 
-                    if (!dbContext.Users.Any())
-                    {
-                        dbContext.Users.AddRange(
-                            new DAL.Entities.Users.User
-                            {
-                                Email = "admin",
-                                Role = UserRole.MainAdministrator,
-                                Login = "admin",
-                                Name = "admin",
-                                Password = "admin",
-                                Surname = "admin",
-                            });
+                    // Seed Roles and Admin User
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
-                        await dbContext.SaveChangesAsync();
+                    // Seed Roles
+                    string[] roleNames = Enum.GetNames(typeof(UserRole));
+
+                    foreach (var roleName in roleNames)
+                    {
+                        if (roleName != "None" && !await roleManager.RoleExistsAsync(roleName))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole<int>(roleName));
+                        }
+                    }
+
+                    // Seed Admin User
+                    var adminUser = await userManager.FindByEmailAsync("admin@gmail.com");
+                    if (adminUser == null)
+                    {
+                        var newAdminUser = new User
+                        {
+                            Email = "admin@gmail.com",
+                            Name = "admin",
+                            Surname = "admin",
+                        };
+
+                        var createResult = await userManager.CreateAsync(newAdminUser, "admin_password_123!");
+                        if (createResult.Succeeded)
+                        {
+                            await userManager.AddToRoleAsync(newAdminUser, UserRole.MainAdministrator.ToString());
+                        }
+                    }
+
+                    // Seed a regular user
+                    var regularUser = await userManager.FindByEmailAsync("user@gmail.com");
+                    if (regularUser == null)
+                    {
+                        var newRegularUser = new User
+                        {
+                            Email = "user@gmail.com",
+                            Name = "user",
+                            Surname = "user"
+                        };
+
+                        var createResult = await userManager.CreateAsync(newRegularUser, "user_password_123!");
+                        if (createResult.Succeeded)
+                        {
+                            // Add user to the User role
+                            await userManager.AddToRoleAsync(newRegularUser, UserRole.User.ToString());
+                        }
                     }
 
                     if (!dbContext.News.Any())
@@ -1245,7 +1280,7 @@ namespace Streetcode.WebApi.Extensions
                                         },
                                         new StreetcodeCategoryContent
                                         {
-                                            Text = "Хроніки про Т. Г. Шевченко",
+                                            Text = "Хроніки про Т. Г. Шевченка",
                                             SourceLinkCategoryId = 2,
                                             StreetcodeId = 2
                                         },
@@ -1417,6 +1452,73 @@ namespace Streetcode.WebApi.Extensions
                     await dbContext.SaveChangesAsync();
                 }
             }
+        }
+
+        private static async Task SeedMediaFiles<T>(List<T> mediaFiles, IBlobService blobService, BlobEnvironmentVariables blobConfig)
+            where T : class
+        {
+            foreach (var mediaFile in mediaFiles)
+            {
+                var blobNameProperty = typeof(T).GetProperty("BlobName");
+                var base64Property = typeof(T).GetProperty("Base64");
+
+                if (blobNameProperty?.GetValue(mediaFile) is string blobName &&
+                    base64Property?.GetValue(mediaFile) is string base64)
+                {
+                    await SeedMediaFile(blobService, blobConfig, blobName, base64);
+                }
+            }
+        }
+
+        private static Task SeedMediaFile(IBlobService blobService, BlobEnvironmentVariables blobConfig, string blobName, string base64)
+        {
+            // Check if we're using local storage and if file already exists
+            if (blobConfig.StorageType?.ToLower() != "azure")
+            {
+                string blobPath = blobConfig.BlobStorePath;
+                Directory.CreateDirectory(blobPath);
+                string filePath = Path.Combine(blobPath, blobName);
+                if (File.Exists(filePath))
+                {
+                    return Task.CompletedTask;
+                }
+            }
+
+            try
+            {
+                // For Azure storage, we need to check if blob exists differently
+                if (blobConfig.StorageType?.ToLower() == "azure")
+                {
+                    try
+                    {
+                        // Try to find the file - if it exists, this won't throw
+                        blobService.FindFileInStorageAsBase64(blobName);
+                        return Task.CompletedTask;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // File doesn't exist, continue with seeding
+                    }
+                }
+
+                // Extract name and extension from blobName
+                var blobNameParts = blobName.Split('.');
+                if (blobNameParts.Length >= 2)
+                {
+                    var nameWithoutExtension = string.Join(".", blobNameParts.Take(blobNameParts.Length - 1));
+                    var extension = blobNameParts.Last();
+
+                    // Use the common interface method
+                    blobService.SaveFileInStorageWithName(base64, nameWithoutExtension, extension);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error but continue with other files
+                Console.WriteLine($"Error seeding file {blobName}: {ex.Message}");
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

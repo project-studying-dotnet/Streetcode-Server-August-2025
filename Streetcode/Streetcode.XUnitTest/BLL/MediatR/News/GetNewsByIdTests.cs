@@ -8,6 +8,8 @@ using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetById;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Xunit;
@@ -78,16 +80,13 @@ public class GetNewsByIdTests
         // Arrange
         int newsId = 1;
         var newsEntity = CreateNewsEntity(newsId);
+        var errorMsg = Errors_Common.NotFoundById.FormatWith("news", newsId);
 
         _mockNewsRepository
             .Setup(r => r.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<DAL.Entities.News.News, bool>>>(),
                 It.IsAny<Func<IQueryable<DAL.Entities.News.News>, IIncludableQueryable<DAL.Entities.News.News, object>>>()))
-            .ReturnsAsync(newsEntity);
-
-        _mockMapper
-            .Setup(m => m.Map<NewsDTO>(newsEntity))
-            .Returns((NewsDTO)null);
+            .ReturnsAsync((DAL.Entities.News.News)null);
 
         var query = new GetNewsByIdQuery(newsId);
 
@@ -98,8 +97,7 @@ public class GetNewsByIdTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
-
-        _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
+        result.Errors[0].Message.Should().Be(errorMsg);
     }
 
     [Fact]
@@ -140,7 +138,7 @@ public class GetNewsByIdTests
         _mockMapper.Verify(m => m.Map<NewsDTO>(newsEntity), Times.Once);
     }
 
-    private DAL.Entities.News.News CreateNewsEntity(int id)
+    private static DAL.Entities.News.News CreateNewsEntity(int id)
     {
         return new DAL.Entities.News.News
         {
@@ -154,7 +152,7 @@ public class GetNewsByIdTests
         };
     }
 
-    private NewsDTO CreateNewsDTO(int id)
+    private static NewsDTO CreateNewsDTO(int id)
     {
         return new NewsDTO
         {
@@ -167,7 +165,7 @@ public class GetNewsByIdTests
         };
     }
 
-    private NewsDTO CreateNewsDTOWithImage(int id, string blobName)
+    private static NewsDTO CreateNewsDTOWithImage(int id, string blobName)
     {
         return new NewsDTO
         {

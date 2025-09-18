@@ -4,6 +4,8 @@ using MediatR;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.Create;
@@ -45,13 +47,13 @@ public class CreateImageHandler : IRequestHandler<CreateImageCommand, Result<Ima
 
         createdImage.Base64 = _blobService.FindFileInStorageAsBase64(createdImage.BlobName);
 
-        if(resultIsSuccess)
+        if (resultIsSuccess)
         {
             return Result.Ok(createdImage);
         }
         else
         {
-            const string errorMsg = "Failed to create an image";
+            string errorMsg = Errors_Common.FailedToCreate_An.FormatWith("image");
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

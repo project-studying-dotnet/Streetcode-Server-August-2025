@@ -5,6 +5,8 @@ using Moq;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
@@ -67,7 +69,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
         public async Task Handle_WhenArtsIsNull_ReturnsFailAndLogsError()
         {
             // Arrange
-            const string ErrorMessage = "Cannot find any arts";
+            string errorMessage = Errors_Common.NotFoundAny.FormatWith("arts");
 
             _repositoryWrapperMock.Setup(r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
@@ -81,14 +83,14 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetAll
 
             // Assert
             Assert.True(result.IsFailed);
-            Assert.Contains(result.Errors, e => e.Message.Contains(ErrorMessage));
+            Assert.Contains(result.Errors, e => e.Message.Contains(errorMessage));
 
             _repositoryWrapperMock.Verify(
                 r => r.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()), Times.Once);
 
-            _loggerMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains(ErrorMessage))), Times.Once);
+            _loggerMock.Verify(l => l.LogError(query, It.Is<string>(s => s.Contains(errorMessage))), Times.Once);
             _mapperMock.VerifyNoOtherCalls();
         }
     }

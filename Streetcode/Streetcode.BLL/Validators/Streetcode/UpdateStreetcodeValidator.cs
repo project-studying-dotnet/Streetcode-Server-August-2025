@@ -1,11 +1,14 @@
 ﻿using FluentValidation;
 using Streetcode.BLL.DTO.Streetcode.Update;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.Validators.Streetcode
 {
-    public class UpdateStreetcodeValidator : AbstractValidator<StreetcodeUpdateDTO>
+    public class UpdateStreetcodeValidator : AbstractValidator<UpdateStreetcodeCommand>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
 
@@ -16,12 +19,13 @@ namespace Streetcode.BLL.Validators.Streetcode
         {
             _repositoryWrapper = repositoryWrapper;
 
-            RuleFor(dto => dto).SetValidator(baseStreetcodeValidator);
+            RuleFor(c => c.Streetcode).SetValidator(baseStreetcodeValidator);
 
-            RuleFor(dto => dto)
-                .MustAsync(BeUniqueIndex).WithMessage("Index must be unique.");
+            RuleFor(c => c.Streetcode)
+                .MustAsync(BeUniqueIndex)
+                .WithMessage(Errors_Validation.MustBeUnique.FormatWith("Index"));
 
-            RuleForEach(dto => dto.Tags).SetValidator(tagValidator);
+            RuleForEach(c => c.Streetcode.Tags).SetValidator(tagValidator);
         }
 
         private async Task<bool> BeUniqueIndex(StreetcodeUpdateDTO streetcode, CancellationToken cancellationToken)

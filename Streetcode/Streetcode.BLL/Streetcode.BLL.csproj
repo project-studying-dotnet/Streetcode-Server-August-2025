@@ -9,9 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Validators\Sourse\**" />
+    <EmbeddedResource Remove="Validators\Sourse\**" />
+    <None Remove="Validators\Sourse\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ardalis.Specification" Version="8.0.0" />
     <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
     <PackageReference Include="FluentResults" Version="3.15.1" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
@@ -41,17 +48,114 @@
 
   <ItemGroup>
     <Folder Include="Mapping\Analytics\" />
+    <Folder Include="Mapping\Comments\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
-    <Folder Include="MediatR\Analytics\" />
+    <Folder Include="MediatR\Comments\Delete\" />
+    <Folder Include="MediatR\Users\Register\" />
     <Folder Include="Validators\Email\" />
-    <Folder Include="Validators\Media\Image\" />
     <Folder Include="Validators\Helpers\" />
     <Folder Include="Validators\Payment\" />
     <Folder Include="Validators\Partners\" />
     <Folder Include="Validators\Team\TeamMembersLinks\" />
     <Folder Include="Validators\Team\Position\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Errors.AdditionalContent.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.AdditionalContent.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.Common.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Common.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.Email.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Email.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.RelatedTerm.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.RelatedTerm.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.Sources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Sources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.Streetcode.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Streetcode.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.Timeline.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Timeline.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.Validation.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Validation.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\MediatR.Payment.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MediatR.Payment.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors_Jwt.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors_Jwt.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Errors.AdditionalContent.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.AdditionalContent.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Common.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Common.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Email.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Email.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors_Jwt.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors_Jwt.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.RelatedTerm.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.RelatedTerm.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Sources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Sources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Streetcode.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Streetcode.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Timeline.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Timeline.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Validation.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Validation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\MediatR.Payment.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MediatR.Payment.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

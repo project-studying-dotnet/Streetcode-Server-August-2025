@@ -2,10 +2,14 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoryById;
+using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using SourceLinkCategoryEntity = Streetcode.DAL.Entities.Sources.SourceLinkCategory;
@@ -29,12 +33,21 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
             _handler = new GetCategoryByIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _blobServiceMock.Object, _loggerMock.Object);
         }
 
+        [Fact]
         public async Task Handle_WithValidId_ReturnsSuccess()
         {
             // Arrange
             int categoryId = 1;
-            var categoryEntity = new SourceLinkCategoryEntity { Id = categoryId };
-            var categoryDto = new SourceLinkCategoryDTO { Id = categoryId };
+            var categoryEntity = new SourceLinkCategoryEntity
+            {
+                Id = categoryId,
+                Image = new Image { BlobName = "blobName" }
+            };
+            var categoryDto = new SourceLinkCategoryDTO
+            {
+                Id = categoryId,
+                Image = new ImageDTO { BlobName = "blobName" }
+            };
 
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),
@@ -71,7 +84,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Sources.SourceLinkCategory.GetCategor
         {
             // Arrange
             int categoryId = -1;
-            string errorMsg = $"Cannot find any srcCategory by the corresponding id: {categoryId}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("source category", categoryId);
             _repositoryWrapperMock.Setup(r => r.SourceCategoryRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<SourceLinkCategoryEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<SourceLinkCategoryEntity>,

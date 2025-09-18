@@ -1,6 +1,10 @@
+using System.Text;
 using FluentValidation;
 using Hangfire;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
@@ -14,6 +18,7 @@ using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
 using Microsoft.FeatureManagement;
+using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Interfaces.Payment;
 using Streetcode.BLL.Services.Payment;
 using Streetcode.BLL.Interfaces.Instagram;
@@ -22,6 +27,13 @@ using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.MediatR;
 using Streetcode.BLL;
+using Streetcode.BLL.Factories.BlobStorage;
+using Streetcode.BLL.Interfaces.Jwt;
+using Streetcode.BLL.Services.JwtService;
+using Streetcode.DAL.Entities.Users;
+using Streetcode.DAL.Repositories.Interfaces.Timeline;
+using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.Services.Timeline;
 using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.BLL.Services.Redis;
 
@@ -48,12 +60,21 @@ public static class ServiceCollectionExtensions
             ApplicationAssembly.Assembly,
             includeInternalTypes: true);
 
-        services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<IBlobServiceFactory, BlobServiceFactory>();
+
+        services.AddScoped<IBlobService>(provider =>
+        {
+            var factory = provider.GetRequiredService<IBlobServiceFactory>();
+            return factory.CreateBlobService();
+        });
+
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IHistoricalContextService, HistoricalContextService>();
         services.AddScoped(typeof(IRedisService<>), typeof(RedisService<>));
     }
 
@@ -97,6 +118,31 @@ public static class ServiceCollectionExtensions
             opt.MaxAge = TimeSpan.FromDays(30);
         });
 
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtEnvironmentVariables>();
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+                };
+            });
+
+        services.AddAuthorization(options => options.DefaultPolicy =
+            new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build());
+
         services.AddLogging();
         services.AddControllers();
 
@@ -114,6 +160,29 @@ public static class ServiceCollectionExtensions
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
             opt.CustomSchemaIds(x => x.FullName);
+            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Please enter token",
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "bearer"
+            });
+            opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
         });
     }
 

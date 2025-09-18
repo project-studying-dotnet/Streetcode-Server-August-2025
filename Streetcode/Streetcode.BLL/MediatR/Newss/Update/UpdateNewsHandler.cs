@@ -4,6 +4,8 @@ using MediatR;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.News;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -28,7 +30,7 @@ namespace Streetcode.BLL.MediatR.Newss.Update
             var news = _mapper.Map<News>(request.news);
             if (news is null)
             {
-                const string errorMsg = $"Cannot convert null to news";
+                string errorMsg = Errors_Common.CannotConvertNull.FormatWith("news");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -51,13 +53,13 @@ namespace Streetcode.BLL.MediatR.Newss.Update
             _repositoryWrapper.NewsRepository.Update(news);
             var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
-            if(resultIsSuccess)
+            if (resultIsSuccess)
             {
                 return Result.Ok(response);
             }
             else
             {
-                const string errorMsg = $"Failed to update news";
+                string errorMsg = Errors_Common.FailedToUpdate.FormatWith("news");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

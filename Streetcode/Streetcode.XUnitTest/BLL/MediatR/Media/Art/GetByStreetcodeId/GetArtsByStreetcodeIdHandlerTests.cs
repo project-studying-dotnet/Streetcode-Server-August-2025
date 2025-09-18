@@ -7,6 +7,8 @@ using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
@@ -117,7 +119,7 @@ namespace Streetcode.XUnitTest.BLL_Tests.MediatR.Media.Art.GetByStreetcodeId
             // Arrange
             const int StreetcodeId = 1;
             var query = new GetArtsByStreetcodeIdQuery(StreetcodeId);
-            var expectedMessage = $"Cannot find any art with corresponding streetcode id: {StreetcodeId}";
+            var expectedMessage = Errors_Common.NotFoundByStreetcode.FormatWith("art", StreetcodeId);
 
             _repositoryWrapperMock
                 .Setup(r => r.ArtRepository.GetAllAsync(

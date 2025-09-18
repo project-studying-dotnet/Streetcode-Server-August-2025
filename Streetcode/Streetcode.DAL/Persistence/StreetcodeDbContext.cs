@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
 using Streetcode.DAL.Entities.Analytics;
+using Streetcode.DAL.Entities.Comments;
 using Streetcode.DAL.Entities.Feedback;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Entities.Media.Images;
@@ -22,7 +25,7 @@ using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Persistence;
 
-public class StreetcodeDbContext : DbContext
+public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public StreetcodeDbContext()
     {
@@ -33,6 +36,7 @@ public class StreetcodeDbContext : DbContext
     {
     }
 
+    public DbSet<CommentContent> Comments { get; set; }
     public DbSet<Art> Arts { get; set; }
     public DbSet<Audio> Audios { get; set; }
     public DbSet<ToponymCoordinate> ToponymCoordinates { get; set; }
@@ -58,6 +62,7 @@ public class StreetcodeDbContext : DbContext
     public DbSet<Video> Videos { get; set; }
     public DbSet<StreetcodeCategoryContent> StreetcodeCategoryContent { get; set; }
     public DbSet<StreetcodeArt> StreetcodeArts { get; set; }
+    public DbSet<StreetcodeArtSlide> StreetcodeArtSlides { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<StreetcodeTagIndex> StreetcodeTagIndices { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }
@@ -69,6 +74,7 @@ public class StreetcodeDbContext : DbContext
     public DbSet<HistoricalContextTimeline> HistoricalContextsTimelines { get; set; }
     public DbSet<StreetcodePartner> StreetcodePartners { get; set; }
     public DbSet<TeamMemberPositions> TeamMemberPosition { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -194,24 +200,35 @@ public class StreetcodeDbContext : DbContext
 
         modelBuilder.Entity<StreetcodeArt>(entity =>
         {
-            entity.HasKey(d => new { d.ArtId, d.StreetcodeId });
-
-            entity.HasOne(d => d.Streetcode)
-               .WithMany(d => d.StreetcodeArts)
-               .HasForeignKey(d => d.StreetcodeId)
-               .OnDelete(DeleteBehavior.Cascade);
+            entity.HasKey(d => new { d.Id });
 
             entity.HasOne(d => d.Art)
                 .WithMany(d => d.StreetcodeArts)
                 .HasForeignKey(d => d.ArtId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasOne(d => d.StreetcodeArtSlide)
+                .WithMany(d => d.StreetcodeArts)
+                .HasForeignKey(d => d.StreetcodeArtSlideId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.Property(e => e.Index)
                 .HasDefaultValue(1);
 
             entity
-                .HasIndex(d => new { d.ArtId, d.StreetcodeId })
+                .HasIndex(d => new { d.ArtId, d.StreetcodeArtSlideId })
                 .IsUnique(false);
+        });
+
+        modelBuilder.Entity<StreetcodeArtSlide>(entity =>
+        {
+            entity.HasOne(d => d.Streetcode)
+               .WithMany(d => d.StreetcodeArtSlides)
+               .HasForeignKey(d => d.StreetcodeId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.Index)
+                .HasDefaultValue(1);
         });
 
         modelBuilder.Entity<StreetcodeContent>(entity =>
@@ -307,5 +324,11 @@ public class StreetcodeDbContext : DbContext
             .HasValue<Coordinate>("coordinate_base")
             .HasValue<StreetcodeCoordinate>("coordinate_streetcode")
             .HasValue<ToponymCoordinate>("coordinate_toponym");
+
+        modelBuilder.Entity<CommentContent>()
+            .HasOne(c => c.ParentComment)
+            .WithMany(c => c.Replies)
+            .HasForeignKey(c => c.ParentCommentId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

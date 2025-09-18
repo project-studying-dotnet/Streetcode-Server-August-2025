@@ -7,8 +7,15 @@ using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Create;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
+using Streetcode.BLL.Validators.ArtGallery;
+using Streetcode.BLL.Validators.Media.Image.Art;
 using Streetcode.BLL.Validators.Streetcode;
+using Streetcode.BLL.Validators.Streetcode.Toponyms;
+using Streetcode.BLL.Validators.Streetcode.ImageDetails;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Enums;
@@ -27,8 +34,18 @@ public class CreateStreetcodeValidatorTests
     public CreateStreetcodeValidatorTests()
     {
         _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-        _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>();
         _mockTagValidator = new Mock<TagValidator>();
+
+        var mockArtSlideValidator = new Mock<StreetcodeArtSlideValidator>();
+        var mockImageDetailsValidator = new Mock<ImageDetailsValidator>(_mockRepositoryWrapper.Object);
+        var mockArtValidator = new Mock<ArtCreateUpdateDTOValidator>();
+        var mockToponymValidator = new Mock<StreetcodeToponymValidator>();
+
+        _mockBaseStreetcodeValidator = new Mock<BaseStreetcodeValidator>(
+            mockArtSlideValidator.Object,
+            mockArtValidator.Object,
+            mockImageDetailsValidator.Object,
+            mockToponymValidator.Object);
 
         _validator = new CreateStreetcodeValidator(
             _mockRepositoryWrapper.Object,
@@ -40,11 +57,11 @@ public class CreateStreetcodeValidatorTests
     public async Task ShouldReturnSuccessResult_WhenAllFieldsAreValid()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeDto();
+        var command = GetValidStreetcodeCommand();
         SetupRepositoryWrapperForValidScenario();
 
         // Act
-        var result = await _validator.ValidateAsync(streetcode);
+        var result = await _validator.ValidateAsync(command);
 
         // Assert
         Assert.True(result.IsValid);
@@ -55,15 +72,15 @@ public class CreateStreetcodeValidatorTests
     public async Task ShouldReturnError_WhenIndexIsNotUnique()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeDto();
+        var command = GetValidStreetcodeCommand();
         SetupRepositoryWrapper(1);
-        var expectedMessage = "Index must be unique.";
+        var expectedMessage = Errors_Validation.MustBeUnique.FormatWith("Index");
 
         // Act
-        var result = await _validator.TestValidateAsync(streetcode);
+        var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(sc => sc.Index)
+        result.ShouldHaveValidationErrorFor(c => c.NewStreetcode.Index)
             .WithErrorMessage(expectedMessage);
     }
 
@@ -71,16 +88,16 @@ public class CreateStreetcodeValidatorTests
     public async Task ShouldReturnError_WhenImagesDetailsIsEmpty()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeDto();
-        streetcode.ImagesDetails = new List<ImageDetailsDto>();
+        var command = GetValidStreetcodeCommand();
+        command.NewStreetcode.ImagesDetails = new List<ImageDetailsDto>();
         SetupRepositoryWrapperForValidScenario();
-        var expectedMessage = "At least one image detail is required.";
+        var expectedMessage = Errors_Validation.CannotBeEmpty.FormatWith("ImagesDetails");
 
         // Act
-        var result = await _validator.TestValidateAsync(streetcode);
+        var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(sc => sc.ImagesDetails)
+        result.ShouldHaveValidationErrorFor(c => c.NewStreetcode.ImagesDetails)
             .WithErrorMessage(expectedMessage);
     }
 
@@ -88,19 +105,19 @@ public class CreateStreetcodeValidatorTests
     public async Task ShouldReturnError_WhenImageDoesNotExist()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeDto();
+        var command = GetValidStreetcodeCommand();
         SetupRepositoryWrapperForValidScenario();
-        streetcode.ImagesDetails.First().ImageId = 99;
+        command.NewStreetcode.ImagesDetails.First().ImageId = 99;
         _mockRepositoryWrapper
             .Setup(repo => repo.ImageRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Image, bool>>>(),
                 It.IsAny<Func<IQueryable<Image>, IIncludableQueryable<Image, object>>>()))
             .ReturnsAsync(null as Image);
 
-        var expectedMessage = "One or more images do not exist.";
+        var expectedMessage = Errors_Validation.ImageDoesntExist.FormatWith(99);
 
         // Act
-        var result = await _validator.TestValidateAsync(streetcode);
+        var result = await _validator.TestValidateAsync(command);
 
         // Assert
         result.ShouldHaveValidationErrorFor($"Streetcode.ImagesDetails.ImageId[{0}]")
@@ -111,11 +128,11 @@ public class CreateStreetcodeValidatorTests
     public async Task ShouldCallBaseValidator()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeDto();
+        var command = GetValidStreetcodeCommand();
         SetupRepositoryWrapperForValidScenario();
 
         // Act
-        var result = await _validator.ValidateAsync(streetcode);
+        var result = await _validator.ValidateAsync(command);
 
         // Assert
         _mockBaseStreetcodeValidator.Verify(v => v.ValidateAsync(It.IsAny<ValidationContext<StreetcodeCreateUpdateDTO>>(), default), Times.Once);
@@ -125,11 +142,11 @@ public class CreateStreetcodeValidatorTests
     public async Task ShouldCallChildValidators()
     {
         // Arrange
-        var streetcode = GetValidStreetcodeDto();
+        var command = GetValidStreetcodeCommand();
         SetupRepositoryWrapperForValidScenario();
 
         // Act
-        var result = await _validator.ValidateAsync(streetcode);
+        await _validator.ValidateAsync(command);
 
         // Assert
         _mockTagValidator.Verify(v => v.ValidateAsync(It.IsAny<ValidationContext<CreateTagDTO>>(), default), Times.AtLeast(1));
@@ -165,9 +182,9 @@ public class CreateStreetcodeValidatorTests
             .ReturnsAsync(new Image { Id = id });
     }
 
-    private static StreetcodeCreateDTO GetValidStreetcodeDto()
+    private static StreetcodeCreateCommand GetValidStreetcodeCommand()
     {
-        return new StreetcodeCreateDTO
+        return new StreetcodeCreateCommand(new StreetcodeCreateDTO
         {
             Index = 1,
             FirstName = "Ivan",
@@ -193,6 +210,6 @@ public class CreateStreetcodeValidatorTests
                     Alt = "1",
                 },
             ]
-        };
+        });
     }
 }

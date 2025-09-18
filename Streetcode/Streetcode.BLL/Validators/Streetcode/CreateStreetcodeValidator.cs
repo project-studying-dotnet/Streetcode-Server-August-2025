@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
-using Streetcode.BLL.DTO.Streetcode.Create;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.BLL.Validators.AdditionalContent.Tag;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.Validators.Streetcode;
 
-public class CreateStreetcodeValidator : AbstractValidator<StreetcodeCreateDTO>
+public class CreateStreetcodeValidator : AbstractValidator<StreetcodeCreateCommand>
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
 
@@ -16,21 +18,22 @@ public class CreateStreetcodeValidator : AbstractValidator<StreetcodeCreateDTO>
     {
         _repositoryWrapper = repositoryWrapper;
 
-        RuleFor(dto => dto).SetValidator(baseStreetcodeValidator);
+        RuleFor(c => c.NewStreetcode).SetValidator(baseStreetcodeValidator);
 
-        RuleFor(dto => dto.Index)
-            .MustAsync(BeUniqueIndex).WithMessage("Index must be unique.");
+        RuleFor(c => c.NewStreetcode.Index)
+            .MustAsync(BeUniqueIndex)
+            .WithMessage(Errors_Validation.MustBeUnique.FormatWith("Index"));
 
-        RuleFor(dto => dto.ImagesDetails)
+        RuleFor(c => c.NewStreetcode.ImagesDetails)
             .NotEmpty()
-            .WithMessage("At least one image detail is required.");
+            .WithMessage(Errors_Validation.CannotBeEmpty.FormatWith("ImagesDetails"));
 
-        RuleForEach(dto => dto.ImagesDetails.Select(x => x.ImageId))
+        RuleForEach(c => c.NewStreetcode.ImagesDetails.Select(x => x.ImageId))
             .MustAsync(HasExistingImage)
-            .WithMessage("One or more images do not exist.")
+            .WithMessage((dto, imgId) => Errors_Validation.ImageDoesntExist.FormatWith(imgId))
             .OverridePropertyName("Streetcode.ImagesDetails.ImageId");
 
-        RuleForEach(dto => dto.Tags).SetValidator(tagValidator);
+        RuleForEach(c => c.NewStreetcode.Tags).SetValidator(tagValidator);
     }
 
     private async Task<bool> BeUniqueIndex(int index, CancellationToken cancellationToken)

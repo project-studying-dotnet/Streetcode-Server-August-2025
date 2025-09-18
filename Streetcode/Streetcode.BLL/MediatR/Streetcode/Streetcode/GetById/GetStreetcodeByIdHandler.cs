@@ -7,6 +7,8 @@ using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Redis;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetById;
@@ -42,7 +44,7 @@ public class GetStreetcodeByIdHandler : IRequestHandler<GetStreetcodeByIdQuery, 
 
         if (streetcode is null)
         {
-            string errorMsg = $"Cannot find any streetcode with corresponding id: {request.Id}";
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("streetcode", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -59,26 +61,4 @@ public class GetStreetcodeByIdHandler : IRequestHandler<GetStreetcodeByIdQuery, 
 
         return Result.Ok(streetcodeDto);
     }
-
-    /*public async Task<Result<StreetcodeDTO>> Handle(GetStreetcodeByIdQuery request, CancellationToken cancellationToken)
-    {
-        var streetcode = await _repositoryWrapper.StreetcodeRepository.GetFirstOrDefaultAsync(
-            predicate: st => st.Id == request.Id);
-
-        if (streetcode is null)
-        {
-            string errorMsg = $"Cannot find any streetcode with corresponding id: {request.Id}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
-        }
-
-        var tagIndexed = await _repositoryWrapper.StreetcodeTagIndexRepository
-                                        .GetAllAsync(
-                                            t => t.StreetcodeId == request.Id,
-                                            include: q => q.Include(ti => ti.Tag));
-        var streetcodeDto = _mapper.Map<StreetcodeDTO>(streetcode);
-        streetcodeDto.Tags = _mapper.Map<List<StreetcodeTagDTO>>(tagIndexed);
-
-        return Result.Ok(streetcodeDto);
-    } */
 }

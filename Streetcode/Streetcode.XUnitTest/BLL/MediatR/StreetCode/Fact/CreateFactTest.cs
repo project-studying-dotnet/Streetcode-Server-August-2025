@@ -6,6 +6,9 @@ using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Services.Text.Fact;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -41,6 +44,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             _mockRepositoryWrapper.Setup(r => r.StreetcodeRepository)
                 .Returns(_mockStreetcodeRepository.Object);
 
+            var factAutoOrder = new FactAutoOrder(_mockRepositoryWrapper.Object);
+
             _handler = new CreateFactHandler(
                 _mockMapper.Object,
                 _mockRepositoryWrapper.Object,
@@ -58,10 +63,10 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
 
             var command = new CreateFactCommand(streetcodeId: 1, factDTO);
 
-            _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
+            _mockMapper.Setup(m => m.Map<Facts>(factDTO))
                 .Returns(factEntity);
-            _mockFactRepository.Setup(r => r.Create(factEntity))
-                .Returns(createdEntity);
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity))
+                .ReturnsAsync(createdEntity);
             _mockStreetcodeRepository
                 .Setup(r => r.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
@@ -80,7 +85,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(expectedResultDTO);
 
-            _mockFactRepository.Verify(r => r.Create(factEntity), Times.Once);
+            _mockFactRepository.Verify(r => r.CreateAsync(factEntity), Times.Once);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(1));
         }
 
@@ -90,9 +95,10 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             // Arrange
             var factDTO = CreateValidFactDTO();
             var command = new CreateFactCommand(streetcodeId: 1, factDTO);
+            var errorMsg = Errors_Common.CannotConvertNull.FormatWith("fact");
 
-            _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
-                .Returns((DAL.Entities.Streetcode.TextContent.Facts)null);
+            _mockMapper.Setup(m => m.Map<Facts>(factDTO))
+                .Returns((Facts)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -101,6 +107,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             result.Should().NotBeNull();
             result.IsFailed.Should().BeTrue();
             result.Errors.Should().NotBeEmpty();
+            result.Errors[0].Message.Should().Be(errorMsg);
 
             _mockFactRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.Streetcode.TextContent.Facts>()), Times.Never);
         }
@@ -124,6 +131,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             // Assert
             result.Should().NotBeNull();
             result.IsFailed.Should().BeTrue();
+            result.Errors.Should().NotBeEmpty();
 
             _mockFactRepository.Verify(r => r.Create(It.IsAny<Facts>()), Times.Never);
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
@@ -140,12 +148,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
 
             var command = new CreateFactCommand(streetcodeId: 1, factDTO);
 
-            _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
+            _mockMapper.Setup(m => m.Map<Facts>(factDTO))
                 .Returns(factEntity);
 
-            _mockFactRepository.Setup(r => r.Create(factEntity))
-                .Callback<DAL.Entities.Streetcode.TextContent.Facts>(entity => factEntity = entity)
-                .Returns(createdEntity);
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity))
+                .Callback<Facts>(entity => factEntity = entity)
+                .ReturnsAsync(createdEntity);
 
             _mockStreetcodeRepository
                 .Setup(r => r.GetFirstOrDefaultAsync(
@@ -167,7 +175,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(expectedResultDTO);
 
-            _mockFactRepository.Verify(r => r.Create(It.IsAny<Facts>()), Times.AtLeast(1));
+            _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<Facts>()), Times.AtLeast(1));
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.AtLeast(1));
         }
 
@@ -178,11 +186,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             var factDTO = CreateValidFactDTO();
             var factEntity = CreateValidFactEntity();
             var command = new CreateFactCommand(streetcodeId: 1, factDTO);
+            var errorMsg = Errors_Common.FailedToCreate.FormatWith("fact");
 
-            _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
+            _mockMapper.Setup(m => m.Map<Facts>(factDTO))
                 .Returns(factEntity);
 
-            _mockFactRepository.Setup(r => r.Create(factEntity)).Returns(factEntity);
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity)).ReturnsAsync(factEntity);
 
             _mockStreetcodeRepository
                 .Setup(r => r.GetFirstOrDefaultAsync(
@@ -199,8 +208,11 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             // Assert
             result.Should().NotBeNull();
             result.IsFailed.Should().BeTrue();
+            result.Errors.Should().NotBeEmpty();
+            result.Errors[0].Message.Should().Be(errorMsg);
 
-            _mockFactRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.Streetcode.TextContent.Facts>()), Times.Once);
+            _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<Facts>()), Times.Once);
+
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
@@ -212,7 +224,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             var factEntity = CreateValidFactEntity();
             var command = new CreateFactCommand(streetcodeId: 1, factDTO);
 
-            _mockMapper.Setup(m => m.Map<DAL.Entities.Streetcode.TextContent.Facts>(factDTO))
+            _mockMapper.Setup(m => m.Map<Facts>(factDTO))
                 .Returns(factEntity);
 
             _mockStreetcodeRepository
@@ -221,19 +233,20 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
                     It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
                 .ReturnsAsync(CreateValidStreetcodeEntity());
 
-            _mockFactRepository.Setup(r => r.Create(factEntity))
+            _mockFactRepository.Setup(r => r.CreateAsync(factEntity))
                 .Throws<InvalidOperationException>();
 
             // act an assert
             await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
 
-            _mockFactRepository.Verify(r => r.Create(It.IsAny<DAL.Entities.Streetcode.TextContent.Facts>()), Times.Once);
+            _mockFactRepository.Verify(r => r.CreateAsync(It.IsAny<Facts>()), Times.Once);
+
             _mockRepositoryWrapper.Verify(r => r.SaveChangesAsync(), Times.Never);
         }
 
-        private DAL.Entities.Streetcode.TextContent.Facts CreateValidFactEntity(int id = 1, int? imageId = 1)
+        private static Facts CreateValidFactEntity(int id = 1, int? imageId = 1)
         {
-            return new DAL.Entities.Streetcode.TextContent.Facts
+            return new Facts
             {
                 Id = 1,
                 Title = "Sample Fact",
@@ -243,7 +256,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             };
         }
 
-        private FactCreateDto CreateValidFactDTO(int id = 0, int? imageId = 1)
+        private static FactCreateDto CreateValidFactDTO(int id = 0, int? imageId = 1)
         {
             return new FactCreateDto
             {
@@ -254,7 +267,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Fact
             };
         }
 
-        private StreetcodeContent CreateValidStreetcodeEntity()
+        private static StreetcodeContent CreateValidStreetcodeEntity()
         {
             return new StreetcodeContent
             {

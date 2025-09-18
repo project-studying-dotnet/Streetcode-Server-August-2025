@@ -1,20 +1,21 @@
 ﻿namespace Streetcode.XUnitTest.BLL.MediatR.Media.Audio;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
-using FluentResults;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Media.Audio;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Audio.GetAll;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Query;
-using System;
 
 public class GetAllAudioHandlerTests
 {
@@ -79,9 +80,11 @@ public class GetAllAudioHandlerTests
             It.IsAny<Func<IQueryable<Audio>, IIncludableQueryable<Audio, object>>>()))
             .ReturnsAsync((IEnumerable<Audio>?)null);
 
+        var errorMsg = Errors_Common.NotFoundAny.FormatWith("audios");
+
         var result = await _handler.Handle(new GetAllAudiosQuery(), CancellationToken.None);
 
         Assert.True(result.IsFailed);
-        _mockLogger.Verify(l => l.LogError(It.IsAny<GetAllAudiosQuery>(), "Cannot find any audios"), Times.Once);
+        _mockLogger.Verify(l => l.LogError(It.IsAny<GetAllAudiosQuery>(), errorMsg), Times.Once);
     }
 }

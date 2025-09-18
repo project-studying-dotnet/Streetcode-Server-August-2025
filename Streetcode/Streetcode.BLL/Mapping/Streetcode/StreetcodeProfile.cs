@@ -15,7 +15,9 @@ public class StreetcodeProfile : Profile
         CreateMap<StreetcodeContent, StreetcodeDTO>()
             .ForMember(x => x.StreetcodeType, conf => conf.MapFrom(s => GetStreetcodeType(s)))
             .ReverseMap();
+
         CreateMap<StreetcodeContent, StreetcodeShortDTO>().ReverseMap();
+
         CreateMap<StreetcodeContent, StreetcodeMainPageDTO>()
              .ForPath(dto => dto.Text, conf => conf
                 .MapFrom(e => e.Text!.Title))
@@ -23,13 +25,18 @@ public class StreetcodeProfile : Profile
                 .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
 
         CreateMap<StreetcodeCreateDTO, StreetcodeContent>()
+            .ForMember(x => x.StreetcodeArtSlides, conf => conf.Ignore())
             .ForMember(x => x.Tags, conf => conf.Ignore())
             .ForMember(x => x.Images, conf => conf.Ignore())
+            .ForMember(x => x.Coordinates, conf => conf.Ignore())
+            .ForMember(x => x.StatisticRecords, conf => conf.Ignore())
             .ReverseMap();
 
         CreateMap<StreetcodeUpdateDTO, StreetcodeContent>()
+            .ForMember(x => x.StreetcodeArtSlides, conf => conf.Ignore())
             .ForMember(x => x.Tags, conf => conf.Ignore())
             .ForMember(x => x.Images, conf => conf.Ignore())
+            .ForMember(x => x.StatisticRecords, conf => conf.Ignore())
             .ReverseMap();
 
         CreateMap<StreetcodeUpdateDTO, PersonStreetcode>()
@@ -41,7 +48,7 @@ public class StreetcodeProfile : Profile
             .ReverseMap();
     }
 
-    private StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)
+    private static StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)
     {
         if (streetcode is EventStreetcode)
         {

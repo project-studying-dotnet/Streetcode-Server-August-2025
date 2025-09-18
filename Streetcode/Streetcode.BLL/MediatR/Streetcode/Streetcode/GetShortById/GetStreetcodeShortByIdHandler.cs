@@ -5,6 +5,8 @@ using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.BLL.Services.Redis;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById
@@ -38,7 +40,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById
 
             if (streetcode == null)
             {
-                const string errorMsg = "Cannot find streetcode by id";
+                string errorMsg = Errors_Common.NotFoundById.FormatWith("streetcode", request.id);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -47,7 +49,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById
 
             if(streetcodeShortDto == null)
             {
-                const string errorMsg = "Cannot map streetcode to shortDTO";
+                string errorMsg = Errors_Streetcode.CannotMap.FormatWith("shortDTO");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Microsoft.EntityFrameworkCore;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Util.Extensions;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
 {
@@ -27,16 +28,19 @@ namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
 
         public async Task<Result<List<NewsDTO>>> Handle(SortedByDateTimeQuery request, CancellationToken cancellationToken)
         {
-            var news = await _repositoryWrapper.NewsRepository.GetAllAsync(
-                include: cat => cat.Include(img => img.Image));
-            if (news == null)
+            var news = (await _repositoryWrapper.NewsRepository.GetAllAsync(
+                    include: cat => cat.Include(img => img.Image)))
+                .OrderByDescending(n => n.CreationDate)
+                .ToList();
+
+            if (!news.Any())
             {
-                const string errorMsg = "There are no news in the database";
+                string errorMsg = Errors_Common.NotFoundAny.FormatWith("news");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
 
-            var newsDTOs = _mapper.Map<IEnumerable<NewsDTO>>(news).OrderByDescending(x => x.CreationDate).ToList();
+            var newsDTOs = _mapper.Map<List<NewsDTO>>(news);
 
             foreach (var dto in newsDTOs)
             {

@@ -1,7 +1,10 @@
-using Hangfire;
+﻿using Hangfire;
 using Streetcode.BLL.Services.BlobStorageService;
+using Streetcode.WebApi.BackgroundServices;
 using Streetcode.WebApi.Extensions;
-using Streetcode.WebApi.Utils;
+using Streetcode.WebApi.Middlewares;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
@@ -13,6 +16,18 @@ builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+builder.Services.ConfigureJwt(builder);
+builder.Services.AddHostedService<RefreshTokenCleanupService>();
+
+// Ocelot Basic setup
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddOcelot(); // single ocelot.json file in read-only mode
+builder.Services
+    .AddOcelot(builder.Configuration);
+
+// Connect extension method Identity
+builder.Services.AddIdentityServices();
 
 var app = builder.Build();
 
@@ -28,9 +43,11 @@ else
 
 await app.ApplyMigrations();
 
-// await app.SeedDataAsync();
+await app.SeedDataAsync();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseCors();
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -40,22 +57,24 @@ app.UseHangfireDashboard("/dash");
 
 if (app.Environment.EnvironmentName != "Local")
 {
-    BackgroundJob.Schedule<WebParsingUtils>(
-        wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
-
-    RecurringJob.AddOrUpdate<WebParsingUtils>(
-        "WebParsingUtils_ParseZipFile",
-        wp => wp.ParseZipFileFromWebAsync(),
-        Cron.Monthly);
-
     RecurringJob.AddOrUpdate<BlobService>(
         "BlobService_CleanBlobStorage",
         b => b.CleanBlobStorage(),
         Cron.Monthly);
 }
 
+// BackgroundJob.Schedule<WebParsingUtils>(
+//     wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
+
+// RecurringJob.AddOrUpdate<WebParsingUtils>(
+//     "WebParsingUtils_ParseZipFile",
+//     wp => wp.ParseZipFileFromWebAsync(),
+//     Cron.Monthly);
+
 app.MapControllers();
 
+// Add middlewares ocelot
+await app.UseOcelot();
 await app.RunAsync();
 
 public partial class Program
