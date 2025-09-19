@@ -13,14 +13,6 @@ namespace Streetcode.XUnitTest.Repositories.Realizations.Comments
 {
     public class CommentRepositoryTests
     {
-        private StreetcodeDbContext GetInMemoryDbContext(string dbName)
-        {
-            var options = new DbContextOptionsBuilder<StreetcodeDbContext>()
-                .UseInMemoryDatabase(databaseName: dbName)
-                .Options;
-            return new StreetcodeDbContext(options);
-        }
-
         [Fact]
         public async Task GetCommentTreeByStreetcodeIdAsync_NoComments_ReturnsEmptyList()
         {
@@ -44,8 +36,7 @@ namespace Streetcode.XUnitTest.Repositories.Realizations.Comments
             dbContext.Users.Add(user);
             dbContext.Comments.AddRange(
                 new CommentContent { Id = 1, StreetcodeId = 1, UserId = 1, User = user, Text = "Root 1", CreatedAt = DateTime.Now.AddHours(-2), IsDeleted = false },
-                new CommentContent { Id = 2, StreetcodeId = 1, UserId = 1, User = user, Text = "Root 2", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = false }
-            );
+                new CommentContent { Id = 2, StreetcodeId = 1, UserId = 1, User = user, Text = "Root 2", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = false });
             dbContext.SaveChanges();
             var repository = new CommentRepository(dbContext);
 
@@ -70,8 +61,7 @@ namespace Streetcode.XUnitTest.Repositories.Realizations.Comments
             dbContext.Comments.AddRange(
                 new CommentContent { Id = 1, StreetcodeId = 1, UserId = 1, User = user, Text = "Root", CreatedAt = DateTime.Now.AddHours(-3), IsDeleted = false },
                 new CommentContent { Id = 2, StreetcodeId = 1, UserId = 1, User = user, ParentCommentId = 1, Text = "Reply 1", CreatedAt = DateTime.Now.AddHours(-2), IsDeleted = false },
-                new CommentContent { Id = 3, StreetcodeId = 1, UserId = 1, User = user, ParentCommentId = 2, Text = "Reply 2", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = false }
-            );
+                new CommentContent { Id = 3, StreetcodeId = 1, UserId = 1, User = user, ParentCommentId = 2, Text = "Reply 2", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = false });
             dbContext.SaveChanges();
             var repository = new CommentRepository(dbContext);
 
@@ -96,8 +86,7 @@ namespace Streetcode.XUnitTest.Repositories.Realizations.Comments
             dbContext.Users.Add(user);
             dbContext.Comments.AddRange(
                 new CommentContent { Id = 1, StreetcodeId = 1, UserId = 1, User = user, Text = "Active", CreatedAt = DateTime.Now.AddHours(-2), IsDeleted = false },
-                new CommentContent { Id = 2, StreetcodeId = 1, UserId = 1, User = user, Text = "Deleted", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = true }
-            );
+                new CommentContent { Id = 2, StreetcodeId = 1, UserId = 1, User = user, Text = "Deleted", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = true });
             dbContext.SaveChanges();
             var repository = new CommentRepository(dbContext);
 
@@ -119,8 +108,7 @@ namespace Streetcode.XUnitTest.Repositories.Realizations.Comments
             dbContext.Users.Add(user);
             dbContext.Comments.AddRange(
                 new CommentContent { Id = 1, StreetcodeId = 1, UserId = 1, User = user, Text = "Streetcode 1", CreatedAt = DateTime.Now.AddHours(-2), IsDeleted = false },
-                new CommentContent { Id = 2, StreetcodeId = 2, UserId = 1, User = user, Text = "Streetcode 2", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = false }
-            );
+                new CommentContent { Id = 2, StreetcodeId = 2, UserId = 1, User = user, Text = "Streetcode 2", CreatedAt = DateTime.Now.AddHours(-1), IsDeleted = false });
             dbContext.SaveChanges();
             var repository = new CommentRepository(dbContext);
 
@@ -131,6 +119,14 @@ namespace Streetcode.XUnitTest.Repositories.Realizations.Comments
             Assert.Single(result);
             Assert.Equal(1, result[0].Id);
             Assert.Equal(1, result[0].StreetcodeId);
+        }
+
+        private StreetcodeDbContext GetInMemoryDbContext(string dbName)
+        {
+            var options = new DbContextOptionsBuilder<StreetcodeDbContext>()
+                .UseInMemoryDatabase(databaseName: dbName)
+                .Options;
+            return new StreetcodeDbContext(options);
         }
     }
 }
