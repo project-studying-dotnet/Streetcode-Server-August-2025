@@ -28,7 +28,7 @@ public class GetCommentsByStreetcodeIdHandler : IRequestHandler<GetCommentsByStr
     {
         var commentTree = await _repositoryWrapper.CommentRepository.GetCommentTreeByStreetcodeIdAsync(request.StreetcodeId);
 
-        if (commentTree is null || !commentTree.Any())
+        if (commentTree is null)
         {
             string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("comment", request.StreetcodeId);
             _logger.LogError(request, errorMsg);
