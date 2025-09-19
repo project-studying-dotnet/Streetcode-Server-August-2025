@@ -17,8 +17,7 @@ public class CommentRepository : RepositoryBase<CommentContent>, ICommentReposit
     {
         var allComments = await GetAllAsync(
             predicate: c => c.StreetcodeId == streetcodeId && !c.IsDeleted,
-            include: query => query.Include(c => c.User)
-        );
+            include: query => query.Include(c => c.User));
 
         // Convert to list for dictionary operations
         var commentList = allComments.ToList();

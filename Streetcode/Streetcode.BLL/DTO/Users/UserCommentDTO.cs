@@ -21,9 +21,14 @@ public class CommentUserDTO
     {
         var initials = "";
         if (!string.IsNullOrWhiteSpace(firstName))
+        {
             initials += firstName[0].ToString().ToUpper();
+        }
+
         if (!string.IsNullOrWhiteSpace(lastName))
+        {
             initials += lastName[0].ToString().ToUpper();
+        }
 
         return string.IsNullOrEmpty(initials) ? "AU" : initials;
     }
