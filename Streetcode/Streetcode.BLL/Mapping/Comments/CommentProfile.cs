@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Streetcode.BLL.DTO.Comments;
+using Streetcode.BLL.DTO.Users;
 using Streetcode.DAL.Entities.Comments;
+using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.Mapping.Comments;
 
@@ -35,5 +37,7 @@ public class CommentProfile : Profile
             .ForMember(dest => dest.Streetcode, opt => opt.Ignore())
             .ForMember(dest => dest.ParentComment, opt => opt.Ignore())
             .ForMember(dest => dest.Replies, opt => opt.Ignore());
+
+        CreateMap<User, CommentUserDTO>();
     }
 }
