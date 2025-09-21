@@ -15,5 +15,7 @@ public class CommentDTO
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
 
+    public bool IsReviewed { get; set; }
+
     public ICollection<CommentDTO> Replies { get; set; } = new List<CommentDTO>();
 }
