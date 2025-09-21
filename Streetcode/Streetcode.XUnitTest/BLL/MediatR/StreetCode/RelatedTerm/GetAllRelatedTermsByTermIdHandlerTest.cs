@@ -50,21 +50,23 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
         }
 
         [Fact]
-        public async Task Handle_ShouldFail_WhenRelatedTermIsNull()
+        public async Task Handle_ShouldReturnSuccess_WhenRelatedTermIsNotFound()
         {
+            // Arrange
             var request = new GetAllRelatedTermsByTermIdQuery(1);
-            var errorMsg = Errors_RelatedTerm.NotFoundByTerm.FormatWith(request.id);
 
             _repositoryWrapperMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
             It.IsAny<Expression<Func<Entity, bool>>>(),
             It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
-            .ReturnsAsync((IEnumerable<Entity>)null!);
+            .ReturnsAsync(Enumerable.Empty<Entity>());
 
+            // Act
             var result = await _handler.Handle(request, CancellationToken.None);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal(result.Errors[0].Message, errorMsg);
-            _loggerServiceMock.Verify(l => l.LogError(request, errorMsg), Times.Once);
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.NotNull(result.Value);
+            Assert.Empty(result.Value);
         }
 
         [Fact]

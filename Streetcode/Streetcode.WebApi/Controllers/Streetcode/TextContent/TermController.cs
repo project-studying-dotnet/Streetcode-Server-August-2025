@@ -1,10 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.MediatR.Streetcode.Term.Create;
+using Streetcode.BLL.MediatR.Streetcode.Term.Update;
+using Streetcode.BLL.MediatR.Streetcode.Term.Delete;
 using Streetcode.BLL.MediatR.Streetcode.Term.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Term.GetById;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
-
 public class TermController : BaseApiController
 {
     [HttpGet]
@@ -17,5 +19,23 @@ public class TermController : BaseApiController
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new GetTermByIdQuery(id)));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateTermDTO termDto)
+    {
+        return HandleResult(await Mediator.Send(new CreateTermCommand(termDto)));
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateTermDTO termDto)
+    {
+        return HandleResult(await Mediator.Send(new UpdateTermCommand(id, termDto)));
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteTermCommand(id)));
     }
 }
