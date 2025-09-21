@@ -26,6 +26,11 @@ namespace Streetcode.BLL.Services.Terms
         public async Task<TermDTO> GetTermByIdAsync(int id)
         {
             var term = await _repositoryWrapper.TermRepository.GetSingleOrDefaultAsync(t => t.Id == id);
+            if (term is null)
+            {
+                throw new KeyNotFoundException($"Term with id {id} not found.");
+            }
+
             return _mapper.Map<TermDTO>(term);
         }
 

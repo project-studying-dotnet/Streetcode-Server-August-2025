@@ -60,6 +60,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.RelatedTerm
             It.IsAny<Func<IQueryable<Entity>, IIncludableQueryable<Entity, object>>>()))
             .ReturnsAsync(Enumerable.Empty<Entity>());
 
+            _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDTO>>(It.IsAny<IEnumerable<Entity>>()))
+                .Returns(Enumerable.Empty<RelatedTermDTO>());
+
             // Act
             var result = await _handler.Handle(request, CancellationToken.None);
 
