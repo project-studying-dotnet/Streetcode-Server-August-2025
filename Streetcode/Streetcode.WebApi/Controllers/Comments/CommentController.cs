@@ -54,7 +54,7 @@ public class CommentController : BaseApiController
         return HandleResult(await Mediator.Send(new UpdateCommentCommand(comment, userId)));
     }
 
-    [Authorize(Roles = "Administrator,Moderator")]
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPost("{id:int}/approve")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,7 +66,7 @@ public class CommentController : BaseApiController
         return HandleResult(result);
     }
 
-    [Authorize(Roles = "Administrator,Moderator")]
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
     [HttpPost("{id:int}/restrict")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
