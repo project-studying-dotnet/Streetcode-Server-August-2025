@@ -1,6 +1,4 @@
 ﻿using Streetcode.BLL.DTO.Users;
-using Streetcode.DAL.Entities.Comments;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Streetcode.BLL.DTO.Comments;
 
