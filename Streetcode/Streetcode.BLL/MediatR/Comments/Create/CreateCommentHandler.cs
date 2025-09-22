@@ -66,7 +66,7 @@ public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, Result
         }
 
         commentEntity.CreatedAt = DateTime.UtcNow;
-        commentEntity.IsRestricted = false;
+        commentEntity.IsRestricted = null;
         commentEntity.IsDeleted = false;
         commentEntity.DeletedAt = null;
 
