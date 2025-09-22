@@ -6,7 +6,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
@@ -39,7 +38,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
                 .GetAllAsync(
                 predicate: rt => rt.TermId == request.RelatedTerm.TermId && rt.Word == request.RelatedTerm.Word);
 
-            if (existingTerms is null || existingTerms.Any())
+            if (existingTerms.Any())
             {
                 string errorMsg = Errors_RelatedTerm.AlreadyExist;
                 _logger.LogError(request, errorMsg);
@@ -47,7 +46,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
             }
 
             var createdRelatedTerm = await _repository.RelatedTermRepository.CreateAsync(relatedTerm);
-
             var isSuccessResult = await _repository.SaveChangesAsync() > 0;
 
             if (!isSuccessResult)
@@ -58,7 +56,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
             }
 
             var createdRelatedTermDTO = _mapper.Map<RelatedTermDTO>(createdRelatedTerm);
-
             if (createdRelatedTermDTO != null)
             {
                 return Result.Ok(createdRelatedTermDTO);

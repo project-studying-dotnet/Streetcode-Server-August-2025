@@ -30,13 +30,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId
                 predicate: rt => rt.TermId == request.id,
                 include: rt => rt.Include(rt => rt.Term));
 
-            if (relatedTerms is null)
-            {
-                string errorMsg = Errors_RelatedTerm.NotFoundByTerm.FormatWith(request.id);
-                _logger.LogError(request, errorMsg);
-                return new Error(errorMsg);
-            }
-
             var relatedTermsDTO = _mapper.Map<IEnumerable<RelatedTermDTO>>(relatedTerms);
 
             if (relatedTermsDTO is null)
