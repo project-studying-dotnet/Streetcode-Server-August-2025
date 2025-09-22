@@ -53,7 +53,6 @@
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
     <Folder Include="MediatR\Comments\Delete\" />
-    <Folder Include="MediatR\Comments\SetCommentBlockStatus\" />
     <Folder Include="MediatR\Users\Register\" />
     <Folder Include="Validators\Email\" />
     <Folder Include="Validators\Helpers\" />
