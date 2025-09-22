@@ -15,7 +15,9 @@ public class CommentRepository : RepositoryBase<CommentContent>, ICommentReposit
 
     public async Task<CommentContent?> GetCommentTreeByCommentIdAsync(int commentId)
     {
-        var rootExists = await GetFirstOrDefaultAsync(c => c.Id == commentId && !c.IsDeleted);
+        var rootExists = await GetFirstOrDefaultAsync(
+            c => c.Id == commentId && !c.IsDeleted,
+            include: query => query.Include(c => c.User!));
 
         if (rootExists == null)
         {
@@ -26,7 +28,7 @@ public class CommentRepository : RepositoryBase<CommentContent>, ICommentReposit
 
         var allComments = await GetAllAsync(
             c => c.StreetcodeId == streetcodeId && !c.IsDeleted,
-            include: query => query.Include(c => c.User)););
+            include: query => query.Include(c => c.User!));
 
         var commentList = allComments.ToList();
 

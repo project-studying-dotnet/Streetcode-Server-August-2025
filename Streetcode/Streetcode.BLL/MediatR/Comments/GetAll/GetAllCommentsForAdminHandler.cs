@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
@@ -25,9 +26,10 @@ namespace Streetcode.BLL.MediatR.Comments.GetAll
         public async Task<Result<IEnumerable<CommentDTO>>> Handle(GetAllCommentsForAdminQuery request, CancellationToken cancellationToken)
         {
             var comments = await _repositoryWrapper.CommentRepository.GetAllAsync(
-                x => !x.IsDeleted && (!request.IsReviewed.HasValue || x.IsReviewed == request.IsReviewed.Value));
+                x => !x.IsDeleted && (!request.IsReviewed.HasValue || x.IsReviewed == request.IsReviewed.Value),
+                include: query => query.Include(c => c.User!));
 
-            if (comments == null || !comments.Any())
+            if (comments is null)
             {
                 string errorMsg = Errors_Common.NotFoundAny.FormatWith("comments");
                 _logger.LogError(request, errorMsg);

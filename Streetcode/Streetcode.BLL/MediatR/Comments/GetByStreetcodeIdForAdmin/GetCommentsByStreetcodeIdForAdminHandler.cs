@@ -2,6 +2,7 @@
 using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
@@ -34,9 +35,11 @@ namespace Streetcode.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin
                               && x.IsReviewed == request.IsReviewed.Value;
             }
 
-            var comments = await _repositoryWrapper.CommentRepository.GetAllAsync(predicate);
+            var comments = await _repositoryWrapper.CommentRepository.GetAllAsync(
+                predicate,
+                include: query => query.Include(c => c.User!));
 
-            if (comments is null || !comments.Any())
+            if (comments is null)
             {
                 string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("comment", request.StreetcodeId);
                 _logger.LogError(request, errorMsg);
