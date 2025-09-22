@@ -66,6 +66,9 @@ public class CreateCommentHandler : IRequestHandler<CreateCommentCommand, Result
         }
 
         commentEntity.CreatedAt = DateTime.UtcNow;
+        commentEntity.IsRestricted = false;
+        commentEntity.IsDeleted = false;
+        commentEntity.DeletedAt = null;
 
         var createdComment = await _repositoryWrapper.CommentRepository.CreateAsync(commentEntity);
         var isSuccessResult = await _repositoryWrapper.SaveChangesAsync() > 0;
