@@ -14,7 +14,7 @@ public class CommentDTO
     public int? ParentCommentId { get; set; }
     public bool IsDeleted { get; set; }
     public bool IsReviewed { get; set; }
-    public bool IsBlocked { get; set; }
+    public bool IsBlocked { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
     public ICollection<CommentDTO> Replies { get; set; } = new List<CommentDTO>();

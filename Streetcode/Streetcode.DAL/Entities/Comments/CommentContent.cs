@@ -27,7 +27,7 @@ public class CommentContent
     public CommentContent? ParentComment { get; set; }
     public bool IsDeleted { get; set; }
     public bool IsReviewed { get; set; }
-    public bool IsBlocked { get; set; }
+    public bool IsBlocked { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
     public ICollection<CommentContent> Replies { get; set; } = new List<CommentContent>();

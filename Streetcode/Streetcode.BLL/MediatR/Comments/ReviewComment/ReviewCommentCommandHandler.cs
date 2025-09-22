@@ -7,16 +7,16 @@ using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.Comments.SetCommentBlockStatus;
+namespace Streetcode.BLL.MediatR.Comments.ReviewComment;
 
-public class SetCommentBlockStatusHandler
-    : IRequestHandler<SetCommentBlockStatusCommand, Result<CommentDTO>>
+public class ReviewCommentCommandHandler
+    : IRequestHandler<ReviewCommentCommand, Result<CommentDTO>>
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
     private readonly IMapper _mapper;
 
-    public SetCommentBlockStatusHandler(
+    public ReviewCommentCommandHandler(
         IRepositoryWrapper repositoryWrapper,
         ILoggerService logger,
         IMapper mapper)
@@ -26,24 +26,18 @@ public class SetCommentBlockStatusHandler
         _mapper = mapper;
     }
 
-    public async Task<Result<CommentDTO>> Handle(SetCommentBlockStatusCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CommentDTO>> Handle(ReviewCommentCommand request, CancellationToken cancellationToken)
     {
         var comment = await _repositoryWrapper.CommentRepository
-            .GetFirstOrDefaultAsync(c => c.Id == request.CommentId);
+            .GetFirstOrDefaultAsync(c => c.Id == request.Id);
 
         if (comment == null)
         {
-            string errorMsg = Errors_Common.NotFoundById.FormatWith("comment", request.CommentId);
+            string errorMsg = Errors_Common.NotFoundById.FormatWith("comment", request.Id);
             _logger.LogError(request, errorMsg);
             return Result.Fail<CommentDTO>(errorMsg);
         }
 
-        if (comment.IsBlocked == request.Block && comment.IsReviewed)
-        {
-            return Result.Ok(_mapper.Map<CommentDTO>(comment));
-        }
-
-        comment.IsBlocked = request.Block;
         comment.IsReviewed = true;
         comment.UpdatedAt = DateTime.UtcNow;
 
