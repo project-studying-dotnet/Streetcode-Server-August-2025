@@ -1,4 +1,5 @@
-﻿using Streetcode.DAL.Entities.Comments;
+﻿using Streetcode.BLL.DTO.Users;
+using Streetcode.DAL.Entities.Comments;
 
 namespace Streetcode.BLL.DTO.Comments;
 
@@ -14,6 +15,7 @@ public class CommentDTO
     public int? ParentCommentId { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
+    public CommentUserDTO? User { get; set; }
 
     public bool IsReviewed { get; set; }
 

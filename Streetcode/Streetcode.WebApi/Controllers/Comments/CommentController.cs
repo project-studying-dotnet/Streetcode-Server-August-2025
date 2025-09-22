@@ -17,6 +17,12 @@ namespace Streetcode.WebApi.Controllers.Comments;
 public class CommentController : BaseApiController
 {
     [HttpGet("{streetcodeId:int}")]
+    public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new GetCommentsByStreetcodeIdQuery(streetcodeId)));
+    }
+
+    [HttpGet("{streetcodeId:int}")]
     [AuthorizeRoles(UserRole.Moderator, UserRole.Administrator, UserRole.MainAdministrator)]
 
     public async Task<IActionResult> GetByStreetcodeIdForModeration(int streetcodeId, [FromQuery] bool? isReviewed)

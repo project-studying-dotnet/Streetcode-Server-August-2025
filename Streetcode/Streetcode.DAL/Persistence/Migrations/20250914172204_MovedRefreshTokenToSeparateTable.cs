@@ -14,6 +14,15 @@ namespace Streetcode.DAL.Persistence.Migrations
             migrationBuilder.EnsureSchema(
                 name: "user");
 
+            // Remove RefreshToken and RefreshTokenExpiryTime columns from AspNetUsers
+            migrationBuilder.DropColumn(
+                name: "RefreshToken",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshTokenExpiryTime",
+                table: "AspNetUsers");
+
             migrationBuilder.CreateTable(
                 name: "refresh_tokens",
                 schema: "user",
@@ -50,6 +59,19 @@ namespace Streetcode.DAL.Persistence.Migrations
             migrationBuilder.DropTable(
                 name: "refresh_tokens",
                 schema: "user");
+
+            // Add RefreshToken and RefreshTokenExpiryTime columns back to AspNetUsers
+            migrationBuilder.AddColumn<string>(
+                name: "RefreshToken",
+                table: "AspNetUsers",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "RefreshTokenExpiryTime",
+                table: "AspNetUsers",
+                type: "datetime2",
+                nullable: true);
         }
     }
 }
