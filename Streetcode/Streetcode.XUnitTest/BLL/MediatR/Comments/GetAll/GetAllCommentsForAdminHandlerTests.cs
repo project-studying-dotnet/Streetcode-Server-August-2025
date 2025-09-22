@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Comments;
@@ -74,15 +73,16 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetAll
         }
 
         [Fact]
-        public async Task Handle_CommentsAreNull_ReturnsFailAndLogsError()
+        public async Task Handle_CommentsDoNotExist_ReturnsFailAndLogsError()
         {
             // Arrange
             var errorMsg = Errors_Common.NotFoundAny.FormatWith("comments");
+            var comments = new List<CommentContent>();
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetAllAsync(
                 It.IsAny<Expression<Func<CommentContent, bool>>>(),
                 It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
-                .ReturnsAsync((List<CommentContent>)null!);
+                .ReturnsAsync(comments);
 
             var query = new GetAllCommentsForAdminQuery(null);
 

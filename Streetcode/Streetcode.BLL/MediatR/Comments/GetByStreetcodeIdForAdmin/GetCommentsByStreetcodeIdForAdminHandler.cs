@@ -39,14 +39,15 @@ namespace Streetcode.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin
                 predicate,
                 include: query => query.Include(c => c.User!));
 
-            if (comments is null)
+            if (!comments.Any())
             {
                 string errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("comment", request.StreetcodeId);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var commentDtos = _mapper.Map<IEnumerable<CommentDTO>>(comments);
+            var ordered = comments.OrderBy(c => c.CreatedAt);
+            var commentDtos = _mapper.Map<IEnumerable<CommentDTO>>(ordered);
             return Result.Ok(commentDtos);
         }
     }

@@ -32,6 +32,11 @@ public class CommentRepository : RepositoryBase<CommentContent>, ICommentReposit
 
         var commentList = allComments.ToList();
 
+        foreach (var c in commentList)
+        {
+            c.Replies = new List<CommentContent>();
+        }
+
         var commentDict = commentList.ToDictionary(c => c.Id, c => c);
 
         foreach (var comment in commentList)
@@ -40,6 +45,11 @@ public class CommentRepository : RepositoryBase<CommentContent>, ICommentReposit
             {
                 commentDict[comment.ParentCommentId.Value].Replies.Add(comment);
             }
+        }
+
+        foreach (var c in commentDict.Values)
+        {
+             c.Replies = c.Replies.OrderBy(r => r.CreatedAt).ToList();
         }
 
         return commentDict.ContainsKey(commentId) ? commentDict[commentId] : null;

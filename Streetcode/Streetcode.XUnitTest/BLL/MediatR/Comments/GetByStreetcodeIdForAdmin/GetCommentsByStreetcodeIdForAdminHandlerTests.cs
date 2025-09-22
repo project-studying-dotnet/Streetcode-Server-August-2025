@@ -74,16 +74,17 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin
         }
 
         [Fact]
-        public async Task Handle_CommentsAreNull_ReturnsFailAndLogsError()
+        public async Task Handle_CommentsDoNotExist_ReturnsFailAndLogsError()
         {
             // Arrange
             var streetcodeId = 999;
             var errorMsg = Errors_Common.NotFoundByStreetcode.FormatWith("comment", streetcodeId);
+            var comments = new List<CommentContent>();
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetAllAsync(
                 It.IsAny<Expression<Func<CommentContent, bool>>>(),
                 It.IsAny<Func<IQueryable<CommentContent>, IIncludableQueryable<CommentContent, object>>>()))
-                .ReturnsAsync((List<CommentContent>)null!);
+                .ReturnsAsync(comments);
 
             var query = new GetCommentsByStreetcodeIdForAdminQuery(streetcodeId, null);
 

@@ -29,15 +29,16 @@ namespace Streetcode.BLL.MediatR.Comments.GetAll
                 x => !x.IsDeleted && (!request.IsReviewed.HasValue || x.IsReviewed == request.IsReviewed.Value),
                 include: query => query.Include(c => c.User!));
 
-            if (comments is null)
+            if (!comments.Any())
             {
                 string errorMsg = Errors_Common.NotFoundAny.FormatWith("comments");
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
 
-            var dtos = _mapper.Map<IEnumerable<CommentDTO>>(comments);
-            return Result.Ok(dtos);
+            var ordered = comments.OrderBy(c => c.CreatedAt);
+            var commentDtos = _mapper.Map<IEnumerable<CommentDTO>>(ordered);
+            return Result.Ok(commentDtos);
         }
     }
 }
