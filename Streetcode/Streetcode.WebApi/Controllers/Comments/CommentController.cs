@@ -5,6 +5,8 @@ using Streetcode.BLL.MediatR.Comments.Create;
 using Streetcode.BLL.MediatR.Comments.Delete;
 using Streetcode.BLL.MediatR.Comments.ReviewComment;
 using Streetcode.BLL.MediatR.Comments.SetCommentBlockStatus;
+using Streetcode.BLL.MediatR.Comments.GetByStreetcodeId;
+using Streetcode.WebApi.Attributes;
 using Streetcode.BLL.MediatR.Comments.Update;
 using Streetcode.DAL.Enums;
 using Streetcode.WebApi.Attributes;
@@ -14,6 +16,12 @@ namespace Streetcode.WebApi.Controllers.Comments;
 
 public class CommentController : BaseApiController
 {
+    [HttpGet("{streetcodeId:int}")]
+    public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new GetCommentsByStreetcodeIdQuery(streetcodeId)));
+    }
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Create([FromBody] CommentCreateDTO commentCreate)
