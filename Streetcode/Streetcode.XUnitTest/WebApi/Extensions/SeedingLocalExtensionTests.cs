@@ -90,41 +90,6 @@ public class SeedingLocalExtensionTests
         CreateTestJsonFiles();
     }
 
-    private void CreateTestJsonFiles()
-    {
-        var testImages = new List<Image>
-        {
-            new Image { Id = 1, BlobName = "test1.jpg", MimeType = "image/jpeg", Base64 = "base64data1" },
-            new Image { Id = 25, BlobName = "test25.jpg", MimeType = "image/jpeg", Base64 = "base64data25" },
-            new Image { Id = 26, BlobName = "test26.jpg", MimeType = "image/jpeg", Base64 = "base64data26" }
-        };
-
-        var testAudios = new List<Audio>
-        {
-            new Audio { Id = 1, BlobName = "test1.mp3", MimeType = "audio/mpeg", Base64 = "audiobase64data1" },
-            new Audio { Id = 2, BlobName = "test2.mp3", MimeType = "audio/mpeg", Base64 = "audiobase64data2" }
-        };
-
-        var imageJson = JsonConvert.SerializeObject(testImages);
-        var audioJson = JsonConvert.SerializeObject(testAudios);
-
-        // Create directories and files for testing
-        var imageDir = Path.GetDirectoryName("../Streetcode.DAL/InitialData/images.json");
-        var audioDir = Path.GetDirectoryName("../Streetcode.DAL/InitialData/audios.json");
-
-        if (!string.IsNullOrEmpty(imageDir))
-        {
-            Directory.CreateDirectory(imageDir);
-            File.WriteAllText("../Streetcode.DAL/InitialData/images.json", imageJson);
-        }
-
-        if (!string.IsNullOrEmpty(audioDir))
-        {
-            Directory.CreateDirectory(audioDir);
-            File.WriteAllText("../Streetcode.DAL/InitialData/audios.json", audioJson);
-        }
-    }
-
     [Fact]
     public void AddIdentityServices_ConfiguresIdentityServices()
     {
@@ -234,8 +199,11 @@ public class SeedingLocalExtensionTests
 
         // Assert
         // Verify that SaveFileInStorageWithName was called for images
-        _blobServiceMock.Verify(x => x.SaveFileInStorageWithName(
-                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+        _blobServiceMock.Verify(
+            x => x.SaveFileInStorageWithName(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()),
             Times.AtLeastOnce);
     }
 
@@ -250,9 +218,12 @@ public class SeedingLocalExtensionTests
 
         // Assert
         // Verify blob service was called for audio files too
-        _blobServiceMock.Verify(x => x.SaveFileInStorageWithName(
-                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
-            Times.AtLeast(2)); // At least 2 calls for audios + images
+        _blobServiceMock.Verify(
+            x => x.SaveFileInStorageWithName(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()),
+            Times.AtLeast(2));
     }
 
     [Fact]
@@ -498,5 +469,40 @@ public class SeedingLocalExtensionTests
         builder.Services.AddSingleton(_dbContext);
 
         return builder.Build();
+    }
+
+    private void CreateTestJsonFiles()
+    {
+        var testImages = new List<Image>
+        {
+            new Image { Id = 1, BlobName = "test1.jpg", MimeType = "image/jpeg", Base64 = "base64data1" },
+            new Image { Id = 25, BlobName = "test25.jpg", MimeType = "image/jpeg", Base64 = "base64data25" },
+            new Image { Id = 26, BlobName = "test26.jpg", MimeType = "image/jpeg", Base64 = "base64data26" }
+        };
+
+        var testAudios = new List<Audio>
+        {
+            new Audio { Id = 1, BlobName = "test1.mp3", MimeType = "audio/mpeg", Base64 = "audiobase64data1" },
+            new Audio { Id = 2, BlobName = "test2.mp3", MimeType = "audio/mpeg", Base64 = "audiobase64data2" }
+        };
+
+        var imageJson = JsonConvert.SerializeObject(testImages);
+        var audioJson = JsonConvert.SerializeObject(testAudios);
+
+        // Create directories and files for testing
+        var imageDir = Path.GetDirectoryName("../Streetcode.DAL/InitialData/images.json");
+        var audioDir = Path.GetDirectoryName("../Streetcode.DAL/InitialData/audios.json");
+
+        if (!string.IsNullOrEmpty(imageDir))
+        {
+            Directory.CreateDirectory(imageDir);
+            File.WriteAllText("../Streetcode.DAL/InitialData/images.json", imageJson);
+        }
+
+        if (!string.IsNullOrEmpty(audioDir))
+        {
+            Directory.CreateDirectory(audioDir);
+            File.WriteAllText("../Streetcode.DAL/InitialData/audios.json", audioJson);
+        }
     }
 }
