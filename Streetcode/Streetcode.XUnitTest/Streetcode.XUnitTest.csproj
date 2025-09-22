@@ -56,7 +56,6 @@
 	<ItemGroup>
 	  <Folder Include="BLL\Validators\Other\" />
 	  <Folder Include="WebApi\Middlewares\" />
-	  <Folder Include="WebApi\Extensions\" />
 	  <Folder Include="WebApi\Utils\" />
 	</ItemGroup>
 
