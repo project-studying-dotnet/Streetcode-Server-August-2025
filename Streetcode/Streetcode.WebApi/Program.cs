@@ -74,7 +74,8 @@ if (app.Environment.EnvironmentName != "Local")
 app.MapControllers();
 
 // Add middlewares ocelot
-await app.UseOcelot();
+
+// await app.UseOcelot();
 await app.RunAsync();
 
 public partial class Program
