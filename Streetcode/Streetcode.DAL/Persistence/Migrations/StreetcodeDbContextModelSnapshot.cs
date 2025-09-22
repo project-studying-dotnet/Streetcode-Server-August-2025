@@ -294,13 +294,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsBlocked")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsReviewed")
                         .HasColumnType("bit");
 
                     b.Property<int?>("ParentCommentId")
@@ -1079,7 +1073,7 @@ namespace Streetcode.DAL.Persistence.Migrations
 
                     b.HasIndex("HistoricalContextId");
 
-                    b.ToTable("HistoricalContextsTimelines");
+                    b.ToTable("HistoricalContextsTimelines", (string)null);
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Timeline.TimelineItem", b =>
