@@ -7,18 +7,17 @@ using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.DAL.Repositories.Realizations.FavouriteStreetcodes;
 
 namespace Streetcode.BLL.MediatR.FavouriteStreetcode.Delete;
 
-public class DeleteFavouriteStreetcodeCommandHandler
+public class DeleteFavouriteStreetcodeHandler
     : IRequestHandler<DeleteFavouriteStreetcodeCommand, Result<FavouriteStreetcodeDTO>>
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
     private readonly IMapper _mapper;
 
-    public DeleteFavouriteStreetcodeCommandHandler(
+    public DeleteFavouriteStreetcodeHandler(
         IRepositoryWrapper repositoryWrapper,
         ILoggerService logger,
         IMapper mapper)
@@ -40,13 +39,8 @@ public class DeleteFavouriteStreetcodeCommandHandler
             return Result.Fail<FavouriteStreetcodeDTO>(errorMsg);
         }
 
-        bool isAdmin = request.UserRole == UserRole.MainAdministrator
-                       || request.UserRole == UserRole.Administrator
-                       || request.UserRole == UserRole.Moderator;
-
-        bool isOwner = favourite.UserId == request.RequestingUserId;
-
-        if (!isAdmin && !isOwner)
+        // Only owner can delete
+        if (favourite.UserId != request.RequestingUserId)
         {
             string errorMsg = Errors_Common.UnauthorizedAction.FormatWith("delete this favourite streetcode");
             _logger.LogError(request, errorMsg);
