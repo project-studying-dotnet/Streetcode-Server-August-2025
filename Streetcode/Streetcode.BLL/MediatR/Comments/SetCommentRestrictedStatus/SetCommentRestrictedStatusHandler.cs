@@ -44,7 +44,6 @@ public class SetCommentRestrictedStatusHandler
         }
 
         comment.IsRestricted = request.IsRestricted;
-        comment.UpdatedAt = DateTime.UtcNow;
 
         _repositoryWrapper.CommentRepository.Update(comment);
 
