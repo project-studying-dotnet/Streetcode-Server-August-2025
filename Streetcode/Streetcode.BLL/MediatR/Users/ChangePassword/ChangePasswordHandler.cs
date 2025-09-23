@@ -50,5 +50,6 @@ namespace Streetcode.BLL.MediatR.Users.ChangePassword
                 Message = "Password changed successfully"
             };
         }
+        
     }
 }
