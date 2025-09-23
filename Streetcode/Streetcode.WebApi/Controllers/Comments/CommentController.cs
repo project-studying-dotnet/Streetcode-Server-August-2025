@@ -7,7 +7,11 @@ using Streetcode.BLL.MediatR.Comments.GetAll;
 using Streetcode.BLL.MediatR.Comments.GetById;
 using Streetcode.BLL.MediatR.Comments.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin;
+using Streetcode.BLL.MediatR.Comments.SetCommentRestrictedStatus;
 using Streetcode.BLL.MediatR.Comments.Update;
+using Streetcode.DAL.Enums;
+using Streetcode.WebApi.Attributes;
+using Streetcode.WebApi.Attributes;
 using Streetcode.DAL.Enums;
 using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Utils;
@@ -77,5 +81,29 @@ public class CommentController : BaseApiController
     {
         var userId = AuthHelper.GetUserId(HttpContext.User);
         return HandleResult(await Mediator.Send(new UpdateCommentCommand(comment, userId)));
+    }
+
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
+    [HttpPost("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ApproveComment([FromRoute] int id, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new SetCommentRestrictedStatusCommand(id, false), ct);
+        return HandleResult(result);
+    }
+
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
+    [HttpPost("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> RestrictComment([FromRoute] int id, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new SetCommentRestrictedStatusCommand(id, true), ct);
+        return HandleResult(result);
     }
 }

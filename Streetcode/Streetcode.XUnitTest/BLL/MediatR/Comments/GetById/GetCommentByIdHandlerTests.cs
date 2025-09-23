@@ -89,9 +89,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetById
                 Id = commentId,
                 Replies = new List<CommentContent>
                 {
-                    new CommentContent { Id = 2, IsReviewed = true },
-                    new CommentContent { Id = 3, IsReviewed = false },
-                    new CommentContent { Id = 4, IsReviewed = true }
+                    new CommentContent { Id = 2, IsRestricted = true },
+                    new CommentContent { Id = 3, IsRestricted = null },
+                    new CommentContent { Id = 4, IsRestricted = true }
                 }
             };
             var mappedDto = new CommentDTO
@@ -99,8 +99,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetById
                 Id = commentId,
                 Replies = new List<CommentDTO>
                 {
-                    new CommentDTO { Id = 2, IsReviewed = true },
-                    new CommentDTO { Id = 4, IsReviewed = true }
+                    new CommentDTO { Id = 2, IsRestricted = true },
+                    new CommentDTO { Id = 4, IsRestricted = true }
                 }
             };
 
@@ -133,9 +133,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetById
                 Id = commentId,
                 Replies = new List<CommentContent>
                 {
-                    new CommentContent { Id = 2, IsReviewed = true },
-                    new CommentContent { Id = 3, IsReviewed = false },
-                    new CommentContent { Id = 4, IsReviewed = true }
+                    new CommentContent { Id = 2, IsRestricted = true },
+                    new CommentContent { Id = 3, IsRestricted = null },
+                    new CommentContent { Id = 4, IsRestricted = true }
                 }
             };
             var mappedDto = new CommentDTO
@@ -143,7 +143,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetById
                 Id = commentId,
                 Replies = new List<CommentDTO>
                 {
-                    new CommentDTO { Id = 3, IsReviewed = false }
+                    new CommentDTO { Id = 3, IsRestricted = null }
                 }
             };
 
@@ -176,8 +176,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetById
                 Id = commentId,
                 Replies = new List<CommentContent>
                 {
-                    new CommentContent { Id = 2, IsReviewed = true },
-                    new CommentContent { Id = 3, IsReviewed = false }
+                    new CommentContent { Id = 2, IsRestricted = true },
+                    new CommentContent { Id = 3, IsRestricted = null }
                 }
             };
             var mappedDto = new CommentDTO
@@ -185,8 +185,8 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetById
                 Id = commentId,
                 Replies = new List<CommentDTO>
                 {
-                    new CommentDTO { Id = 2, IsReviewed = true },
-                    new CommentDTO { Id = 3, IsReviewed = false }
+                    new CommentDTO { Id = 2, IsRestricted = true },
+                    new CommentDTO { Id = 3, IsRestricted = null }
                 }
             };
 

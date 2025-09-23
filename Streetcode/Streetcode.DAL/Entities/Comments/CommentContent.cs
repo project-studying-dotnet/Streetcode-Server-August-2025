@@ -26,7 +26,12 @@ public class CommentContent
     public int? ParentCommentId { get; set; }
     public CommentContent? ParentComment { get; set; }
     public bool IsDeleted { get; set; }
+
+    // If null, the comment was not reviewed yet
+    public bool? IsRestricted { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public bool IsReviewed { get; set; }
     public ICollection<CommentContent> Replies { get; set; } = new List<CommentContent>();
+
+    [NotMapped]
+    public bool IsReviewed => IsRestricted.HasValue;
 }
