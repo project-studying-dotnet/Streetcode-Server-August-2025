@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ using Streetcode.BLL.MediatR.FavouriteStreetcode.Delete;
 using Streetcode.WebApi.Controllers.FavouriteStreetcode;
 using Xunit;
 using FluentResults;
-using System.Security.Claims;
 
 namespace Streetcode.XUnitTest.WebApi.Controllers;
 
@@ -74,5 +74,3 @@ public class FavouriteStreetcodeControllerTests
         _mediatorMock.VerifyAll();
     }
 }
-
-
