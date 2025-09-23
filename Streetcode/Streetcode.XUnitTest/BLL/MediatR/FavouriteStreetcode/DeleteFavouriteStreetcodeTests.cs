@@ -58,6 +58,7 @@ public class DeleteFavouriteStreetcodeTests
             Times.Once);
     }
 
+    [Fact]
     public async Task Handle_UnauthorizedUser_ReturnsFailureResult()
     {
         // Arrange
