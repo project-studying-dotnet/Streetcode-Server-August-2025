@@ -297,6 +297,9 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("IsRestricted")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("ParentCommentId")
                         .HasColumnType("int");
 
@@ -322,6 +325,29 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("comments", "comment");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Favourite.FavouriteStreetcode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("StreetcodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StreetcodeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("favourite_streetcodes", "favourite_streetcode");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Feedback.Response", b =>
@@ -1482,6 +1508,25 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("ParentComment");
+
+                    b.Navigation("Streetcode");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Favourite.FavouriteStreetcode", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
+                        .WithMany()
+                        .HasForeignKey("StreetcodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Streetcode");
 

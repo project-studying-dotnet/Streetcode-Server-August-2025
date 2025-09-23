@@ -4,6 +4,7 @@ using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.DTO.Streetcode.Create;
 using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.CreateFavourite;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Delete;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllCatalog;
@@ -81,6 +82,13 @@ public class StreetcodeController : BaseApiController
     public async Task<IActionResult> Create([FromBody] StreetcodeCreateDTO streetcodeCreate)
     {
         return HandleResult(await Mediator.Send(new StreetcodeCreateCommand(streetcodeCreate)));
+    }
+
+    [HttpPost("{streetcodeId:int}")]
+    [AuthorizeRoles(UserRole.User)]
+    public async Task<IActionResult> CreateFavourite([FromRoute] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new CreateFavouriteStreetcodeCommand(streetcodeId)));
     }
 
     [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator)]

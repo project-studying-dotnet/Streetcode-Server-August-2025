@@ -6,6 +6,7 @@ using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
+using Streetcode.DAL.Entities.Favourite;
 using Streetcode.DAL.Entities.Feedback;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Entities.Media.Images;
@@ -299,23 +300,74 @@ namespace Streetcode.WebApi.Extensions
                         }
                     }
 
-                    // Seed a regular user
-                    var regularUser = await userManager.FindByEmailAsync("user@gmail.com");
-                    if (regularUser == null)
+                    // Seed Users
+                    if (!dbContext.Users.Any(u => u.Email == "testuser@gmail.com"))
                     {
-                        var newRegularUser = new User
+                        var passwordHasher = new PasswordHasher<User>();
+                        var newTestUser = new User
                         {
-                            Email = "user@gmail.com",
-                            Name = "user",
-                            Surname = "user"
+                            Email = "testuser@gmail.com",
+                            Name = "Test",
+                            Surname = "User",
+                            UserName = "testuser@gmail.com",
+                            Role = UserRole.User,
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            LockoutEnabled = false,
+                            EmailConfirmed = true,
+                            AccessFailedCount = 0
                         };
+                        newTestUser.PasswordHash = passwordHasher.HashPassword(newTestUser, "test_password_123!");
 
-                        var createResult = await userManager.CreateAsync(newRegularUser, "user_password_123!");
-                        if (createResult.Succeeded)
+                        dbContext.Users.Add(newTestUser);
+                        var tmp = await dbContext.SaveChangesAsync();
+                        await dbContext.SaveChangesAsync();
+                    }
+
+                    // Add second default user
+                    if (!dbContext.Users.Any(u => u.Email == "testuser2@gmail.com"))
+                    {
+                        var passwordHasher = new PasswordHasher<User>();
+                        var newTestUser2 = new User
                         {
-                            // Add user to the User role
-                            await userManager.AddToRoleAsync(newRegularUser, UserRole.User.ToString());
-                        }
+                            Email = "testuser2@gmail.com",
+                            Name = "Test2",
+                            Surname = "User2",
+                            UserName = "testuser2@gmail.com",
+                            Role = UserRole.User,
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            LockoutEnabled = false,
+                            EmailConfirmed = true,
+                            AccessFailedCount = 0
+                        };
+                        newTestUser2.PasswordHash = passwordHasher.HashPassword(newTestUser2, "test_password_456!");
+
+                        dbContext.Users.Add(newTestUser2);
+                        await dbContext.SaveChangesAsync();
+                    }
+
+                    // Add admin user
+                    if (!dbContext.Users.Any(u => u.Email == "adminuser@gmail.com"))
+                    {
+                        var passwordHasher = new PasswordHasher<User>();
+                        var newAdminUser = new User
+                        {
+                            Email = "adminuser@gmail.com",
+                            Name = "Admin",
+                            Surname = "User",
+                            UserName = "adminuser@gmail.com",
+                            Role = UserRole.Administrator,
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            LockoutEnabled = false,
+                            EmailConfirmed = true,
+                            AccessFailedCount = 0
+                        };
+                        newAdminUser.PasswordHash = passwordHasher.HashPassword(newAdminUser, "admin_password_789!");
+
+                        dbContext.Users.Add(newAdminUser);
+                        await dbContext.SaveChangesAsync();
                     }
 
                     if (!dbContext.News.Any())
@@ -1083,6 +1135,22 @@ namespace Streetcode.WebApi.Extensions
                                         await dbContext.SaveChangesAsync();
                                     }
                                 }
+                            }
+
+                            if (!dbContext.FavouriteStreetcodes.Any())
+                            {
+                                dbContext.AddRange(
+                                    new FavouriteStreetcode
+                                    {
+                                        UserId = 1,
+                                        StreetcodeId = 1
+                                    },
+                                    new FavouriteStreetcode
+                                    {
+                                        UserId = 2,
+                                        StreetcodeId = 2
+                                    });
+                                await dbContext.SaveChangesAsync();
                             }
 
                             if (!dbContext.TransactionLinks.Any())
