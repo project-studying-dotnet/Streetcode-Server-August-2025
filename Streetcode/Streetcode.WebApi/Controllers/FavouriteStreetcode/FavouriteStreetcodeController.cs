@@ -28,7 +28,7 @@ namespace Streetcode.WebApi.Controllers.FavouriteStreetcode
             return HandleResult(result);
         }
 
-        // [Authorize]
+        [Authorize]
         [HttpGet("{userId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
