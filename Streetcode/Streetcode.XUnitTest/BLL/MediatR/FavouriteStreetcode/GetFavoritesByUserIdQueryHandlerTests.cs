@@ -12,7 +12,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.FavouriteStreetcode.GetFavoritesByUserId;
 using Streetcode.DAL.Entities.Favourite;
 using Streetcode.DAL.Entities.Streetcode;
-using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
@@ -69,8 +68,9 @@ public class GetFavoritesByUserIdQueryHandlerTests
             .ReturnsAsync(favoriteStreetcodes);
 
         _repositoryWrapperMock
-            .Setup(x => x.StreetcodeRepository.GetStreetcodesByIdsAsync(
-                It.IsAny<IEnumerable<int>>()))
+            .Setup(x => x.StreetcodeRepository.GetAllAsync(
+                It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
+                It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
             .ReturnsAsync(streetcodeContents);
 
         _mapperMock
@@ -103,6 +103,12 @@ public class GetFavoritesByUserIdQueryHandlerTests
                 It.IsAny<Func<IQueryable<DAL.Entities.Favourite.FavouriteStreetcode>, IIncludableQueryable<DAL.Entities.Favourite.FavouriteStreetcode, object>>>()))
             .ReturnsAsync(favoriteStreetcodes);
 
+        _repositoryWrapperMock
+            .Setup(x => x.StreetcodeRepository.GetAllAsync(
+                It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
+                It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
+            .ReturnsAsync(new List<StreetcodeContent>());
+
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
@@ -110,9 +116,6 @@ public class GetFavoritesByUserIdQueryHandlerTests
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
         Assert.Empty(result.Value);
-
-        _repositoryWrapperMock.Verify(r => r.StreetcodeRepository.GetStreetcodesByIdsAsync(It.IsAny<IEnumerable<int>>()), Times.Never);
-        _mapperMock.Verify(m => m.Map<IEnumerable<StreetcodeDTO>>(It.IsAny<IEnumerable<StreetcodeContent>>()), Times.Never);
     }
 
     [Fact]
@@ -135,8 +138,5 @@ public class GetFavoritesByUserIdQueryHandlerTests
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
         Assert.Empty(result.Value);
-
-        _repositoryWrapperMock.Verify(r => r.StreetcodeRepository.GetStreetcodesByIdsAsync(It.IsAny<IEnumerable<int>>()), Times.Never);
-        _mapperMock.Verify(m => m.Map<IEnumerable<StreetcodeDTO>>(It.IsAny<IEnumerable<StreetcodeContent>>()), Times.Never);
     }
 }
