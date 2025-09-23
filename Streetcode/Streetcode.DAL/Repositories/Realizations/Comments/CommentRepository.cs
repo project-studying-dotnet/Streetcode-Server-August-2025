@@ -13,6 +13,48 @@ public class CommentRepository : RepositoryBase<CommentContent>, ICommentReposit
     {
     }
 
+    public async Task<CommentContent?> GetCommentTreeByCommentIdAsync(int commentId)
+    {
+        var rootExists = await GetFirstOrDefaultAsync(
+            c => c.Id == commentId && !c.IsDeleted,
+            include: query => query.Include(c => c.User!));
+
+        if (rootExists == null)
+        {
+            return null;
+        }
+
+        var streetcodeId = rootExists.StreetcodeId;
+
+        var allComments = await GetAllAsync(
+            c => c.StreetcodeId == streetcodeId && !c.IsDeleted,
+            include: query => query.Include(c => c.User!));
+
+        var commentList = allComments.ToList();
+
+        foreach (var c in commentList)
+        {
+            c.Replies = new List<CommentContent>();
+        }
+
+        var commentDict = commentList.ToDictionary(c => c.Id, c => c);
+
+        foreach (var comment in commentList)
+        {
+            if (comment.ParentCommentId.HasValue && commentDict.ContainsKey(comment.ParentCommentId.Value))
+            {
+                commentDict[comment.ParentCommentId.Value].Replies.Add(comment);
+            }
+        }
+
+        foreach (var c in commentDict.Values)
+        {
+             c.Replies = c.Replies.OrderBy(r => r.CreatedAt).ToList();
+        }
+
+        return commentDict.ContainsKey(commentId) ? commentDict[commentId] : null;
+    }
+
     public async Task<IEnumerable<CommentContent>> GetCommentTreeByStreetcodeIdAsync(int streetcodeId)
     {
         var allComments = await GetAllAsync(

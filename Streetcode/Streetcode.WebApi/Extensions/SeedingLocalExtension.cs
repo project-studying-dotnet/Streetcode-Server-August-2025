@@ -6,6 +6,7 @@ using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
+using Streetcode.DAL.Entities.Favourite;
 using Streetcode.DAL.Entities.Feedback;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Entities.Media.Images;
@@ -1134,6 +1135,22 @@ namespace Streetcode.WebApi.Extensions
                                         await dbContext.SaveChangesAsync();
                                     }
                                 }
+                            }
+
+                            if (!dbContext.FavouriteStreetcodes.Any())
+                            {
+                                dbContext.AddRange(
+                                    new FavouriteStreetcode
+                                    {
+                                        UserId = 1,
+                                        StreetcodeId = 1
+                                    },
+                                    new FavouriteStreetcode
+                                    {
+                                        UserId = 2,
+                                        StreetcodeId = 2
+                                    });
+                                await dbContext.SaveChangesAsync();
                             }
 
                             if (!dbContext.TransactionLinks.Any())
