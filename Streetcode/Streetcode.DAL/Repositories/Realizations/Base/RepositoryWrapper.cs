@@ -606,7 +606,7 @@ public class RepositoryWrapper : IRepositoryWrapper
         }
     }
 
-    public IFavouriteStreetcodeRepository FavoriteStreetcodeRepository
+    public IFavouriteStreetcodeRepository FavouriteStreetcodeRepository
     {
         get
         {
