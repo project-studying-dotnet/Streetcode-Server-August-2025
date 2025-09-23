@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Users;
+using Streetcode.BLL.DTO.Users.ChangePassword;
 using Streetcode.BLL.DTO.Users.Logout;
+using Streetcode.BLL.MediatR.Users.ChangePassword;
 using Streetcode.BLL.MediatR.Users.Logout;
 using Streetcode.BLL.MediatR.Users.Register;
 
@@ -36,6 +38,19 @@ namespace Streetcode.WebApi.Controllers.Auth
             }
 
             return Ok(result.Value);
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto dto)
+        {
+            var result = await Mediator.Send(new ChangePasswordCommand(dto));
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
     }
 }
