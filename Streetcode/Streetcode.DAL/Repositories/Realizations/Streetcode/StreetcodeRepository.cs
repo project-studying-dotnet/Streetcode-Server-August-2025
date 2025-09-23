@@ -12,11 +12,4 @@ public class StreetcodeRepository : RepositoryBase<StreetcodeContent>, IStreetco
         : base(dbContext)
     {
     }
-
-    public async Task<IEnumerable<StreetcodeContent>> GetStreetcodesByIdsAsync(IEnumerable<int> streetcodeIds)
-    {
-        return await FindAll()
-            .Where(s => streetcodeIds.Contains(s.Id))
-            .ToListAsync();
-    }
 }

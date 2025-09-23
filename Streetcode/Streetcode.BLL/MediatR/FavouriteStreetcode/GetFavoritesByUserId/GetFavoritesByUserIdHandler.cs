@@ -27,17 +27,16 @@ namespace Streetcode.BLL.MediatR.FavouriteStreetcode.GetFavoritesByUserId
 
         public async Task<Result<IEnumerable<StreetcodeDTO>>> Handle(GetFavoritesByUserIdQuery request, CancellationToken cancellationToken)
         {
-            var favoriteStreetcodes = await _repositoryWrapper.FavouriteStreetcodeRepository
-                .GetAllAsync(fs => fs.UserId == request.UserId);
-            if (favoriteStreetcodes == null || !favoriteStreetcodes.Any())
-            {
-                return Result.Ok(Enumerable.Empty<StreetcodeDTO>());
-            }
+            var streetcodeIds = (await _repositoryWrapper.FavouriteStreetcodeRepository
+                .GetAllAsync(fs => fs.UserId == request.UserId))
+                .Select(fs => fs.StreetcodeId)
+                .ToList();
 
-            var streetcodeIds = favoriteStreetcodes.Select(fs => fs.StreetcodeId).ToList();
             var streetcodes = await _repositoryWrapper.StreetcodeRepository
-                .GetStreetcodesByIdsAsync(streetcodeIds);
+                .GetAllAsync(sc => streetcodeIds.Contains(sc.Id));
+
             var streetcodeDtos = _mapper.Map<IEnumerable<StreetcodeDTO>>(streetcodes);
+
             return Result.Ok(streetcodeDtos);
         }
     }
