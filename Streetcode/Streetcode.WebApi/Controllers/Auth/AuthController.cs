@@ -38,15 +38,15 @@ namespace Streetcode.WebApi.Controllers.Auth
             return Ok(result.Value);
         }
 
-        [HttpGet("google")]
+        [HttpGet]
         public IActionResult GoogleLogin()
         {
-            var props = new AuthenticationProperties { RedirectUri = "/api/auth/google-callback" };
+            var props = new AuthenticationProperties { RedirectUri = "/api/auth/GoogleCallback" };
 
             return Challenge(props, "Google");
         }
 
-        [HttpGet("google-callback")]
+        [HttpGet]
         public async Task<IActionResult> GoogleCallback(CancellationToken ct)
         {
             var result = await Mediator.Send(new GoogleLoginQuery(), ct);
@@ -58,7 +58,7 @@ namespace Streetcode.WebApi.Controllers.Auth
 
             return Ok(result.Value);
         }
-         
+
         [HttpPost]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto dto)
         {
