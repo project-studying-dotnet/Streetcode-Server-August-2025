@@ -49,6 +49,7 @@
   <ItemGroup>
     <Folder Include="Mapping\Analytics\" />
     <Folder Include="Mapping\Comments\" />
+    <Folder Include="Mapping\FavouriteStreetcode\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
