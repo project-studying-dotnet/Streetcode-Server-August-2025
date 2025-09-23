@@ -10,6 +10,7 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
   WORKING_DIRECTORY: Streetcode/Streetcode.WebApi
+  TEST_DIRECTORY: ./Streetcode/Streetcode.XUnitTest/Streetcode.XUnitTest.csproj
 
 jobs:
   build:
@@ -26,7 +27,7 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.WORKING_DIRECTORY }} --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Test
-      run: dotnet test ${{ env.WORKING_DIRECTORY }} --no-build
+      run: dotnet test ${{ env.TEST_DIRECTORY }} --no-build
     - name: Publish
       run: dotnet publish ${{ env.WORKING_DIRECTORY }} --configuration ${{ env.CONFIGURATION }} --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
     - name: Upload build artifacts
