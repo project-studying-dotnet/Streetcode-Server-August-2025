@@ -14,12 +14,12 @@ public class CreateFavouriteStreetcodeHandler : IRequestHandler<CreateFavouriteS
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CreateFavouriteStreetcodeHandler(
         IRepositoryWrapper repositoryWrapper,
         ILoggerService logger,
-        HttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor)
     {
         _repositoryWrapper = repositoryWrapper;
         _logger = logger;
