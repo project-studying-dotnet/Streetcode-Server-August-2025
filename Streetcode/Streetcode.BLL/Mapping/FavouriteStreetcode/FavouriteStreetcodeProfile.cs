@@ -3,7 +3,7 @@ using Streetcode.BLL.DTO.FavouriteStreetcode;
 
 namespace Streetcode.BLL.Mapping.FavouriteStreetcode;
 
-public class FavouriteStreetcodeProfile: Profile
+public class FavouriteStreetcodeProfile : Profile
 {
     public FavouriteStreetcodeProfile()
     {
