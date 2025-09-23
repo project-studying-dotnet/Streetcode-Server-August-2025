@@ -34,16 +34,16 @@ namespace Streetcode.WebApi.Controllers.FavouriteStreetcode
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> GetByUserId([FromRoute] int userId)
+        public async Task<IActionResult> GetByUserId([FromRoute] int userId, CancellationToken ct)
         {
-            var result = await Mediator.Send(new GetFavoritesByUserIdQuery(userId));
+            var result = await Mediator.Send(new GetFavoritesByUserIdQuery(userId), ct);
 
             if (result.IsFailed)
             {
                 return BadRequest(result.Errors.Select(e => e.Message));
             }
 
-            return Ok(result.Value);
+            return HandleResult(result);
         }
     }
 }
