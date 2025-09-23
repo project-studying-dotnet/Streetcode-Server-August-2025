@@ -111,12 +111,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin
             var streetcodeId = 1;
             var comments = new List<CommentContent>
             {
-                new CommentContent { Id = 1, StreetcodeId = streetcodeId, IsReviewed = true, IsDeleted = false },
-                new CommentContent { Id = 2, StreetcodeId = streetcodeId, IsReviewed = false, IsDeleted = false },
+                new CommentContent { Id = 1, StreetcodeId = streetcodeId, IsRestricted = true, IsDeleted = false },
+                new CommentContent { Id = 2, StreetcodeId = streetcodeId, IsRestricted = null, IsDeleted = false },
             };
             var expectedDtos = new List<CommentDTO>
             {
-                new CommentDTO { Id = 1, IsReviewed = true },
+                new CommentDTO { Id = 1, IsRestricted = true },
             };
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetAllAsync(
@@ -152,12 +152,12 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin
             var streetcodeId = 1;
             var comments = new List<CommentContent>
             {
-                new CommentContent { Id = 1, StreetcodeId = streetcodeId, IsReviewed = true, IsDeleted = false },
-                new CommentContent { Id = 2, StreetcodeId = streetcodeId, IsReviewed = false, IsDeleted = false },
+                new CommentContent { Id = 1, StreetcodeId = streetcodeId, IsRestricted = true, IsDeleted = false },
+                new CommentContent { Id = 2, StreetcodeId = streetcodeId, IsRestricted = null, IsDeleted = false },
             };
             var expectedDtos = new List<CommentDTO>
             {
-                new CommentDTO { Id = 2, IsReviewed = false },
+                new CommentDTO { Id = 2, IsRestricted = null },
             };
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetAllAsync(

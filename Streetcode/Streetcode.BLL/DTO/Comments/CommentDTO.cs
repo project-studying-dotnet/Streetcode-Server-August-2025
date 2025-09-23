@@ -18,9 +18,6 @@ public class CommentDTO
     public bool? IsRestricted { get; set; }
     public DateTime? DeletedAt { get; set; }
     public CommentUserDTO? User { get; set; }
-
-    public bool IsReviewed { get; set; }
-
     public ICollection<CommentDTO> Replies { get; set; } = new List<CommentDTO>();
     public bool IsReviewed => IsRestricted.HasValue;
 }

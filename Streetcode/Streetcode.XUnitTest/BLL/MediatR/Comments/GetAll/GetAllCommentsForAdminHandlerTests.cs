@@ -37,13 +37,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetAll
             // Arrange
             var comments = new List<CommentContent>
             {
-                new CommentContent { Id = 1, IsDeleted = false, IsReviewed = true },
-                new CommentContent { Id = 2, IsDeleted = false, IsReviewed = false },
+                new CommentContent { Id = 1, IsDeleted = false, IsRestricted = false },
+                new CommentContent { Id = 2, IsDeleted = false, IsRestricted = null },
             };
             var expectedDtos = new List<CommentDTO>
             {
-                new CommentDTO { Id = 1, IsReviewed = true },
-                new CommentDTO { Id = 2, IsReviewed = false },
+                new CommentDTO { Id = 1, IsRestricted = false },
+                new CommentDTO { Id = 2, IsRestricted = null },
             };
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetAllAsync(
@@ -108,14 +108,14 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetAll
             // Arrange
             var comments = new List<CommentContent>
             {
-                new CommentContent { Id = 1, IsReviewed = true, IsDeleted = false },
-                new CommentContent { Id = 2, IsReviewed = false, IsDeleted = false },
-                new CommentContent { Id = 3, IsReviewed = true, IsDeleted = false },
+                new CommentContent { Id = 1, IsRestricted = true, IsDeleted = false },
+                new CommentContent { Id = 2, IsRestricted = null, IsDeleted = false },
+                new CommentContent { Id = 3, IsRestricted = true, IsDeleted = false },
             };
             var expectedDtos = new List<CommentDTO>
             {
-                new CommentDTO { Id = 1, IsReviewed = true },
-                new CommentDTO { Id = 3, IsReviewed = true },
+                new CommentDTO { Id = 1, IsRestricted = true },
+                new CommentDTO { Id = 3, IsRestricted = true },
             };
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetAllAsync(
@@ -149,13 +149,13 @@ namespace Streetcode.XUnitTest.BLL.MediatR.Comments.GetAll
             // Arrange
             var comments = new List<CommentContent>
             {
-                new CommentContent { Id = 1, IsReviewed = true, IsDeleted = false },
-                new CommentContent { Id = 2, IsReviewed = false, IsDeleted = false },
-                new CommentContent { Id = 3, IsReviewed = true, IsDeleted = false },
+                new CommentContent { Id = 1, IsRestricted = true, IsDeleted = false },
+                new CommentContent { Id = 2, IsRestricted = null, IsDeleted = false },
+                new CommentContent { Id = 3, IsRestricted = true, IsDeleted = false },
             };
             var expectedDtos = new List<CommentDTO>
             {
-                new CommentDTO { Id = 2, IsReviewed = false },
+                new CommentDTO { Id = 2, IsRestricted = null },
             };
 
             _repositoryWrapperMock.Setup(r => r.CommentRepository.GetAllAsync(
