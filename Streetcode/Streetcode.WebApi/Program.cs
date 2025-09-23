@@ -3,8 +3,6 @@ using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.WebApi.BackgroundServices;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Middlewares;
-using Ocelot.DependencyInjection;
-using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
