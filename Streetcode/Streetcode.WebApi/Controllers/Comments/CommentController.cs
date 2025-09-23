@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.MediatR.Comments.Create;
 using Streetcode.BLL.MediatR.Comments.Delete;
+using Streetcode.BLL.MediatR.Comments.GetAll;
+using Streetcode.BLL.MediatR.Comments.GetById;
 using Streetcode.BLL.MediatR.Comments.GetByStreetcodeId;
-using Streetcode.WebApi.Attributes;
+using Streetcode.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin;
 using Streetcode.BLL.MediatR.Comments.Update;
+using Streetcode.DAL.Enums;
+using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Utils;
 
 namespace Streetcode.WebApi.Controllers.Comments;
@@ -16,6 +20,30 @@ public class CommentController : BaseApiController
     public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
     {
         return HandleResult(await Mediator.Send(new GetCommentsByStreetcodeIdQuery(streetcodeId)));
+    }
+
+    [HttpGet("{streetcodeId:int}")]
+    [AuthorizeRoles(UserRole.Moderator, UserRole.Administrator, UserRole.MainAdministrator)]
+
+    public async Task<IActionResult> GetByStreetcodeIdForModeration(int streetcodeId, [FromQuery] bool? isReviewed)
+    {
+        return HandleResult(await Mediator.Send(
+            new GetCommentsByStreetcodeIdForAdminQuery(streetcodeId, isReviewed)));
+    }
+
+    [HttpGet("{commentId:int}")]
+    [AuthorizeRoles(UserRole.Moderator, UserRole.Administrator, UserRole.MainAdministrator)]
+    public async Task<IActionResult> GetCommentById(int commentId, [FromQuery] bool? isReviewed)
+    {
+        return HandleResult(await Mediator.Send(
+            new GetCommentByIdQuery(commentId, isReviewed)));
+    }
+
+    [HttpGet]
+    [AuthorizeRoles(UserRole.Moderator, UserRole.Administrator, UserRole.MainAdministrator)]
+    public async Task<IActionResult> GetAll([FromQuery] bool? isReviewed = null)
+    {
+        return HandleResult(await Mediator.Send(new GetAllCommentsForAdminQuery(isReviewed)));
     }
 
     [HttpPost]
