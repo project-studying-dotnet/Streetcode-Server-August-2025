@@ -40,7 +40,7 @@ public class CreateFavouriteStreetcodeHandler : IRequestHandler<CreateFavouriteS
 
         var userId = int.Parse(userIdString);
 
-        if(await _repositoryWrapper.FavoriteStreetcodeRepository.GetFirstOrDefaultAsync(
+        if(await _repositoryWrapper.FavouriteStreetcodeRepository.GetFirstOrDefaultAsync(
                f => f.StreetcodeId == request.StreetcodeId && f.UserId == userId) is not null)
         {
             var errorMsg = Errors_Common.AlreadyExists.FormatWith("Favourite streetcode");
@@ -48,13 +48,13 @@ public class CreateFavouriteStreetcodeHandler : IRequestHandler<CreateFavouriteS
             return Result.Fail(errorMsg);
         }
 
-        var favouriteStreetcode = new FavouriteStreetcode
+        var favouriteStreetcode = new DAL.Entities.Favourite.FavouriteStreetcode
         {
             StreetcodeId = request.StreetcodeId,
             UserId = userId
         };
 
-        await _repositoryWrapper.FavoriteStreetcodeRepository.CreateAsync(favouriteStreetcode);
+        await _repositoryWrapper.FavouriteStreetcodeRepository.CreateAsync(favouriteStreetcode);
         var resultSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
         if (!resultSuccess)

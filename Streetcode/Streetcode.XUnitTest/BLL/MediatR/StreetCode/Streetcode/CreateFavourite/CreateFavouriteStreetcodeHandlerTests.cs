@@ -13,6 +13,8 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.FavouriteStreetcodes;
 using Xunit;
 
+using FavouriteStreetcodeEntity = Streetcode.DAL.Entities.Favourite.FavouriteStreetcode;
+
 namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.CreateFavourite;
 
 public class CreateFavouriteStreetcodeHandlerTests
@@ -30,7 +32,7 @@ public class CreateFavouriteStreetcodeHandlerTests
         _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
         _mockFavouriteRepository = new Mock<IFavouriteStreetcodeRepository>();
 
-        _mockRepositoryWrapper.Setup(x => x.FavoriteStreetcodeRepository)
+        _mockRepositoryWrapper.Setup(x => x.FavouriteStreetcodeRepository)
             .Returns(_mockFavouriteRepository.Object);
 
         _handler = new CreateFavouriteStreetcodeHandler(
@@ -48,9 +50,9 @@ public class CreateFavouriteStreetcodeHandlerTests
 
         SetupHttpContextWithValidUser(userId);
         _mockFavouriteRepository.Setup(x => x.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<FavouriteStreetcode, bool>>>(),
-            It.IsAny<Func<IQueryable<FavouriteStreetcode>, IIncludableQueryable<FavouriteStreetcode, object>>>()))
-            .ReturnsAsync((FavouriteStreetcode?)null);
+            It.IsAny<Expression<Func<FavouriteStreetcodeEntity, bool>>>(),
+            It.IsAny<Func<IQueryable<FavouriteStreetcodeEntity>, IIncludableQueryable<FavouriteStreetcodeEntity, object>>>()))
+            .ReturnsAsync((FavouriteStreetcodeEntity?)null);
         _mockRepositoryWrapper.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
@@ -59,7 +61,7 @@ public class CreateFavouriteStreetcodeHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(Unit.Value);
         _mockFavouriteRepository.Verify(
-            x => x.CreateAsync(It.Is<FavouriteStreetcode>(f =>
+            x => x.CreateAsync(It.Is<FavouriteStreetcodeEntity>(f =>
                 f.UserId == userId && f.StreetcodeId == streetcodeId)),
             Times.Once);
         _mockRepositoryWrapper.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -76,7 +78,7 @@ public class CreateFavouriteStreetcodeHandlerTests
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Message.Should().Be(Errors_Jwt.UserNotFound);
         _mockLogger.Verify(x => x.LogError(command, Errors_Jwt.UserNotFound), Times.Once);
-        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcode>()), Times.Never);
+        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcodeEntity>()), Times.Never);
     }
 
     [Fact]
@@ -90,7 +92,7 @@ public class CreateFavouriteStreetcodeHandlerTests
         await Assert.ThrowsAsync<ArgumentNullException>(() => _handler.Handle(command, CancellationToken.None));
 
         _mockLogger.Verify(x => x.LogError(command, It.IsAny<string>()), Times.Never);
-        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcode>()), Times.Never);
+        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcodeEntity>()), Times.Never);
     }
 
     [Fact]
@@ -127,12 +129,12 @@ public class CreateFavouriteStreetcodeHandlerTests
         var userId = 123;
         var streetcodeId = 456;
         var command = new CreateFavouriteStreetcodeCommand(streetcodeId);
-        var existingFavourite = new FavouriteStreetcode { UserId = userId, StreetcodeId = streetcodeId };
+        var existingFavourite = new FavouriteStreetcodeEntity { UserId = userId, StreetcodeId = streetcodeId };
 
         SetupHttpContextWithValidUser(userId);
         _mockFavouriteRepository.Setup(x => x.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<FavouriteStreetcode, bool>>>(),
-            It.IsAny<Func<IQueryable<FavouriteStreetcode>, IIncludableQueryable<FavouriteStreetcode, object>>>()))
+            It.IsAny<Expression<Func<FavouriteStreetcodeEntity, bool>>>(),
+            It.IsAny<Func<IQueryable<FavouriteStreetcodeEntity>, IIncludableQueryable<FavouriteStreetcodeEntity, object>>>()))
             .ReturnsAsync(existingFavourite);
 
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -140,7 +142,7 @@ public class CreateFavouriteStreetcodeHandlerTests
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Message.Should().Contain("Favourite streetcode");
         result.Errors.First().Message.Should().Contain("already exists");
-        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcode>()), Times.Never);
+        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcodeEntity>()), Times.Never);
         _mockRepositoryWrapper.Verify(x => x.SaveChangesAsync(), Times.Never);
     }
 
@@ -153,9 +155,9 @@ public class CreateFavouriteStreetcodeHandlerTests
 
         SetupHttpContextWithValidUser(userId);
         _mockFavouriteRepository.Setup(x => x.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<FavouriteStreetcode, bool>>>(),
-            It.IsAny<Func<IQueryable<FavouriteStreetcode>, IIncludableQueryable<FavouriteStreetcode, object>>>()))
-            .ReturnsAsync((FavouriteStreetcode?)null);
+            It.IsAny<Expression<Func<FavouriteStreetcodeEntity, bool>>>(),
+            It.IsAny<Func<IQueryable<FavouriteStreetcodeEntity>, IIncludableQueryable<FavouriteStreetcodeEntity, object>>>()))
+            .ReturnsAsync((FavouriteStreetcodeEntity?)null);
         _mockRepositoryWrapper.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(0);
 
@@ -164,7 +166,7 @@ public class CreateFavouriteStreetcodeHandlerTests
         result.IsFailed.Should().BeTrue();
         result.Errors.First().Message.Should().Contain("favourite streetcode");
         result.Errors.First().Message.Should().Contain("Failed to create");
-        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcode>()), Times.Once);
+        _mockFavouriteRepository.Verify(x => x.CreateAsync(It.IsAny<FavouriteStreetcodeEntity>()), Times.Once);
     }
 
     [Theory]
@@ -178,9 +180,9 @@ public class CreateFavouriteStreetcodeHandlerTests
 
         SetupHttpContextWithValidUser(userId);
         _mockFavouriteRepository.Setup(x => x.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<FavouriteStreetcode, bool>>>(),
-            It.IsAny<Func<IQueryable<FavouriteStreetcode>, IIncludableQueryable<FavouriteStreetcode, object>>>()))
-            .ReturnsAsync((FavouriteStreetcode?)null);
+            It.IsAny<Expression<Func<FavouriteStreetcodeEntity, bool>>>(),
+            It.IsAny<Func<IQueryable<FavouriteStreetcodeEntity>, IIncludableQueryable<FavouriteStreetcodeEntity, object>>>()))
+            .ReturnsAsync((FavouriteStreetcodeEntity?)null);
         _mockRepositoryWrapper.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(saveResult);
 
@@ -199,18 +201,18 @@ public class CreateFavouriteStreetcodeHandlerTests
 
         SetupHttpContextWithValidUser(userId);
         _mockFavouriteRepository.Setup(x => x.GetFirstOrDefaultAsync(
-            It.IsAny<Expression<Func<FavouriteStreetcode, bool>>>(),
-            It.IsAny<Func<IQueryable<FavouriteStreetcode>, IIncludableQueryable<FavouriteStreetcode, object>>>()))
-            .ReturnsAsync((FavouriteStreetcode?)null);
+            It.IsAny<Expression<Func<FavouriteStreetcodeEntity, bool>>>(),
+            It.IsAny<Func<IQueryable<FavouriteStreetcodeEntity>, IIncludableQueryable<FavouriteStreetcodeEntity, object>>>()))
+            .ReturnsAsync((FavouriteStreetcodeEntity?)null);
         _mockRepositoryWrapper.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1);
 
         await _handler.Handle(command, CancellationToken.None);
 
         _mockFavouriteRepository.Verify(
             x => x.GetFirstOrDefaultAsync(
-                It.Is<Expression<Func<FavouriteStreetcode, bool>>>(expr =>
-                    expr.Compile()(new FavouriteStreetcode { StreetcodeId = streetcodeId, UserId = userId })),
-                It.IsAny<Func<IQueryable<FavouriteStreetcode>, IIncludableQueryable<FavouriteStreetcode, object>>>()),
+                It.Is<Expression<Func<FavouriteStreetcodeEntity, bool>>>(expr =>
+                    expr.Compile()(new FavouriteStreetcodeEntity { StreetcodeId = streetcodeId, UserId = userId })),
+                It.IsAny<Func<IQueryable<FavouriteStreetcodeEntity>, IIncludableQueryable<FavouriteStreetcodeEntity, object>>>()),
             Times.Once);
     }
 
