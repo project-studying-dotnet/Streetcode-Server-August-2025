@@ -5,4 +5,5 @@ namespace Streetcode.DAL.Repositories.Interfaces.Streetcode;
 
 public interface IStreetcodeRepository : IRepositoryBase<StreetcodeContent>
 {
+    Task<IEnumerable<StreetcodeContent>> GetStreetcodesByIdsAsync(IEnumerable<int> streetcodeIds);
 }
