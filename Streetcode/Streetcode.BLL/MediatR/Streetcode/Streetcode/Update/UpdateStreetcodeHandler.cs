@@ -11,6 +11,7 @@ using Streetcode.BLL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
+using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
@@ -23,12 +24,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly ILoggerService _logger;
+        private readonly IRedisService<StreetcodeContent> _redisService;
 
-        public UpdateStreetcodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+        public UpdateStreetcodeHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger, IRedisService<StreetcodeContent> redisService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _logger = logger;
+            _redisService = redisService;
         }
 
         public async Task<Result<int>> Handle(UpdateStreetcodeCommand request, CancellationToken cancellationToken)
@@ -74,6 +77,15 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Update
                         _logger.LogInformation($"No changes detected for Streetcode ID {existingEntity.Id}; committing transaction.");
                     }
 
+                    var redisKeys = new[]
+                        {
+                            $"streetcodeById:{existingEntity.Id}",
+                            $"streetcodeByIndex:{existingEntity.Index}",
+                            $"streetcodeByUrl:{existingEntity.TransliterationUrl}",
+                            $"streetcodeShortById:{existingEntity.Id}"
+                        };
+
+                    await _redisService.DeleteAsync(redisKeys, cancellationToken);
                     transactionScope.Complete();
 
                     _logger.LogInformation($"Success! Streetcode with ID {existingEntity.Id} was updated");

@@ -35,6 +35,10 @@ using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Timeline;
+using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.Services.Timeline;
+using Streetcode.BLL.Interfaces.Redis;
+using Streetcode.BLL.Services.Redis;
 using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.WebApi.Extensions;
@@ -75,6 +79,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITextService, AddTermsToTextService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IHistoricalContextService, HistoricalContextService>();
+        services.AddScoped(typeof(IRedisService<>), typeof(RedisService<>));
         services.AddScoped<IGoogleService, GoogleService>();
     }
 
@@ -173,6 +178,12 @@ public static class ServiceCollectionExtensions
         services.AddLogging();
         services.AddControllers();
         services.AddHttpContextAccessor();
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = "redis:6379";
+            options.InstanceName = "Streetcode_";
+        });
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)

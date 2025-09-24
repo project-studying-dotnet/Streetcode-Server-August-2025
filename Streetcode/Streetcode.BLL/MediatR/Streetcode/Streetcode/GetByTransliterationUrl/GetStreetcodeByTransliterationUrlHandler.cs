@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using Ardalis.Specification;
+using AutoMapper;
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.AdditionalContent.Tag;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -13,20 +15,30 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByTransliterationUrl
 {
     public class GetStreetcodeByTransliterationUrlHandler : IRequestHandler<GetStreetcodeByTransliterationUrlQuery, Result<StreetcodeDTO>>
     {
-        private readonly IRepositoryWrapper _repository;
+        private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly ILoggerService _logger;
+        private readonly IRedisService<StreetcodeDTO> _redisService;
 
-        public GetStreetcodeByTransliterationUrlHandler(IRepositoryWrapper repository, IMapper mapper, ILoggerService logger)
+        public GetStreetcodeByTransliterationUrlHandler(IRepositoryWrapper repository, IMapper mapper, ILoggerService logger, IRedisService<StreetcodeDTO> redisService)
         {
-            _repository = repository;
+            _repositoryWrapper = repository;
             _mapper = mapper;
             _logger = logger;
+            _redisService = redisService;
         }
 
         public async Task<Result<StreetcodeDTO>> Handle(GetStreetcodeByTransliterationUrlQuery request, CancellationToken cancellationToken)
         {
-            var streetcode = await _repository.StreetcodeRepository
+            var cacheKey = $"streetcodeByUrl:{request.url}";
+
+            var streetcodeDtoFromCache = await _redisService.GetAsync(cacheKey, cancellationToken);
+            if (streetcodeDtoFromCache is not null)
+            {
+                return Result.Ok(streetcodeDtoFromCache);
+            }
+
+            var streetcode = await _repositoryWrapper.StreetcodeRepository
                 .GetFirstOrDefaultAsync(
                     predicate: st => st.TransliterationUrl == request.url);
 
@@ -37,14 +49,17 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByTransliterationUrl
                 return new Error(errorMsg);
             }
 
-            var tagIndexed = await _repository.StreetcodeTagIndexRepository
-                                            .GetAllAsync(
-                                                t => t.StreetcodeId == streetcode.Id,
-                                                include: q => q.Include(ti => ti.Tag));
+            var tagIndexed = await _repositoryWrapper.StreetcodeTagIndexRepository
+                                    .GetAllAsync(
+                                        t => t.StreetcodeId == streetcode.Id,
+                                        include: q => q.Include(ti => ti.Tag));
 
-            var streetcodeDTO = _mapper.Map<StreetcodeDTO>(streetcode);
-            streetcodeDTO.Tags = _mapper.Map<List<StreetcodeTagDTO>>(tagIndexed);
-            return Result.Ok(streetcodeDTO);
+            var streetcodeDto = _mapper.Map<StreetcodeDTO>(streetcode);
+            streetcodeDto.Tags = _mapper.Map<List<StreetcodeTagDTO>>(tagIndexed);
+
+            await _redisService.SetAsync(cacheKey, streetcodeDto, Services.Redis.TimeToLiveOption.Minutes, 30, cancellationToken);
+
+            return Result.Ok(streetcodeDto);
         }
     }
 }

@@ -2,8 +2,10 @@
 using FluentAssertions;
 using MediatR;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Delete;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
@@ -17,15 +19,18 @@ public class DeleteStreetcodeHandlerTests
 {
     private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
     private readonly Mock<ILoggerService> _loggerMock;
+    private readonly Mock<IRedisService<StreetcodeContent>> _redisServiceMock;
     private readonly DeleteStreetcodeHandler _handler;
 
     public DeleteStreetcodeHandlerTests()
     {
         _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
         _loggerMock = new Mock<ILoggerService>();
+        _redisServiceMock = new Mock<IRedisService<StreetcodeContent>>();
         _handler = new DeleteStreetcodeHandler(
             _repositoryWrapperMock.Object,
-            _loggerMock.Object);
+            _loggerMock.Object,
+            _redisServiceMock.Object);
     }
 
     [Fact]

@@ -8,6 +8,7 @@ using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Streetcode.Update;
 using Streetcode.BLL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Update;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Util.Extensions;
@@ -26,6 +27,7 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILoggerService> _loggerServiceMock;
+        private readonly Mock<IRedisService<StreetcodeContent>> _redisServiceMock;
         private readonly UpdateStreetcodeHandler _handler;
 
         public UpdateStreetcodeTests()
@@ -33,7 +35,9 @@ namespace Streetcode.XUnitTest.BLL.MediatR.StreetCode.Streetcode.Update
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
             _loggerServiceMock = new Mock<ILoggerService>();
-            _handler = new UpdateStreetcodeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object);
+            _redisServiceMock = new Mock<IRedisService<StreetcodeContent>>();
+
+            _handler = new UpdateStreetcodeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerServiceMock.Object, _redisServiceMock.Object);
         }
 
         [Fact]
