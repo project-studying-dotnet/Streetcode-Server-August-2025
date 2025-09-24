@@ -70,6 +70,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Errors.AdditionalContent.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Errors.Auth.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Auth.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Errors.Common.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -122,6 +127,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.AdditionalContent.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Auth.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Auth.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Errors.Common.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.Common.Designer.cs</LastGenOutput>
@@ -157,6 +166,9 @@
     <EmbeddedResource Update="Resources\MediatR.Payment.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MediatR.Payment.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Res.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
 
