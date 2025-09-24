@@ -168,4 +168,7 @@
   <data name="UnauthorizedAction" xml:space="preserve">
     <value>Unauthorized to {0}</value>
   </data>
+  <data name="AlreadyExists" xml:space="preserve">
+    <value>This {0} already exists.</value>
+  </data>
 </root>

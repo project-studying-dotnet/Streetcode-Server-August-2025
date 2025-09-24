@@ -2,40 +2,44 @@ using System.Text;
 using FluentValidation;
 using Hangfire;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Services.Logging;
-using Streetcode.DAL.Persistence;
-using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.DAL.Repositories.Realizations.Base;
-using Streetcode.BLL.Interfaces.Email;
-using Streetcode.BLL.Services.Email;
-using Streetcode.DAL.Entities.AdditionalContent.Email;
-using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.Services.BlobStorageService;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
-using Streetcode.BLL.Interfaces.Payment;
-using Streetcode.BLL.Services.Payment;
-using Streetcode.BLL.Interfaces.Instagram;
-using Streetcode.BLL.Services.Instagram;
-using Streetcode.BLL.Interfaces.Text;
-using Streetcode.BLL.Services.Text;
-using Streetcode.BLL.MediatR;
+using Microsoft.OpenApi.Models;
+using Ocelot.Values;
 using Streetcode.BLL;
 using Streetcode.BLL.Factories.BlobStorage;
+using Streetcode.BLL.Interfaces.BlobStorage;
+using Streetcode.BLL.Interfaces.Email;
+using Streetcode.BLL.Interfaces.Google;
+using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Interfaces.Jwt;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Payment;
+using Streetcode.BLL.Interfaces.Text;
+using Streetcode.BLL.Interfaces.Timeline;
+using Streetcode.BLL.MediatR;
+using Streetcode.BLL.Services.Email;
+using Streetcode.BLL.Services.Google;
+using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Services.JwtService;
-using Streetcode.DAL.Entities.Users;
+using Streetcode.BLL.Services.Logging;
+using Streetcode.BLL.Services.Payment;
+using Streetcode.BLL.Services.Text;
+using Streetcode.BLL.Services.Timeline;
+using Streetcode.DAL.Entities.AdditionalContent.Email;
+using Streetcode.DAL.Persistence;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Timeline;
 using Streetcode.BLL.Interfaces.Timeline;
 using Streetcode.BLL.Services.Timeline;
 using Streetcode.BLL.Interfaces.Redis;
 using Streetcode.BLL.Services.Redis;
+using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -76,6 +80,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IHistoricalContextService, HistoricalContextService>();
         services.AddScoped(typeof(IRedisService<>), typeof(RedisService<>));
+        services.AddScoped<IGoogleService, GoogleService>();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -122,6 +127,33 @@ public static class ServiceCollectionExtensions
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+            })
+            .AddGoogle(options =>
+            {
+                var clientId = configuration["Authentication:Google:ClientId"];
+
+                if (clientId == null)
+                {
+                    throw new ArgumentNullException(nameof(clientId));
+                }
+
+                var clientSecret = configuration["Authentication:Google:ClientSecret"];
+
+                if (clientSecret == null)
+                {
+                    throw new ArgumentNullException(nameof(clientSecret));
+                }
+
+                options.ClientId = clientId;
+                options.ClientSecret = clientSecret;
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -145,6 +177,7 @@ public static class ServiceCollectionExtensions
 
         services.AddLogging();
         services.AddControllers();
+        services.AddHttpContextAccessor();
 
         services.AddStackExchangeRedisCache(options =>
         {

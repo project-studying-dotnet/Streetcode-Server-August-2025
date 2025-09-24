@@ -23,6 +23,7 @@
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="MediatR" Version="11.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.20" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
@@ -49,6 +50,7 @@
   <ItemGroup>
     <Folder Include="Mapping\Analytics\" />
     <Folder Include="Mapping\Comments\" />
+    <Folder Include="Mapping\FavouriteStreetcode\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
     <Folder Include="Exceptions\" />
     <Folder Include="DTO\Instagram\" />
@@ -67,6 +69,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Errors.AdditionalContent.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Errors.Auth.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Errors.Auth.resx</DependentUpon>
     </Compile>
     <Compile Update="Resources\Errors.Common.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -120,6 +127,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.AdditionalContent.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Errors.Auth.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Errors.Auth.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Errors.Common.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Errors.Common.Designer.cs</LastGenOutput>
@@ -155,6 +166,9 @@
     <EmbeddedResource Update="Resources\MediatR.Payment.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MediatR.Payment.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Res.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
 

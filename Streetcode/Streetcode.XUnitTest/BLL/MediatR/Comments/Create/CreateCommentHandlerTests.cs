@@ -9,7 +9,7 @@ using Streetcode.DAL.Entities.Comments;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
-namespace Streetcode.XUnitTest.BLL.MediatR.Comments;
+namespace Streetcode.XUnitTest.BLL.MediatR.Comments.Create;
 
 public class CreateCommentHandlerTests
 {
@@ -145,7 +145,7 @@ public class CreateCommentHandlerTests
 
         _mockMapper.Setup(m => m.Map<CommentContent>(request.NewComment))
             .Returns(commentEntity);
-        _mockRepositoryWrapper.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<CommentContent, bool>>>(), null))
+        _mockRepositoryWrapper.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<Func<CommentContent, bool>>>(), null))
             .ReturnsAsync(new CommentContent { Id = commentEntity.ParentCommentId!.Value });
         _mockRepositoryWrapper.Setup(r => r.CommentRepository.CreateAsync(commentEntity))
             .ReturnsAsync(commentEntity);
@@ -173,7 +173,7 @@ public class CreateCommentHandlerTests
 
         _mockMapper.Setup(m => m.Map<CommentContent>(request.NewComment))
             .Returns(commentEntity);
-        _mockRepositoryWrapper.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<System.Func<CommentContent, bool>>>(), null))
+        _mockRepositoryWrapper.Setup(r => r.CommentRepository.GetFirstOrDefaultAsync(It.IsAny<System.Linq.Expressions.Expression<Func<CommentContent, bool>>>(), null))
             .ReturnsAsync((CommentContent)null!);
 
         // Act

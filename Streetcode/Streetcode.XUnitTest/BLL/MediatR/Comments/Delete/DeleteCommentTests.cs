@@ -15,7 +15,7 @@ using Streetcode.DAL.Repositories.Interfaces.Comments;
 using Streetcode.BLL.Util.Extensions;
 using Xunit;
 
-namespace Streetcode.XUnitTest.BLL.MediatR.Comments;
+namespace Streetcode.XUnitTest.BLL.MediatR.Comments.Delete;
 
 public class DeleteCommentTests
 {

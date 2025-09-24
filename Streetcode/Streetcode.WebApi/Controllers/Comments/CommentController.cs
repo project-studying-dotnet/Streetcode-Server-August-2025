@@ -3,14 +3,53 @@ using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Comments;
 using Streetcode.BLL.MediatR.Comments.Create;
 using Streetcode.BLL.MediatR.Comments.Delete;
-using Streetcode.WebApi.Attributes;
+using Streetcode.BLL.MediatR.Comments.GetAll;
+using Streetcode.BLL.MediatR.Comments.GetById;
+using Streetcode.BLL.MediatR.Comments.GetByStreetcodeId;
+using Streetcode.BLL.MediatR.Comments.GetByStreetcodeIdForAdmin;
+using Streetcode.BLL.MediatR.Comments.SetCommentRestrictedStatus;
 using Streetcode.BLL.MediatR.Comments.Update;
+using Streetcode.DAL.Enums;
+using Streetcode.WebApi.Attributes;
+using Streetcode.WebApi.Attributes;
+using Streetcode.DAL.Enums;
+using Streetcode.WebApi.Attributes;
 using Streetcode.WebApi.Utils;
 
 namespace Streetcode.WebApi.Controllers.Comments;
 
 public class CommentController : BaseApiController
 {
+    [HttpGet("{streetcodeId:int}")]
+    public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new GetCommentsByStreetcodeIdQuery(streetcodeId)));
+    }
+
+    [HttpGet("{streetcodeId:int}")]
+    [AuthorizeRoles(UserRole.Moderator, UserRole.Administrator, UserRole.MainAdministrator)]
+
+    public async Task<IActionResult> GetByStreetcodeIdForModeration(int streetcodeId, [FromQuery] bool? isReviewed)
+    {
+        return HandleResult(await Mediator.Send(
+            new GetCommentsByStreetcodeIdForAdminQuery(streetcodeId, isReviewed)));
+    }
+
+    [HttpGet("{commentId:int}")]
+    [AuthorizeRoles(UserRole.Moderator, UserRole.Administrator, UserRole.MainAdministrator)]
+    public async Task<IActionResult> GetCommentById(int commentId, [FromQuery] bool? isReviewed)
+    {
+        return HandleResult(await Mediator.Send(
+            new GetCommentByIdQuery(commentId, isReviewed)));
+    }
+
+    [HttpGet]
+    [AuthorizeRoles(UserRole.Moderator, UserRole.Administrator, UserRole.MainAdministrator)]
+    public async Task<IActionResult> GetAll([FromQuery] bool? isReviewed = null)
+    {
+        return HandleResult(await Mediator.Send(new GetAllCommentsForAdminQuery(isReviewed)));
+    }
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Create([FromBody] CommentCreateDTO commentCreate)
@@ -42,5 +81,29 @@ public class CommentController : BaseApiController
     {
         var userId = AuthHelper.GetUserId(HttpContext.User);
         return HandleResult(await Mediator.Send(new UpdateCommentCommand(comment, userId)));
+    }
+
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
+    [HttpPost("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ApproveComment([FromRoute] int id, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new SetCommentRestrictedStatusCommand(id, false), ct);
+        return HandleResult(result);
+    }
+
+    [AuthorizeRoles(UserRole.MainAdministrator, UserRole.Administrator, UserRole.Moderator)]
+    [HttpPost("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> RestrictComment([FromRoute] int id, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new SetCommentRestrictedStatusCommand(id, true), ct);
+        return HandleResult(result);
     }
 }
