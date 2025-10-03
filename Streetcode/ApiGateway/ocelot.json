@@ -1,0 +1,21 @@
+{
+	"Routes": [
+		{
+			"DownstreamPathTemplate": "/api/{controller}/{action}",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "streetcode-back",
+					"Port": 80
+				}
+			],
+			"UpstreamPathTemplate": "/streetcode/api/{controller}/{action}",
+			"UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+			"FileCacheOptions": {
+				"TtlSeconds": 60,
+				"Region": "streetcode_cache"
+			}
+		}
+	],
+	"GlobalConfiguration": { "BaseUrl": "http://localhost:5001" }
+}
